@@ -7,14 +7,29 @@ typedef struct
 {
     // Ressources brutes
     int herbes, fer, viande, or, bois, cristaux;
-    // Niveaux des auto-clickers (Ex: Mineurs, Bûcherons)
-    int auto_herbes, auto_fer, auto_viande, auto_or, auto_bois, auto_cristaux;
+
+    // Déblocages (Fer et Herbes sont débloqués par défaut)
+    bool unlock_or;
+    bool unlock_bois;
+    bool unlock_cristaux;
+    bool unlock_viande;
+
+    // Tableaux des auto-clickers (4 Tiers par ressource)
+    // [0] = +1/s, [1] = +10/s, [2] = +100/s, [3] = +1000/s
+    int b_fer[4];
+    int b_or[4];
+    int b_cristaux[4];
+    
+    int b_herbes[4];
+    int b_bois[4];
+    int b_viande[4];
+
 } PlayerResources;
 
 typedef struct
 {
     PlayerResources inventory;
-    float           autoTimer; // Chronomètre pour générer les ressources automatiques
+    float           autoTimer; 
 } ClickerContext;
 
 void Clicker_Init(ClickerContext* clicker);
@@ -25,4 +40,5 @@ void Clicker_RenderMine(ClickerContext* clicker, int viewStartX, int viewWidth, 
 
 void Clicker_UpdateForest(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font);
 void Clicker_RenderForest(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font);
+
 #endif // CLICKER_H

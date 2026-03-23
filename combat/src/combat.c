@@ -343,7 +343,8 @@ void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemE
 void Combat_Init(CombatContext* combat)
 {
     combat->player.inventory_count = 0;
-
+    combat->player.inventory_safe_count = 0;
+    
     for (int i = 0; i < MAX_SLOTS; i++)
     {
         combat->player.equipped[i] = -1;

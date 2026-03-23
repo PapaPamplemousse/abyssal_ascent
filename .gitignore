@@ -48,3 +48,6 @@ CMakeUserPresets.json
 
 
 save.json
+
+lib-win/
+raylib_win/

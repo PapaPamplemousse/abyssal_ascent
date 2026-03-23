@@ -1,230 +1,212 @@
 #include "clicker.h"
-#include <stdio.h> // Pour sprintf
+#include <stdio.h> 
 #include "../../utils/inc/lang.h"
 
 void Clicker_Init(ClickerContext* clicker)
 {
-    clicker->inventory = (PlayerResources){0}; // Met tout à zéro
+    clicker->inventory = (PlayerResources){0}; 
     clicker->autoTimer = 0.0f;
 }
 
-// Fonction appelée à chaque frame pour générer les ressources des auto-clickers
+// Calcule et ajoute la production par seconde
 void Clicker_ProcessAuto(ClickerContext* clicker, float deltaTime)
 {
     clicker->autoTimer += deltaTime;
     if (clicker->autoTimer >= 1.0f)
-    { // Toutes les 1 seconde
-        clicker->inventory.fer += clicker->inventory.auto_fer;
-        clicker->inventory.or += clicker->inventory.auto_or;
-        clicker->inventory.cristaux += clicker->inventory.auto_cristaux;
-        clicker->inventory.bois += clicker->inventory.auto_bois;
-        clicker->inventory.viande += clicker->inventory.auto_viande;
-        clicker->inventory.herbes += clicker->inventory.auto_herbes;
+    { 
+        PlayerResources* inv = &clicker->inventory;
+        
+        int p_fer = inv->b_fer[0]*1 + inv->b_fer[1]*10 + inv->b_fer[2]*100 + inv->b_fer[3]*1000;
+        int p_or = inv->b_or[0]*1 + inv->b_or[1]*10 + inv->b_or[2]*100 + inv->b_or[3]*1000;
+        int p_cris = inv->b_cristaux[0]*1 + inv->b_cristaux[1]*10 + inv->b_cristaux[2]*100 + inv->b_cristaux[3]*1000;
+        
+        int p_herb = inv->b_herbes[0]*1 + inv->b_herbes[1]*10 + inv->b_herbes[2]*100 + inv->b_herbes[3]*1000;
+        int p_bois = inv->b_bois[0]*1 + inv->b_bois[1]*10 + inv->b_bois[2]*100 + inv->b_bois[3]*1000;
+        int p_vian = inv->b_viande[0]*1 + inv->b_viande[1]*10 + inv->b_viande[2]*100 + inv->b_viande[3]*1000;
+
+        inv->fer += p_fer;
+        if (inv->unlock_or) inv->or += p_or;
+        if (inv->unlock_cristaux) inv->cristaux += p_cris;
+        
+        inv->herbes += p_herb;
+        if (inv->unlock_bois) inv->bois += p_bois;
+        if (inv->unlock_viande) inv->viande += p_vian;
+
         clicker->autoTimer -= 1.0f;
     }
 }
 
-// --- UTILITAIRES D'INTERFACE ---
-
-// Fonction interne pour dessiner un texte centré et savoir s'il est cliqué
 bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX, int y, int fontSize, Color baseColor)
 {
-    Vector2   textSize = MeasureTextEx(font, text, fontSize, 1);
-    Rectangle hitbox   = {centerX - (textSize.x / 2), y, textSize.x, textSize.y};
-
-    bool  isHovered = CheckCollisionPointRec(GetMousePosition(), hitbox);
+    Vector2 textSize = MeasureTextEx(font, text, fontSize, 1);
+    Rectangle hitbox = {centerX - (textSize.x / 2), y, textSize.x, textSize.y};
+    bool isHovered = CheckCollisionPointRec(GetMousePosition(), hitbox);
     Color drawColor = isHovered ? WHITE : baseColor;
-
     DrawTextEx(font, text, (Vector2){hitbox.x, hitbox.y}, fontSize, 1, drawColor);
-
     return isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 }
 
-// --- LA MINE ---
+// Super fonction utilitaire pour générer les boutons d'achat proprement
+void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, int* res, int x, int y) {
+    int cost = baseCost + (*count * scale);
+    char txt[64];
+    sprintf(txt, "[%d] %s (-%d)", *count, name, cost);
+    if (DrawAndCheckButtonCentered(font, txt, x, y, 18, GRAY)) {
+        if (*res >= cost) { *res -= cost; (*count)++; }
+    }
+}
 
+// --- LA MINE ---
 void Clicker_UpdateMine(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font)
 {
-    int colWidth   = viewWidth / 3;
-    int col1Center = viewStartX + (colWidth / 2);
-    int col2Center = viewStartX + colWidth + (colWidth / 2);
-    int col3Center = viewStartX + (colWidth * 2) + (colWidth / 2);
+    int colWidth = viewWidth / 3;
+    int c1 = viewStartX + (colWidth / 2);
+    int c2 = viewStartX + colWidth + (colWidth / 2);
+    int c3 = viewStartX + (colWidth * 2) + (colWidth / 2);
 
-    int artY = screenHeight * 0.3f; // Position du dessin ASCII
-    int buyY = screenHeight * 0.6f; // Position du bouton d'achat
+    int artY = screenHeight * 0.25f; 
+    int buyY = screenHeight * 0.45f; 
 
-    // --- COLONNE 1 : FER ---
-    if (DrawAndCheckButtonCentered(font, T("ART_IRON"), col1Center, artY, 30, LIGHTGRAY))
-        clicker->inventory.fer++;
+    PlayerResources* inv = &clicker->inventory;
 
-    // Coût du mineur de fer : 10 Fer
-    int  costFer = 10 + (clicker->inventory.auto_fer * 5);
-    char buyFerText[50];
-    sprintf(buyFerText, T("BUY_MINER"), costFer);
-    if (DrawAndCheckButtonCentered(font, buyFerText, col1Center, buyY, 20, GRAY))
-    {
-        if (clicker->inventory.fer >= costFer)
-        {
-            clicker->inventory.fer -= costFer;
-            clicker->inventory.auto_fer++;
+    // COLONNE 1 : FER (Toujours débloqué)
+    if (DrawAndCheckButtonCentered(font, T("ART_IRON"), c1, artY, 30, LIGHTGRAY)) inv->fer++;
+    BuyBld(font, "Mineur", &inv->b_fer[0], 10, 5, &inv->fer, c1, buyY);
+    BuyBld(font, "Foreuse", &inv->b_fer[1], 150, 50, &inv->fer, c1, buyY + 40);
+    BuyBld(font, "Excavatrice", &inv->b_fer[2], 2000, 500, &inv->fer, c1, buyY + 80);
+    BuyBld(font, "Faille Terrestre", &inv->b_fer[3], 25000, 5000, &inv->fer, c1, buyY + 120);
+
+    // COLONNE 2 : OR
+    if (!inv->unlock_or) {
+        if (DrawAndCheckButtonCentered(font, "DEBLOQUER L'OR\n\n(-1000 Fer)", c2, screenHeight/2, 20, YELLOW)) {
+            if (inv->fer >= 1000) { inv->fer -= 1000; inv->unlock_or = true; }
         }
+    } else {
+        if (DrawAndCheckButtonCentered(font, T("ART_GOLD"), c2, artY, 30, GOLD)) inv->or++;
+        BuyBld(font, "Chercheur", &inv->b_or[0], 10, 5, &inv->or, c2, buyY);
+        BuyBld(font, "Orpailleur", &inv->b_or[1], 150, 50, &inv->or, c2, buyY + 40);
+        BuyBld(font, "Mine d'Or", &inv->b_or[2], 2000, 500, &inv->or, c2, buyY + 80);
+        BuyBld(font, "Transmutateur", &inv->b_or[3], 25000, 5000, &inv->or, c2, buyY + 120);
     }
 
-    // --- COLONNE 2 : OR ---
-    if (DrawAndCheckButtonCentered(font, T("ART_GOLD"), col2Center, artY, 30, GOLD))
-        clicker->inventory.or ++;
-
-    // Coût du chercheur d'or : 50 Fer + 10 Or
-    int  costOr = 10 + (clicker->inventory.auto_or * 10);
-    char buyOrText[50];
-    sprintf(buyOrText, T("BUY_PROSPECTOR"), costOr);
-    if (DrawAndCheckButtonCentered(font, buyOrText, col2Center, buyY, 20, GRAY))
-    {
-        if (clicker->inventory.or >= costOr)
-        {
-            clicker->inventory.or -= costOr;
-            clicker->inventory.auto_or++;
+    // COLONNE 3 : CRISTAUX
+    if (!inv->unlock_cristaux) {
+        if (DrawAndCheckButtonCentered(font, "DEBLOQUER CRISTAUX\n\n(-10k Fer, -1k Or)", c3, screenHeight/2, 18, PURPLE)) {
+            if (inv->fer >= 10000 && inv->or >= 1000) {
+                inv->fer -= 10000; inv->or -= 1000; inv->unlock_cristaux = true;
+            }
         }
-    }
-
-    // --- COLONNE 3 : CRISTAUX ---
-    if (DrawAndCheckButtonCentered(font, T("ART_CRYSTAL"), col3Center, artY, 30, PURPLE))
-        clicker->inventory.cristaux++;
-
-    int  costCristal = 5 + (clicker->inventory.auto_cristaux * 5);
-    char buyCristalText[50];
-    sprintf(buyCristalText, T("BUY_EXTRACTOR"), costCristal);
-    if (DrawAndCheckButtonCentered(font, buyCristalText, col3Center, buyY, 20, GRAY))
-    {
-        if (clicker->inventory.cristaux >= costCristal)
-        {
-            clicker->inventory.cristaux -= costCristal;
-            clicker->inventory.auto_cristaux++;
-        }
+    } else {
+        if (DrawAndCheckButtonCentered(font, T("ART_CRYSTAL"), c3, artY, 30, PURPLE)) inv->cristaux++;
+        BuyBld(font, "Extracteur", &inv->b_cristaux[0], 10, 5, &inv->cristaux, c3, buyY);
+        BuyBld(font, "Resonateur", &inv->b_cristaux[1], 150, 50, &inv->cristaux, c3, buyY + 40);
+        BuyBld(font, "Puits Magique", &inv->b_cristaux[2], 2000, 500, &inv->cristaux, c3, buyY + 80);
+        BuyBld(font, "Monolithe", &inv->b_cristaux[3], 25000, 5000, &inv->cristaux, c3, buyY + 120);
     }
 }
 
 void Clicker_RenderMine(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font)
 {
     int colWidth = viewWidth / 3;
+    DrawAndCheckButtonCentered(font, T("MINE_TITLE"), viewStartX + (viewWidth / 2), 100, 50, LIGHTGRAY);
+    DrawLine(viewStartX, 150, viewStartX + viewWidth, 150, DARKGRAY);
+    DrawLine(viewStartX + colWidth, 150, viewStartX + colWidth, screenHeight, DARKGRAY);
+    DrawLine(viewStartX + (colWidth * 2), 150, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
 
-    // Titre
-    DrawAndCheckButtonCentered(font, T("MINE_TITLE"), viewStartX + (viewWidth / 2), 120, 50, LIGHTGRAY);
-
-    // Ligne horizontale sous le titre
-    DrawLine(viewStartX, 180, viewStartX + viewWidth, 180, DARKGRAY);
-
-    // Lignes verticales de séparation
-    DrawLine(viewStartX + colWidth, 180, viewStartX + colWidth, screenHeight, DARKGRAY);
-    DrawLine(viewStartX + (colWidth * 2), 180, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
-
-    // Affichage des statistiques d'auto-click
-    int  statsY = screenHeight * 0.8f;
+    // Affichage des Productions par seconde (Dynamique)
+    int statsY = screenHeight * 0.85f;
     char statText[50];
+    PlayerResources* inv = &clicker->inventory;
 
-    sprintf(statText, T("STAT_MINER"), clicker->inventory.auto_fer, clicker->inventory.auto_fer);
-    // sprintf(statText, T("STAT_MINER"), clicker->inventory.auto_fer, clicker->inventory.auto_fer);
+    int p_fer = inv->b_fer[0]*1 + inv->b_fer[1]*10 + inv->b_fer[2]*100 + inv->b_fer[3]*1000;
+    sprintf(statText, "Prod: +%d/sec", p_fer);
     DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth / 2), statsY, 20, DARKGRAY);
 
-    sprintf(statText, T("STAT_PROSPECTOR"), clicker->inventory.auto_or, clicker->inventory.auto_or);
-    DrawAndCheckButtonCentered(font, statText, viewStartX + colWidth + (colWidth / 2), statsY, 20, DARKGRAY);
-
-    sprintf(statText, T("STAT_EXTRACTOR"), clicker->inventory.auto_cristaux, clicker->inventory.auto_cristaux);
-    DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, DARKGRAY);
+    if (inv->unlock_or) {
+        int p_or = inv->b_or[0]*1 + inv->b_or[1]*10 + inv->b_or[2]*100 + inv->b_or[3]*1000;
+        sprintf(statText, "Prod: +%d/sec", p_or);
+        DrawAndCheckButtonCentered(font, statText, viewStartX + colWidth + (colWidth / 2), statsY, 20, DARKGRAY);
+    }
+    if (inv->unlock_cristaux) {
+        int p_cris = inv->b_cristaux[0]*1 + inv->b_cristaux[1]*10 + inv->b_cristaux[2]*100 + inv->b_cristaux[3]*1000;
+        sprintf(statText, "Prod: +%d/sec", p_cris);
+        DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, DARKGRAY);
+    }
 }
 
 // --- LA FORÊT SOMBRE ---
-
 void Clicker_UpdateForest(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font)
 {
-    int colWidth   = viewWidth / 3;
-    int col1Center = viewStartX + (colWidth / 2);
-    int col2Center = viewStartX + colWidth + (colWidth / 2);
-    int col3Center = viewStartX + (colWidth * 2) + (colWidth / 2);
+    int colWidth = viewWidth / 3;
+    int c1 = viewStartX + (colWidth / 2);
+    int c2 = viewStartX + colWidth + (colWidth / 2);
+    int c3 = viewStartX + (colWidth * 2) + (colWidth / 2);
 
-    int artY = screenHeight * 0.3f; // Position Y des gros dessins ASCII
-    int buyY = screenHeight * 0.6f; // Position Y des boutons d'achat
+    int artY = screenHeight * 0.25f; 
+    int buyY = screenHeight * 0.45f; 
 
-    // --- COLONNE 1 : HERBES ---
-    // Gros ASCII art cliquable pour ramasser à la main
-    if (DrawAndCheckButtonCentered(font, T("ART_HERBS"), col1Center, artY, 30, GREEN))
-        clicker->inventory.herbes++;
+    PlayerResources* inv = &clicker->inventory;
 
-    // Coût de l'Herboriste : 10 Herbes
-    int  costHerboriste = 10 + (clicker->inventory.auto_herbes * 5);
-    char buyHerbText[50];
-    sprintf(buyHerbText, T("BUY_HERBALIST"), costHerboriste);
-    if (DrawAndCheckButtonCentered(font, buyHerbText, col1Center, buyY, 20, GRAY))
-    {
-        if (clicker->inventory.herbes >= costHerboriste)
-        {
-            clicker->inventory.herbes -= costHerboriste;
-            clicker->inventory.auto_herbes++;
+    // COLONNE 1 : HERBES
+    if (DrawAndCheckButtonCentered(font, T("ART_HERBS"), c1, artY, 30, GREEN)) inv->herbes++;
+    BuyBld(font, "Herboriste", &inv->b_herbes[0], 10, 5, &inv->herbes, c1, buyY);
+    BuyBld(font, "Serre", &inv->b_herbes[1], 150, 50, &inv->herbes, c1, buyY + 40);
+    BuyBld(font, "Bosquet", &inv->b_herbes[2], 2000, 500, &inv->herbes, c1, buyY + 80);
+    BuyBld(font, "Arbre Monde", &inv->b_herbes[3], 25000, 5000, &inv->herbes, c1, buyY + 120);
+
+    // COLONNE 2 : BOIS
+    if (!inv->unlock_bois) {
+        if (DrawAndCheckButtonCentered(font, "DEBLOQUER LE BOIS\n\n(-1000 Herbes)", c2, screenHeight/2, 20, BROWN)) {
+            if (inv->herbes >= 1000) { inv->herbes -= 1000; inv->unlock_bois = true; }
         }
+    } else {
+        if (DrawAndCheckButtonCentered(font, T("ART_WOOD"), c2, artY, 30, BROWN)) inv->bois++;
+        BuyBld(font, "Bucheron", &inv->b_bois[0], 10, 5, &inv->bois, c2, buyY);
+        BuyBld(font, "Scierie", &inv->b_bois[1], 150, 50, &inv->bois, c2, buyY + 40);
+        BuyBld(font, "Treant", &inv->b_bois[2], 2000, 500, &inv->bois, c2, buyY + 80);
+        BuyBld(font, "Esprit Foret", &inv->b_bois[3], 25000, 5000, &inv->bois, c2, buyY + 120);
     }
 
-    // --- COLONNE 2 : BOIS ---
-    if (DrawAndCheckButtonCentered(font, T("ART_WOOD"), col2Center, artY, 30, BROWN))
-        clicker->inventory.bois++;
-
-    // Coût du Bûcheron : 10 Bois + 5 Herbes
-    int  costBucheronBois = 10 + (clicker->inventory.auto_bois * 8);
-    int  costBucheronHerb = 5 + (clicker->inventory.auto_bois * 2);
-    char buyBoisText[60];
-    sprintf(buyBoisText, T("BUY_LUMBERJACK"), costBucheronBois, costBucheronHerb);
-
-    if (DrawAndCheckButtonCentered(font, buyBoisText, col2Center, buyY, 18, GRAY))
-    {
-        if (clicker->inventory.bois >= costBucheronBois && clicker->inventory.herbes >= costBucheronHerb)
-        {
-            clicker->inventory.bois -= costBucheronBois;
-            clicker->inventory.herbes -= costBucheronHerb;
-            clicker->inventory.auto_bois++;
+    // COLONNE 3 : VIANDE
+    if (!inv->unlock_viande) {
+        if (DrawAndCheckButtonCentered(font, "DEBLOQUER VIANDE\n\n(-10k Herb, -1k Bois)", c3, screenHeight/2, 18, RED)) {
+            if (inv->herbes >= 10000 && inv->bois >= 1000) {
+                inv->herbes -= 10000; inv->bois -= 1000; inv->unlock_viande = true;
+            }
         }
-    }
-
-    // --- COLONNE 3 : VIANDE ---
-    if (DrawAndCheckButtonCentered(font, T("ART_MEAT"), col3Center, artY, 30, RED))
-        clicker->inventory.viande++;
-
-    // Coût du Chasseur : 20 Bois (pour arcs/pièges)
-    int  costChasseurBois = 20 + (clicker->inventory.auto_viande * 10);
-    char buyViandeText[50];
-    sprintf(buyViandeText, T("BUY_HUNTER"), costChasseurBois);
-
-    if (DrawAndCheckButtonCentered(font, buyViandeText, col3Center, buyY, 20, GRAY))
-    {
-        if (clicker->inventory.bois >= costChasseurBois)
-        {
-            clicker->inventory.bois -= costChasseurBois;
-            clicker->inventory.auto_viande++;
-        }
+    } else {
+        if (DrawAndCheckButtonCentered(font, T("ART_MEAT"), c3, artY, 30, RED)) inv->viande++;
+        BuyBld(font, "Chasseur", &inv->b_viande[0], 10, 5, &inv->viande, c3, buyY);
+        BuyBld(font, "Trappeur", &inv->b_viande[1], 150, 50, &inv->viande, c3, buyY + 40);
+        BuyBld(font, "Abattoir", &inv->b_viande[2], 2000, 500, &inv->viande, c3, buyY + 80);
+        BuyBld(font, "Cloneur", &inv->b_viande[3], 25000, 5000, &inv->viande, c3, buyY + 120);
     }
 }
 
 void Clicker_RenderForest(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font)
 {
     int colWidth = viewWidth / 3;
+    DrawAndCheckButtonCentered(font, T("FOREST_TITLE"), viewStartX + (viewWidth / 2), 100, 50, GREEN);
+    DrawLine(viewStartX, 150, viewStartX + viewWidth, 150, DARKGRAY);
+    DrawLine(viewStartX + colWidth, 150, viewStartX + colWidth, screenHeight, DARKGRAY);
+    DrawLine(viewStartX + (colWidth * 2), 150, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
 
-    // Titre de la zone
-    DrawAndCheckButtonCentered(font, T("FOREST_TITLE"), viewStartX + (viewWidth / 2), 120, 50, GREEN);
-
-    // Ligne horizontale sous le titre
-    DrawLine(viewStartX, 180, viewStartX + viewWidth, 180, DARKGRAY);
-
-    // Lignes verticales de séparation des 3 colonnes
-    DrawLine(viewStartX + colWidth, 180, viewStartX + colWidth, screenHeight, DARKGRAY);
-    DrawLine(viewStartX + (colWidth * 2), 180, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
-
-    // Affichage des statistiques d'auto-click en bas
-    int  statsY = screenHeight * 0.8f;
+    int statsY = screenHeight * 0.85f;
     char statText[50];
+    PlayerResources* inv = &clicker->inventory;
 
-    sprintf(statText, T("STAT_HERBALIST"), clicker->inventory.auto_herbes, clicker->inventory.auto_herbes);
+    int p_herb = inv->b_herbes[0]*1 + inv->b_herbes[1]*10 + inv->b_herbes[2]*100 + inv->b_herbes[3]*1000;
+    sprintf(statText, "Prod: +%d/sec", p_herb);
     DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth / 2), statsY, 20, DARKGRAY);
 
-    sprintf(statText, T("STAT_LUMBERJACK"), clicker->inventory.auto_bois, clicker->inventory.auto_bois);
-    DrawAndCheckButtonCentered(font, statText, viewStartX + colWidth + (colWidth / 2), statsY, 20, DARKGRAY);
-
-    sprintf(statText, T("STAT_HUNTER"), clicker->inventory.auto_viande, clicker->inventory.auto_viande);
-    DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, DARKGRAY);
+    if (inv->unlock_bois) {
+        int p_bois = inv->b_bois[0]*1 + inv->b_bois[1]*10 + inv->b_bois[2]*100 + inv->b_bois[3]*1000;
+        sprintf(statText, "Prod: +%d/sec", p_bois);
+        DrawAndCheckButtonCentered(font, statText, viewStartX + colWidth + (colWidth / 2), statsY, 20, DARKGRAY);
+    }
+    if (inv->unlock_viande) {
+        int p_vian = inv->b_viande[0]*1 + inv->b_viande[1]*10 + inv->b_viande[2]*100 + inv->b_viande[3]*1000;
+        sprintf(statText, "Prod: +%d/sec", p_vian);
+        DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, DARKGRAY);
+    }
 }

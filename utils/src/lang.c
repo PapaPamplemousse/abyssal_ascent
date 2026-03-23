@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 cJSON* g_langDB    = NULL;
-bool   g_isEnglish = true; // On commence en Français par défaut
+bool   g_isEnglish = false; // On commence en Français par défaut
 
 void Lang_Init(const char* filepath)
 {
