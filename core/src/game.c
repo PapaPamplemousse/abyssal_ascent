@@ -222,21 +222,36 @@ void Game_Render(GameContext* game) {
     } 
     else {
         if (game->currentState == STATE_CAMP) {
+            // --- TIMER POUR LE CRÉPITEMENT ---
+            // On change l'état du feu toutes les 0.15 secondes
+            float frameTime = 0.30f; 
+            int seed = (int)(GetTime() / frameTime);
+            
+            // On "fixe" le hasard pour cette frame précise
+            SetRandomSeed(seed);
             int cx = (w * 0.2f) + ((w * 0.55f) / 2);
             int cy = h / 2;
-            int baseFontSize = 40; // Taille de base pour le texte du titre
-            float asciiFontSize = 20; // Taille plus petite pour l'ASCII pour plus de détail
-            float spacing = 2; // Espacement léger entre les caractères
+            float asciiFontSize = 20;
+            float spacing = 2;
 
-            // 2. Titre
-            DrawTextEx(game->dungeonFont, "LE CAMPEMENT", (Vector2){cx - 100, cy - 200}, baseFontSize, 1, GREEN);
+            DrawTextEx(game->dungeonFont, "LE CAMPEMENT", (Vector2){cx - 100, cy - 200}, 40, 1, GREEN);
 
-            // 3. Définition de l'ASCII Art "Blocs" (13 lignes)
+            // --- RENDU DE LA FUMÉE ---
+            for (int s = 0; s < 3; s++) {
+                // Ces positions ne changeront que toutes les 0.15s grâce au seed
+                int smokeX = cx + GetRandomValue(-40, 40);
+                int smokeY = cy - 130 + GetRandomValue(-20, 20);
+                Color smokeCol = (Color){ 120, 120, 120, (unsigned char)GetRandomValue(100, 180) };
+                
+                DrawTextEx(game->dungeonFont, "▒", (Vector2){(float)smokeX, (float)smokeY}, asciiFontSize, spacing, smokeCol);
+            }
+
+            // --- 2. L'ASCII DU FEU (SANS LA FUMÉE STATIQUE) ---
             const char* fireAscii[] = {
-                "        ▒       .      ",
-                "    ▓██▄  ▒   ▓██▄     ",
+                "                       ", // Ligne vide pour laisser place à la fumée
+                "    ▓██▄      ▓██▄     ",
                 "    ▀███  ███████████   ",
-                "    ▒    █████████████  ",
+                "         █████████████  ",
                 "   ▄████  ████████████▀  ",
                 "  ████████████▓▀███▀████     ▄▄ ",
                 "  █████████████▀   █████▄   ▄███",
@@ -249,29 +264,37 @@ void Game_Render(GameContext* game) {
             };
 
             int lineCount = 13;
-
-            // 4. Boucle de rendu de l'ASCII avec dégradé
             for (int i = 0; i < lineCount; i++) {
-                // Calcul du centrage pour chaque ligne
-                Vector2 textSize = MeasureTextEx(game->dungeonFont, fireAscii[i], asciiFontSize, spacing);
-                Vector2 pos = { cx - (textSize.x / 2), cy - 100 + (i * asciiFontSize) };
-                
-                // Dégradé de couleur pour l'effet de feu :
-                // Jaune -> Orange -> Rouge -> Marron (pour les bûches/cendre)
-                Color col = YELLOW; // Haut (flammes)
-                if (i > 3) col = ORANGE; // Milieu
-                if (i > 8) col = RED; // Bas du feu
-                if (i > 10) col = (Color){101, 67, 33, 255}; // Bûches (Marron foncé)
+                float flickerX = (i < 11) ? (float)GetRandomValue(-1, 1) : 0;
 
-                DrawTextEx(game->dungeonFont, fireAscii[i], pos, asciiFontSize, spacing, col);
+                Vector2 textSize = MeasureTextEx(game->dungeonFont, fireAscii[i], asciiFontSize, spacing);
+                Vector2 pos = { cx - (textSize.x / 2) + flickerX, cy - 100 + (i * asciiFontSize) };
+                
+                Color col;
+                int intensity = GetRandomValue(0, 40);
+
+                if (i <= 4) {
+                    col = (Color){ 255, 255 - intensity, intensity, 255 }; // Jaune/Blanc
+                } 
+                else if (i <= 8) {
+                    col = (Color){ 255, 160 - intensity, 0, 255 }; // Orange
+                } 
+                else if (i <= 10) {
+                    col = (Color){ 220 - intensity, 20, 0, 255 }; // Rouge
+                } 
+                else {
+                    col = (Color){ 100, 60, 30, 255 }; // Bûches
+                }
+
+                DrawTextEx(game->dungeonFont, fireAscii[i], (Vector2){pos.x + flickerX, pos.y}, asciiFontSize, spacing, col);
             }
-            DrawTextEx(game->uiFont, "[1] Mine", (Vector2){cx - 150, h - 300}, 24, 1, LIGHTGRAY);
-            DrawTextEx(game->uiFont, "[2] Foret", (Vector2){cx - 150, h - 260}, 24, 1, GREEN);
-            DrawTextEx(game->uiFont, "[3] La Forge (Equipement)", (Vector2){cx - 150, h - 220}, 24, 1, ORANGE);
-            DrawTextEx(game->uiFont, "[4] Alchimiste (Potions)", (Vector2){cx - 150, h - 180}, 24, 1, PURPLE);
-            DrawTextEx(game->uiFont, "[5] Archiforge (Sorts)", (Vector2){cx - 150, h - 140}, 24, 1, BLUE);
-            DrawTextEx(game->uiFont, "[6] >>> DONJON <<<", (Vector2){cx - 150, h - 100}, 24, 1, RED);
-            DrawTextEx(game->uiFont, "[Q] Menu Principal", (Vector2){cx - 150, h - 50}, 20, 1, DARKGRAY);
+                DrawTextEx(game->uiFont, "[1] Mine", (Vector2){cx - 150, h - 300}, 24, 1, LIGHTGRAY);
+                DrawTextEx(game->uiFont, "[2] Foret", (Vector2){cx - 150, h - 260}, 24, 1, GREEN);
+                DrawTextEx(game->uiFont, "[3] La Forge (Equipement)", (Vector2){cx - 150, h - 220}, 24, 1, ORANGE);
+                DrawTextEx(game->uiFont, "[4] Alchimiste (Potions)", (Vector2){cx - 150, h - 180}, 24, 1, PURPLE);
+                DrawTextEx(game->uiFont, "[5] Archiforge (Sorts)", (Vector2){cx - 150, h - 140}, 24, 1, BLUE);
+                DrawTextEx(game->uiFont, "[6] >>> DONJON <<<", (Vector2){cx - 150, h - 100}, 24, 1, RED);
+                DrawTextEx(game->uiFont, "[Q] Menu Principal", (Vector2){cx - 150, h - 50}, 20, 1, DARKGRAY);
 
         }
         else if (game->currentState == STATE_FORGE) {
