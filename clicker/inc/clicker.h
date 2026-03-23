@@ -3,42 +3,136 @@
 
 #include "raylib.h"
 
+/**
+ * @brief Structure contenant toutes les ressources du joueur ainsi que les états de progression.
+ * @details Gère les ressources, les déblocages et les auto-producteurs par tiers.
+ * @note Structure publique
+ */
 typedef struct
 {
-    // Ressources brutes
-    int herbes, fer, viande, or, bois, cristaux;
+    /** @brief Quantité d'herbes possédées */
+    int herbes;
 
-    // Déblocages (Fer et Herbes sont débloqués par défaut)
+    /** @brief Quantité de fer possédée */
+    int fer;
+
+    /** @brief Quantité de viande possédée */
+    int viande;
+
+    /** @brief Quantité d'or possédée */
+    int or ;
+
+    /** @brief Quantité de bois possédée */
+    int bois;
+
+    /** @brief Quantité de cristaux possédée */
+    int cristaux;
+
+    /** @brief Indique si la ressource or est débloquée */
     bool unlock_or;
+
+    /** @brief Indique si la ressource bois est débloquée */
     bool unlock_bois;
+
+    /** @brief Indique si la ressource cristaux est débloquée */
     bool unlock_cristaux;
+
+    /** @brief Indique si la ressource viande est débloquée */
     bool unlock_viande;
 
-    // Tableaux des auto-clickers (4 Tiers par ressource)
-    // [0] = +1/s, [1] = +10/s, [2] = +100/s, [3] = +1000/s
+    /** @brief Auto-producteurs de fer (tiers 0 à 3) */
     int b_fer[4];
+
+    /** @brief Auto-producteurs d'or */
     int b_or[4];
+
+    /** @brief Auto-producteurs de cristaux */
     int b_cristaux[4];
-    
+
+    /** @brief Auto-producteurs d'herbes */
     int b_herbes[4];
+
+    /** @brief Auto-producteurs de bois */
     int b_bois[4];
+
+    /** @brief Auto-producteurs de viande */
     int b_viande[4];
 
 } PlayerResources;
 
+/**
+ * @brief Contexte global du système de clicker.
+ * @details Contient les ressources du joueur et les timers de production automatique.
+ * @note Structure publique
+ */
 typedef struct
 {
+    /** @brief Inventaire du joueur */
     PlayerResources inventory;
-    float           autoTimer; 
+
+    /** @brief Timer accumulant le temps pour la production automatique */
+    float autoTimer;
+
 } ClickerContext;
 
+/**
+ * @brief Initialise le contexte du clicker.
+ * @param[out] clicker Contexte à initialiser
+ * @note Fonction publique
+ */
 void Clicker_Init(ClickerContext* clicker);
+
+/**
+ * @brief Met à jour la production automatique des ressources.
+ * @details Ajoute les ressources générées chaque seconde en fonction des bâtiments.
+ * @param[in,out] clicker Contexte du clicker
+ * @param[in] deltaTime Temps écoulé depuis la dernière frame
+ * @note Fonction publique
+ */
 void Clicker_ProcessAuto(ClickerContext* clicker, float deltaTime);
 
+/**
+ * @brief Met à jour la logique de la mine (inputs, achats, clics).
+ * @param[in,out] clicker Contexte du clicker
+ * @param[in] viewStartX Position X de départ de la vue
+ * @param[in] viewWidth Largeur de la vue
+ * @param[in] screenHeight Hauteur de l'écran
+ * @param[in] font Police utilisée pour le rendu
+ * @note Fonction publique
+ */
 void Clicker_UpdateMine(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font);
+
+/**
+ * @brief Affiche l'interface de la mine.
+ * @param[in] clicker Contexte du clicker
+ * @param[in] viewStartX Position X de départ de la vue
+ * @param[in] viewWidth Largeur de la vue
+ * @param[in] screenHeight Hauteur de l'écran
+ * @param[in] font Police utilisée pour le rendu
+ * @note Fonction publique
+ */
 void Clicker_RenderMine(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font);
 
+/**
+ * @brief Met à jour la logique de la forêt (inputs, achats, clics).
+ * @param[in,out] clicker Contexte du clicker
+ * @param[in] viewStartX Position X de départ de la vue
+ * @param[in] viewWidth Largeur de la vue
+ * @param[in] screenHeight Hauteur de l'écran
+ * @param[in] font Police utilisée pour le rendu
+ * @note Fonction publique
+ */
 void Clicker_UpdateForest(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font);
+
+/**
+ * @brief Affiche l'interface de la forêt.
+ * @param[in] clicker Contexte du clicker
+ * @param[in] viewStartX Position X de départ de la vue
+ * @param[in] viewWidth Largeur de la vue
+ * @param[in] screenHeight Hauteur de l'écran
+ * @param[in] font Police utilisée pour le rendu
+ * @note Fonction publique
+ */
 void Clicker_RenderForest(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font);
 
 #endif // CLICKER_H

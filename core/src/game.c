@@ -2,34 +2,21 @@
 #include "../../dungeon/inc/dungeon.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "save.h"
 #include "../../utils/inc/cJSON.h"
 #include "../../utils/inc/lang.h"
 #include "../../combat/inc/combat.h"
 
 static DungeonContext myDungeon;
-static int            selectedForgeIdx = -1;
-static int            selectedSpellIdx = -1;
-static int selectedPotionIdx = -1;
+static int            selectedForgeIdx  = -1;
+static int            selectedSpellIdx  = -1;
+static int            selectedPotionIdx = -1;
 
-static void SaveGame(GameContext* game);
-static void LoadGame(GameContext* game);
-static bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool canAfford);
+static bool        DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool canAfford);
 static const char* GetEffectString(int effect);
 
 extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
-extern SpellTemplate g_spellDB[MAX_SPELLS_DB];
-
-#define LOAD_INT_ARRAY(jsonName, cArray, maxSize) \
-        do { \
-            cJSON* arr = cJSON_GetObjectItem(root, jsonName); \
-            if (arr) { \
-                int i = 0; cJSON* item; \
-                cJSON_ArrayForEach(item, arr) { \
-                    if (i < maxSize) { cArray[i] = item->valueint; i++; } \
-                } \
-            } \
-        } while(0)
-
+extern SpellTemplate  g_spellDB[MAX_SPELLS_DB];
 
 void Game_Init(GameContext* game)
 {
@@ -61,7 +48,7 @@ void Game_Init(GameContext* game)
     Clicker_Init(&game->clicker);
     Combat_Init(&game->combat);
     Dungeon_Init(&myDungeon);
-    LoadGame(game);
+    LoadGame(game, &myDungeon);
 }
 
 void Game_Close(GameContext* game)
@@ -114,11 +101,11 @@ void Game_Update(GameContext* game)
             else if (key == KEY_L)
             {
                 g_isEnglish = !g_isEnglish;
-                SaveGame(game);
+                SaveGame(game, &myDungeon);
             }
             else if (pressedQuit)
             {
-                SaveGame(game);
+                SaveGame(game, &myDungeon);
                 game->isRunning = false;
             }
             break;
@@ -234,7 +221,7 @@ void DrawGameUI(GameContext* game, int w, int h)
     // =========================================================
     // --- PANNEAU GAUCHE : RESSOURCES ET CARTE ---
     // =========================================================
-    
+
     // Ressources du clicker (En haut à gauche)
     DrawTextEx(game->uiFont, T("UI_RESOURCES_TITLE"), (Vector2){20, 20}, 24, 1, LIGHTGRAY);
     DrawTextEx(game->uiFont, TextFormat(T("RES_IRON"), game->clicker.inventory.fer), (Vector2){20, 60}, 20, 1, GRAY);
@@ -275,15 +262,22 @@ void DrawGameUI(GameContext* game, int w, int h)
                     if (x == myDungeon.playerX && y == myDungeon.playerY)
                     {
                         char* dirStr = "^";
-                        if (myDungeon.playerDir == DIR_EAST) dirStr = ">";
-                        else if (myDungeon.playerDir == DIR_SOUTH) dirStr = "v";
-                        else if (myDungeon.playerDir == DIR_WEST) dirStr = "<";
+                        if (myDungeon.playerDir == DIR_EAST)
+                            dirStr = ">";
+                        else if (myDungeon.playerDir == DIR_SOUTH)
+                            dirStr = "v";
+                        else if (myDungeon.playerDir == DIR_WEST)
+                            dirStr = "<";
                         DrawTextEx(game->dungeonFont, dirStr, pos, cell_size, spacing, mapPlayerColor);
                     }
-                    else if (tile == '#') DrawTextEx(game->dungeonFont, "#", pos, cell_size, spacing, mapWallColor);
-                    else if (tile == '.') DrawTextEx(game->dungeonFont, ".", pos, cell_size, spacing, mapFloorColor);
-                    else if (tile == '>') DrawTextEx(game->dungeonFont, ">", pos, cell_size, spacing, mapStairsColor);
-                    else if (tile == 'E' || tile == 'B') DrawTextEx(game->dungeonFont, "?", pos, cell_size, spacing, mapSpecialColor);
+                    else if (tile == '#')
+                        DrawTextEx(game->dungeonFont, "#", pos, cell_size, spacing, mapWallColor);
+                    else if (tile == '.')
+                        DrawTextEx(game->dungeonFont, ".", pos, cell_size, spacing, mapFloorColor);
+                    else if (tile == '>')
+                        DrawTextEx(game->dungeonFont, ">", pos, cell_size, spacing, mapStairsColor);
+                    else if (tile == 'E' || tile == 'B')
+                        DrawTextEx(game->dungeonFont, "?", pos, cell_size, spacing, mapSpecialColor);
                 }
             }
         }
@@ -302,7 +296,7 @@ void DrawGameUI(GameContext* game, int w, int h)
     }
 
     // 2. Equipement Actuel (Remonté à 35% de l'écran pour faire de la place)
-    float equipStartY = h * 0.35f; 
+    float equipStartY = h * 0.35f;
     DrawLine(w - rightWidth, equipStartY, w, equipStartY, uiBorder);
     DrawTextEx(game->uiFont, T("UI_EQUIP_VISUAL"), (Vector2){rightX, equipStartY + 10}, 24, 1, LIGHTGRAY);
 
@@ -319,9 +313,9 @@ void DrawGameUI(GameContext* game, int w, int h)
         }
         else
         {
-            OwnedItem* item = &game->combat.player.inventory[inv_idx];
+            OwnedItem*    item = &game->combat.player.inventory[inv_idx];
             ItemTemplate* t    = &g_itemDB[item->template_idx];
-            //sprintf(eq_text, "%s: %s (+%d)", slot_names[i], g_isEnglish ? t->name_en : t->name_fr, item->level);
+            // sprintf(eq_text, "%s: %s (+%d)", slot_names[i], g_isEnglish ? t->name_en : t->name_fr, item->level);
             sprintf(eq_text, "%s: %s%s (+%d)", slot_names[i], g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
             DrawTextEx(game->uiFont, eq_text, (Vector2){rightX, equipStartY + 45 + (i * 20)}, 20, 1, WHITE);
         }
@@ -331,7 +325,7 @@ void DrawGameUI(GameContext* game, int w, int h)
     float magicStartY = equipStartY + 195; // Placé juste sous l'équipement
     DrawLine(w - rightWidth, magicStartY, w, magicStartY, uiBorder);
     DrawTextEx(game->uiFont, "[ CONSOMMABLES ]", (Vector2){rightX, magicStartY + 10}, 24, 1, LIGHTGRAY);
-    
+
     for (int i = 0; i < 3; i++)
     {
         int p_idx = game->combat.player.equipped_potions[i];
@@ -354,7 +348,7 @@ void DrawGameUI(GameContext* game, int w, int h)
     float spellStartY = magicStartY + 115; // Placé juste sous les potions
     DrawLine(w - rightWidth, spellStartY, w, spellStartY, uiBorder);
     DrawTextEx(game->uiFont, "[ SORTS (Cost Mana) ]", (Vector2){rightX, spellStartY + 10}, 24, 1, LIGHTGRAY);
-    
+
     for (int i = 0; i < 3; i++)
     {
         int s_idx = game->combat.player.equipped_spells[i];
@@ -471,7 +465,7 @@ void Game_RenderInventory(GameContext* game, int w, int h)
                 is_eq = true;
 
         char btn_text[128];
-        //sprintf(btn_text, "%s %s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, item->level);
+        // sprintf(btn_text, "%s %s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, item->level);
         sprintf(btn_text, "%s %s%s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
 
         if (DoShopButton(game->uiFont, btn_text, listX, 150 + (i * 30), 20, true))
@@ -529,10 +523,10 @@ void Game_RenderForge(GameContext* game, int w, int h)
                 is_eq = true;
 
         char itemText[128];
-        //sprintf(itemText, "%s %s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, item->level);
+        // sprintf(itemText, "%s %s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, item->level);
         sprintf(itemText, "%s %s%s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
         Color itemColor = (inv_idx == selectedForgeIdx) ? WHITE : GRAY; // Blanc si sélectionné pour upgrade
-        
+
         (void)itemColor; // Non utilisé pour l'instant, mais on pourrait faire du responsive plus tard
 
         // DoShopButton pour la sélection
@@ -722,80 +716,99 @@ void Game_RenderArchiforge(GameContext* game, int w, int h)
     }
 }
 
-void Game_RenderAlchemist(GameContext* game, int w, int h) {
-    int startX = (w * 0.25f) + 30; 
+void Game_RenderAlchemist(GameContext* game, int w, int h)
+{
+    int startX      = (w * 0.25f) + 30;
     int centerWidth = w * 0.55f;
-    int listWidth = centerWidth * 0.45f; 
-    int shopX = startX + listWidth + 20;
-    
+    int listWidth   = centerWidth * 0.45f;
+    int shopX       = startX + listWidth + 20;
+
     DrawLine(startX, 80, startX + centerWidth, 80, DARKGRAY);
     DrawLine(startX + listWidth, 80, startX + listWidth, h, DARKGRAY);
 
     DrawTextEx(game->uiFont, "=== L'ALCHIMISTE ===", (Vector2){startX + 20, 100}, 24, 1, PURPLE);
 
     // --- LISTE GAUCHE ---
-    for (int i = 0; i < g_potionCount; i++) {
-        PotionTemplate* t = &g_potionDB[i];
-        bool unlocked = game->combat.player.potion_unlocked[i];
-        char text[128];
-        
-        if (unlocked) {
+    for (int i = 0; i < g_potionCount; i++)
+    {
+        PotionTemplate* t        = &g_potionDB[i];
+        bool            unlocked = game->combat.player.potion_unlocked[i];
+        char            text[128];
+
+        if (unlocked)
+        {
             sprintf(text, "%s (Niv %d) x%d", g_isEnglish ? t->name_en : t->name_fr, game->combat.player.potion_level[i], game->combat.player.potion_qty[i]);
-        } else {
+        }
+        else
+        {
             sprintf(text, "[LOCKED] %s", g_isEnglish ? t->name_en : t->name_fr);
         }
 
         // On rend le bouton cliquable pour sélectionner la potion
-        if (DoShopButton(game->uiFont, text, startX + 20, 150 + (i * 30), 20, true)) {
+        if (DoShopButton(game->uiFont, text, startX + 20, 150 + (i * 30), 20, true))
+        {
             selectedPotionIdx = i;
         }
     }
 
     // --- ATELIER DROITE ---
-    if (selectedPotionIdx != -1) {
-        PotionTemplate* t = &g_potionDB[selectedPotionIdx];
-        bool unlocked = game->combat.player.potion_unlocked[selectedPotionIdx];
+    if (selectedPotionIdx != -1)
+    {
+        PotionTemplate* t        = &g_potionDB[selectedPotionIdx];
+        bool            unlocked = game->combat.player.potion_unlocked[selectedPotionIdx];
 
         DrawTextEx(game->uiFont, g_isEnglish ? t->name_en : t->name_fr, (Vector2){shopX, 150}, 30, 1, WHITE);
 
-        if (!unlocked) {
+        if (!unlocked)
+        {
             // BOUTON APPRENDRE
-            char costText[64]; sprintf(costText, "Cout: %d Or", t->learn_gold);
+            char costText[64];
+            sprintf(costText, "Cout: %d Or", t->learn_gold);
             DrawTextEx(game->uiFont, costText, (Vector2){shopX, 200}, 20, 1, GRAY);
-            
+
             bool canAfford = (game->clicker.inventory.or >= t->learn_gold);
-            if (DoShopButton(game->uiFont, "[ APPRENDRE ]", shopX, 250, 24, canAfford)) {
+            if (DoShopButton(game->uiFont, "[ APPRENDRE ]", shopX, 250, 24, canAfford))
+            {
                 game->clicker.inventory.or -= t->learn_gold;
                 game->combat.player.potion_unlocked[selectedPotionIdx] = true;
             }
-        } else {
+        }
+        else
+        {
             // BOUTONS AMELIORER ET CRAFTER
-            int lvl = game->combat.player.potion_level[selectedPotionIdx];
-            int upg_cost = t->upg_gold_base + (lvl * t->upg_gold_inc);
+            int lvl        = game->combat.player.potion_level[selectedPotionIdx];
+            int upg_cost   = t->upg_gold_base + (lvl * t->upg_gold_inc);
             int craft_cost = t->craft_herbs_base + (lvl * t->craft_herbs_inc);
 
             bool canUpg = (game->clicker.inventory.or >= upg_cost && lvl < 10);
-            if (DoShopButton(game->uiFont, TextFormat("[ AMELIORER (-%d Or) ]", upg_cost), shopX, 200, 20, canUpg)) {
+            if (DoShopButton(game->uiFont, TextFormat("[ AMELIORER (-%d Or) ]", upg_cost), shopX, 200, 20, canUpg))
+            {
                 game->clicker.inventory.or -= upg_cost;
                 game->combat.player.potion_level[selectedPotionIdx]++;
             }
 
             bool canCraft = (game->clicker.inventory.herbes >= craft_cost);
-            if (DoShopButton(game->uiFont, TextFormat("[ CRAFTER (-%d Herbes) ]", craft_cost), shopX, 250, 24, canCraft)) {
+            if (DoShopButton(game->uiFont, TextFormat("[ CRAFTER (-%d Herbes) ]", craft_cost), shopX, 250, 24, canCraft))
+            {
                 game->clicker.inventory.herbes -= craft_cost;
                 game->combat.player.potion_qty[selectedPotionIdx]++;
             }
 
             // GESTION DE L'ÉQUIPEMENT (SLOTS 1, 2, 3)
             DrawTextEx(game->uiFont, "Equiper dans le slot (Touches 1, 2, 3):", (Vector2){shopX, 320}, 20, 1, LIGHTGRAY);
-            for(int slot = 0; slot < 3; slot++) {
-                bool is_eq = (game->combat.player.equipped_potions[slot] == selectedPotionIdx);
-                const char* btnLabel = is_eq ? TextFormat("[E] Slot %d", slot+1) : TextFormat("[ ] Slot %d", slot+1);
-                
-                if (DoShopButton(game->uiFont, btnLabel, shopX + (slot * 110), 360, 20, true)) {
-                    if (is_eq) {
+            for (int slot = 0; slot < 3; slot++)
+            {
+                bool        is_eq    = (game->combat.player.equipped_potions[slot] == selectedPotionIdx);
+                const char* btnLabel = is_eq ? TextFormat("[E] Slot %d", slot + 1) : TextFormat("[ ] Slot %d", slot + 1);
+
+                if (DoShopButton(game->uiFont, btnLabel, shopX + (slot * 110), 360, 20, true))
+                {
+                    if (is_eq)
+                    {
                         game->combat.player.equipped_potions[slot] = -1; // Déséquipe
-                    } else {
+                    }
+                    else
+                    {
                         game->combat.player.equipped_potions[slot] = selectedPotionIdx; // Equipe
                     }
                 }
@@ -893,7 +906,6 @@ void Game_Render(GameContext* game)
         }
         else if (game->currentState == STATE_FORGE)
         {
-            
             Game_RenderForge(game, w, h);
             DrawTextEx(game->uiFont, T("BTN_BACK_CAMP"), (Vector2){startX, h - 80}, 20, 1, GRAY);
         }
@@ -975,233 +987,6 @@ void Game_Run(GameContext* game)
     }
 }
 
-static void SaveGame(GameContext* game)
-{
-    cJSON* root = cJSON_CreateObject();
-    if (!root) return; // Sécurité absolue
-
-    cJSON_AddBoolToObject(root, "is_english", g_isEnglish);
-    cJSON_AddNumberToObject(root, "highest_floor", myDungeon.highest_floor);
-
-    // Sauvegarde des Ressources
-    cJSON_AddNumberToObject(root, "fer", game->clicker.inventory.fer);
-    cJSON_AddNumberToObject(root, "or", game->clicker.inventory.or);
-    cJSON_AddNumberToObject(root, "cristaux", game->clicker.inventory.cristaux);
-    cJSON_AddNumberToObject(root, "bois", game->clicker.inventory.bois);
-    cJSON_AddNumberToObject(root, "viande", game->clicker.inventory.viande);
-    cJSON_AddNumberToObject(root, "herbes", game->clicker.inventory.herbes);
-
-    cJSON_AddBoolToObject(root, "unlock_or", game->clicker.inventory.unlock_or);
-    cJSON_AddBoolToObject(root, "unlock_bois", game->clicker.inventory.unlock_bois);
-    cJSON_AddBoolToObject(root, "unlock_cristaux", game->clicker.inventory.unlock_cristaux);
-    cJSON_AddBoolToObject(root, "unlock_viande", game->clicker.inventory.unlock_viande);
-
-    // Macro sécurisée pour les tableaux
-    #define SAVE_INT_ARRAY(name, arr, size) \
-        do { \
-            cJSON* jArr = cJSON_CreateArray(); \
-            if(jArr) { \
-                for(int i=0; i<size; i++) cJSON_AddItemToArray(jArr, cJSON_CreateNumber(arr[i])); \
-                cJSON_AddItemToObject(root, name, jArr); \
-            } \
-        } while(0)
-
-    SAVE_INT_ARRAY("b_fer", game->clicker.inventory.b_fer, 4);
-    SAVE_INT_ARRAY("b_or", game->clicker.inventory.b_or, 4);
-    SAVE_INT_ARRAY("b_cristaux", game->clicker.inventory.b_cristaux, 4);
-    SAVE_INT_ARRAY("b_herbes", game->clicker.inventory.b_herbes, 4);
-    SAVE_INT_ARRAY("b_bois", game->clicker.inventory.b_bois, 4);
-    SAVE_INT_ARRAY("b_viande", game->clicker.inventory.b_viande, 4);
-
-    cJSON* sp_unl = cJSON_CreateArray();
-    cJSON* sp_lvl = cJSON_CreateArray();
-    if(sp_unl && sp_lvl) {
-        for(int i = 0; i < g_spellCount; i++) {
-            cJSON_AddItemToArray(sp_unl, cJSON_CreateBool(game->combat.player.spell_unlocked[i]));
-            cJSON_AddItemToArray(sp_lvl, cJSON_CreateNumber(game->combat.player.spell_level[i]));
-        }
-        cJSON_AddItemToObject(root, "spell_unlocked", sp_unl);
-        cJSON_AddItemToObject(root, "spell_level", sp_lvl);
-    }
-
-    cJSON* po_unl = cJSON_CreateArray();
-    cJSON* po_lvl = cJSON_CreateArray();
-    cJSON* po_qty = cJSON_CreateArray();
-    if(po_unl && po_lvl && po_qty) {
-        for(int i = 0; i < g_potionCount; i++) {
-            cJSON_AddItemToArray(po_unl, cJSON_CreateBool(game->combat.player.potion_unlocked[i]));
-            cJSON_AddItemToArray(po_lvl, cJSON_CreateNumber(game->combat.player.potion_level[i]));
-            cJSON_AddItemToArray(po_qty, cJSON_CreateNumber(game->combat.player.potion_qty[i]));
-        }
-        cJSON_AddItemToObject(root, "potion_unlocked", po_unl);
-        cJSON_AddItemToObject(root, "potion_level", po_lvl);
-        cJSON_AddItemToObject(root, "potion_qty", po_qty);
-    }
-
-    cJSON* eq_sp = cJSON_CreateArray();
-    cJSON* eq_po = cJSON_CreateArray();
-    if(eq_sp && eq_po) {
-        for(int i = 0; i < 3; i++) {
-            cJSON_AddItemToArray(eq_sp, cJSON_CreateNumber(game->combat.player.equipped_spells[i]));
-            cJSON_AddItemToArray(eq_po, cJSON_CreateNumber(game->combat.player.equipped_potions[i]));
-        }
-        cJSON_AddItemToObject(root, "equipped_spells", eq_sp);
-        cJSON_AddItemToObject(root, "equipped_potions", eq_po);
-    }
-
-    int save_inv_count = (game->currentState == STATE_DUNGEON || game->currentState == STATE_GAMEOVER) 
-                         ? game->combat.player.inventory_safe_count 
-                         : game->combat.player.inventory_count;
-
-    // Sécurité pour ne pas déborder du tableau !
-    if (save_inv_count < 0) save_inv_count = 0;
-    if (save_inv_count > MAX_INVENTORY) save_inv_count = MAX_INVENTORY;
-
-    cJSON_AddNumberToObject(root, "inventory_count", save_inv_count);
-    
-    cJSON* inv_arr = cJSON_CreateArray();
-    if (inv_arr) {
-        for (int i = 0; i < save_inv_count; i++) { 
-            cJSON* itemObj = cJSON_CreateObject();
-            if(itemObj) {
-                cJSON_AddNumberToObject(itemObj, "template_idx", game->combat.player.inventory[i].template_idx);
-                cJSON_AddNumberToObject(itemObj, "level", game->combat.player.inventory[i].level);
-                cJSON_AddNumberToObject(itemObj, "effect", game->combat.player.inventory[i].effect); 
-                cJSON_AddItemToArray(inv_arr, itemObj);
-            }
-        }
-        cJSON_AddItemToObject(root, "inventory", inv_arr);
-    }
-
-    cJSON* eq_arr = cJSON_CreateArray();
-    if (eq_arr) {
-        for (int i = 0; i < MAX_SLOTS; i++) {
-            cJSON_AddItemToArray(eq_arr, cJSON_CreateNumber(game->combat.player.equipped[i]));
-        }
-        cJSON_AddItemToObject(root, "equipped", eq_arr);
-    }
-
-    char* jsonStr = cJSON_Print(root);
-    if (jsonStr) {
-        SaveFileText("save.json", jsonStr); 
-        free(jsonStr);
-    }
-    cJSON_Delete(root);
-}
-
-static void LoadGame(GameContext* game)
-{
-    // =========================================================
-    // 1. SÉCURITÉ : INITIALISATION DE BASE (Anti-Valeurs Poubelles)
-    // =========================================================
-    for(int i = 0; i < MAX_POTIONS_DB; i++) {
-        game->combat.player.potion_unlocked[i] = false;
-        game->combat.player.potion_level[i] = 0;
-        game->combat.player.potion_qty[i] = 0;
-    }
-    for(int i = 0; i < MAX_SPELLS_DB; i++) {
-        game->combat.player.spell_unlocked[i] = false;
-        game->combat.player.spell_level[i] = 0;
-    }
-    for(int i = 0; i < 3; i++) {
-        game->combat.player.equipped_spells[i] = -1;
-        game->combat.player.equipped_potions[i] = -1;
-    }
-    for(int i = 0; i < MAX_SLOTS; i++) {
-        game->combat.player.equipped[i] = -1;
-    }
-    game->combat.player.inventory_count = 0;
-    game->combat.player.inventory_safe_count = 0;
-
-    // =========================================================
-    // 2. TENTATIVE DE CHARGEMENT DE LA SAUVEGARDE
-    // =========================================================
-    char* file = LoadFileText("save.json");
-    if (!file) return;
-
-    cJSON* root = cJSON_Parse(file);
-    if (!root) { UnloadFileText(file); return; }
-
-    cJSON* langNode = cJSON_GetObjectItem(root, "is_english");
-    if (langNode) g_isEnglish = cJSON_IsTrue(langNode);
-
-    cJSON* hf = cJSON_GetObjectItem(root, "highest_floor");
-    if (hf) myDungeon.highest_floor = hf->valueint;
-
-    // Chargement ultra-sécurisé des ressources (si la clé manque, on met 0 au lieu de crasher)
-    cJSON* fNode = cJSON_GetObjectItem(root, "fer"); if(fNode) game->clicker.inventory.fer = fNode->valueint;
-    cJSON* oNode = cJSON_GetObjectItem(root, "or"); if(oNode) game->clicker.inventory.or = oNode->valueint;
-    cJSON* cNode = cJSON_GetObjectItem(root, "cristaux"); if(cNode) game->clicker.inventory.cristaux = cNode->valueint;
-    cJSON* bNode = cJSON_GetObjectItem(root, "bois"); if(bNode) game->clicker.inventory.bois = bNode->valueint;
-    cJSON* vNode = cJSON_GetObjectItem(root, "viande"); if(vNode) game->clicker.inventory.viande = vNode->valueint;
-    cJSON* hNode = cJSON_GetObjectItem(root, "herbes"); if(hNode) game->clicker.inventory.herbes = hNode->valueint;
-
-    game->clicker.inventory.unlock_or       = cJSON_IsTrue(cJSON_GetObjectItem(root, "unlock_or"));
-    game->clicker.inventory.unlock_bois     = cJSON_IsTrue(cJSON_GetObjectItem(root, "unlock_bois"));
-    game->clicker.inventory.unlock_cristaux = cJSON_IsTrue(cJSON_GetObjectItem(root, "unlock_cristaux"));
-    game->clicker.inventory.unlock_viande   = cJSON_IsTrue(cJSON_GetObjectItem(root, "unlock_viande"));
-
-    #define LOAD_INT_ARRAY(jsonName, cArray, maxSize) \
-        do { \
-            cJSON* arr = cJSON_GetObjectItem(root, jsonName); \
-            if (arr) { \
-                int i = 0; cJSON* item; \
-                cJSON_ArrayForEach(item, arr) { \
-                    if (i < maxSize) { cArray[i] = item->valueint; i++; } \
-                } \
-            } \
-        } while(0)
-
-    LOAD_INT_ARRAY("b_fer", game->clicker.inventory.b_fer, 4);
-    LOAD_INT_ARRAY("b_or", game->clicker.inventory.b_or, 4);
-    LOAD_INT_ARRAY("b_cristaux", game->clicker.inventory.b_cristaux, 4);
-    LOAD_INT_ARRAY("b_herbes", game->clicker.inventory.b_herbes, 4);
-    LOAD_INT_ARRAY("b_bois", game->clicker.inventory.b_bois, 4);
-    LOAD_INT_ARRAY("b_viande", game->clicker.inventory.b_viande, 4);
-
-    LOAD_INT_ARRAY("spell_unlocked", game->combat.player.spell_unlocked, MAX_SPELLS_DB);
-    LOAD_INT_ARRAY("spell_level", game->combat.player.spell_level, MAX_SPELLS_DB);
-    LOAD_INT_ARRAY("potion_unlocked", game->combat.player.potion_unlocked, MAX_POTIONS_DB);
-    LOAD_INT_ARRAY("potion_level", game->combat.player.potion_level, MAX_POTIONS_DB);
-    LOAD_INT_ARRAY("potion_qty", game->combat.player.potion_qty, MAX_POTIONS_DB);
-    LOAD_INT_ARRAY("equipped_spells", game->combat.player.equipped_spells, 3);
-    LOAD_INT_ARRAY("equipped_potions", game->combat.player.equipped_potions, 3);
-
-    cJSON* inv_count_node = cJSON_GetObjectItem(root, "inventory_count");
-    if (inv_count_node) {
-        int count = inv_count_node->valueint;
-        if(count < 0) count = 0;
-        if(count > MAX_INVENTORY) count = MAX_INVENTORY;
-        game->combat.player.inventory_count = count;
-        game->combat.player.inventory_safe_count = count; // <- CRUCIAL ! Évite les pertes mystères de loot.
-
-        cJSON* inv_arr = cJSON_GetObjectItem(root, "inventory");
-        if (inv_arr) {
-            int i = 0;
-            cJSON* itemNode = NULL;
-            cJSON_ArrayForEach(itemNode, inv_arr) {
-                if (i < count) {
-                    cJSON* tNode = cJSON_GetObjectItem(itemNode, "template_idx");
-                    cJSON* lNode = cJSON_GetObjectItem(itemNode, "level");
-                    cJSON* eNode = cJSON_GetObjectItem(itemNode, "effect");
-                    
-                    game->combat.player.inventory[i].template_idx = tNode ? tNode->valueint : 0;
-                    game->combat.player.inventory[i].level = lNode ? lNode->valueint : 0;
-                    game->combat.player.inventory[i].effect = eNode ? eNode->valueint : 0;
-                    i++;
-                }
-            }
-        }
-    }
-
-    LOAD_INT_ARRAY("equipped", game->combat.player.equipped, MAX_SLOTS);
-
-    cJSON_Delete(root);
-    UnloadFileText(file);
-
-    Combat_RecalculateStats(&game->combat);
-}
-
 bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool canAfford)
 {
     Vector2   textSize  = MeasureTextEx(font, text, fontSize, 1);
@@ -1219,11 +1004,15 @@ bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool 
     return isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && canAfford;
 }
 
-
-static const char* GetEffectString(int effect) {
-    if (effect == 1) return " [Feu]";
-    if (effect == 2) return " [Poison]";
-    if (effect == 3) return " [Vamp]";
-    if (effect == 4) return " [Vif]";
+static const char* GetEffectString(int effect)
+{
+    if (effect == 1)
+        return " [Feu]";
+    if (effect == 2)
+        return " [Poison]";
+    if (effect == 3)
+        return " [Vamp]";
+    if (effect == 4)
+        return " [Vif]";
     return "";
 }
