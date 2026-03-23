@@ -3,9 +3,9 @@ TARGET = abyssal_ascent
 CC = gcc
 CFLAGS = -Wall -Wextra -g -std=c99
 WIN_CC = x86_64-w64-mingw32-gcc
-WIN_CFLAGS = -Wall -Wextra -std=c99 -Iraylib_win/include -Iclicker/inc -Icombat/inc -Icore/inc -Idungeon/inc -Iutils/inc
+WIN_CFLAGS = -Wall -Wextra -std=c99 -Iraylib_win/include -Iclicker/inc -Icombat/inc -Icore/inc -Idungeon/inc -Iui/inc -Iutils/inc
 WIN_LDFLAGS = -Lraylib_win/lib -lraylib -lopengl32 -lgdi32 -lwinmm -static -mwindows
-WIN_SRC = clicker/src/*.c combat/src/*.c core/src/*.c dungeon/src/*.c utils/src/*.c
+WIN_SRC = clicker/src/*.c combat/src/*.c core/src/*.c dungeon/src/*.c ui/src/*.c utils/src/*.c
 
 WIN_OUT_DIR = lib-win/Abyssal_Ascent_Game
 WIN_OUT = $(WIN_OUT_DIR)/AbyssalAscent.exe
