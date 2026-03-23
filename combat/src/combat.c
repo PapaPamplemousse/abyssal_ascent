@@ -205,128 +205,76 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
     }
 }
 
-// void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int centerY) {
-//     if (!combat->is_active) return;
-
-//     if (IsKeyPressed(KEY_H) && combat->player.potions_hp > 0) {
-//         combat->player.potions_hp--;
-//         combat->player.hp += 30; // Rend 30 HP
-//         if (combat->player.hp > combat->player.max_hp) combat->player.hp = combat->player.max_hp;
-//         Combat_AddLog(combat, "> Vous buvez une Potion de Soin !");
-//     }
-    
-//     if (IsKeyPressed(KEY_M) && combat->player.potions_mana > 0) {
-//         combat->player.potions_mana--;
-//         combat->player.mana += 20; // Rend 20 Mana
-//         if (combat->player.mana > combat->player.max_mana) combat->player.mana = combat->player.max_mana;
-//         Combat_AddLog(combat, "> Vous buvez une Potion de Mana !");
-//     }
-
-//     if (IsKeyPressed(KEY_F) && combat->player.spell_fireball && combat->player.mana >= 10) {
-//         combat->player.mana -= 10;
-//         int damage = 25 + (combat->player.atk); // Le sort scale avec l'attaque
-//         combat->current_enemy.hp -= damage;
-//         char log[64];
-//         sprintf(log, "> BOULE DE FEU ! (%d degats)", damage);
-//         Combat_AddLog(combat, log);
-//     }
-
-//     if (IsKeyPressed(KEY_S) && combat->player.spell_heal && combat->player.mana >= 15) {
-//         combat->player.mana -= 15;
-//         combat->player.hp += 40;
-//         if (combat->player.hp > combat->player.max_hp) combat->player.hp = combat->player.max_hp;
-//         Combat_AddLog(combat, "> Vous lancez SOIN !");
-//     }
-
-//     // 1. Auto-attaque du Joueur
-//     combat->player_attack_timer += deltaTime * combat->player.spd;
-//     if (combat->player_attack_timer >= 1.0f) {
-//         combat->current_enemy.hp -= combat->player.atk;
-//         char log[64];
-//         sprintf(log, "Vous frappez (%d degats)", combat->player.atk);
-//         Combat_AddLog(combat, log);
-//         combat->player_attack_timer -= 1.0f;
-//     }
-
-//     // 2. Auto-attaque de l'Ennemi
-//     combat->enemy_attack_timer += deltaTime * combat->current_enemy.spd;
-//     if (combat->enemy_attack_timer >= 1.0f) {
-//         combat->player.hp -= combat->current_enemy.atk;
-//         char log[64];
-//         sprintf(log, "%s frappe (%d degats)", combat->current_enemy.name, combat->current_enemy.atk);
-//         Combat_AddLog(combat, log);
-//         combat->enemy_attack_timer -= 1.0f;
-//     }
-
-//     // 3. Gestion du Point Faible (QTE)
-//     combat->current_enemy.qte_timer -= deltaTime;
-//     if (combat->current_enemy.qte_timer <= 0.0f) {
-//         if (!combat->current_enemy.qte_active) {
-//             // Fait apparaitre le point faible à une position aléatoire autour du centre
-//             combat->current_enemy.qte_active = true;
-//             combat->current_enemy.qte_pos.x = centerX - 50 + (GetRandomValue(0, 100));
-//             combat->current_enemy.qte_pos.y = centerY - 50 + (GetRandomValue(0, 100));
-//             combat->current_enemy.qte_timer = 1.5f; // Reste actif 1.5 secondes
-//         } else {
-//             // Le point faible disparait
-//             combat->current_enemy.qte_active = false;
-//             combat->current_enemy.qte_timer = GetRandomValue(3, 6); // Revient dans 3 à 6 secondes
-//         }
-//     }
-
-//     // Clic sur le point faible
-//     if (combat->current_enemy.qte_active) {
-//         Rectangle qte_rect = { combat->current_enemy.qte_pos.x, combat->current_enemy.qte_pos.y, 40, 40 };
-//         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(GetMousePosition(), qte_rect)) {
-//             // Attaque critique bonus !
-//             int crit_dmg = combat->player.atk * 2;
-//             combat->current_enemy.hp -= crit_dmg;
-//             combat->current_enemy.qte_active = false;
-//             combat->current_enemy.qte_timer = GetRandomValue(3, 6);
-//             Combat_AddLog(combat, "*** POINT FAIBLE ! ***");
-//         }
-//     }
-
-//     // 4. Conditions de fin de combat
-//     if (combat->current_enemy.hp <= 0) {
-//         combat->is_active = false;
-//         Combat_AddLog(combat, "Ennemi vaincu !");
-        
-//         // Gain d'XP
-//         combat->player.xp += combat->current_enemy.xp_yield;
-//         if (combat->player.xp >= combat->player.max_xp) {
-//             // Level Up !
-//             combat->player.level++;
-//             combat->player.xp -= combat->player.max_xp;
-//             combat->player.max_xp = (int)(combat->player.max_xp * 1.5);
-//             combat->player.max_hp += 10;
-//             combat->player.hp = combat->player.max_hp; // Soin total
-//             combat->player.atk += 2;
-//             Combat_AddLog(combat, "NIVEAU SUPERIEUR !");
-//         }
-//     }
-// }
 
 void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int centerY) {
     if (!combat->is_active) return;
 
-    // Nom et HP de l'ennemi
+    // nom et HP de l'ennemi
     char hpText[64];
-    sprintf(hpText, "[ %s : %d / %d HP ]", combat->current_enemy.name, combat->current_enemy.hp, combat->current_enemy.max_hp);
+    sprintf(hpText, "[ %s : %d / %d HP ]", combat->current_enemy.name, 
+            combat->current_enemy.hp, combat->current_enemy.max_hp);
     
-    // Fonction magique pour centrer (on l'avait créée avant)
+    // Mesure du texte pour le centrer horizontalement
     Vector2 tSize = MeasureTextEx(font, hpText, 24, 1);
-    DrawTextEx(font, hpText, (Vector2){centerX - (tSize.x/2), centerY - 150}, 24, 1, RED);
+    
+    // On le place bien au-dessus du dessin ASCII
+    int nameOffsetY = 240; // distance entre le centreY et le haut du nom
+    DrawTextEx(font, hpText, (Vector2){centerX - (tSize.x/2), centerY - nameOffsetY}, 24, 1, RED);
+
 
     // Dessin du monstre ASCII (on simplifie pour l'exemple)
     Color mColor = LIGHTGRAY;
     if (strcmp(combat->current_enemy.name, "Squelette") == 0) {
-        DrawTextEx(font, "   .-.   ", (Vector2){centerX - 40, centerY - 80}, 24, 1, mColor);
-        DrawTextEx(font, "  (o.o)  ", (Vector2){centerX - 40, centerY - 60}, 24, 1, mColor);
-        DrawTextEx(font, "  | O |  ", (Vector2){centerX - 40, centerY - 40}, 24, 1, mColor);
-        DrawTextEx(font, "  |   |  ", (Vector2){centerX - 40, centerY - 20}, 24, 1, mColor);
-        DrawTextEx(font, " '~~~' ", (Vector2){centerX - 40, centerY}, 24, 1, mColor);
-    } else {
+        const char* skeleton_ascii[] = {
+        "                              _.--\"\"-._",
+        "  .                         .\"         \".",
+        " / \\    ,^.         /(     Y             |      )\\",
+        "/   `---. |--'\\    (  \\__..'--   -   -- -'\"\"-.-'  )",
+        "|        :|    `>   '.     l_..-------.._l      .'",
+        "|      __l;__ .'      \"-.__.||_.-'v'-._||`\"----\"",
+        " \\  .-' | |  `              l._       _.'",
+        "  \\/    | |                   l`^^'^^'j",
+        "        | |                _   \\_____/     _",
+        "        j |               l `--__)-'(__.--' |",
+        "        | |               | /`---``-----'\"1 |  ,-----.",
+        "        | |               )/  `--' '---'   \\'-'  ___  `-.",
+        "        | |              //  `-'  '`----'  /  ,-'   I`.  \\",
+        "      _ L |_            //  `-.-.'`-----' /  /  |   |  `. \\",
+        "     '._' / \\         _/(   `/   )- ---' ;  /__.J   L.__.\\ :",
+        "      `._;/7(-.......'  /        ) (     |  |            | |",
+        "      `._;l _'--------_/        )-'/     :  |___.    _._./ ;",
+        "        | |                 .__ )-'\\  __  \\  \\  I   1   / /",
+        "        `-'                /   `-\\-(-'   \\ \\  `.|   | ,' /",
+        "                           \\__  `-'    __/  `-. `---'',-'",
+        "                              )-._.-- (        `-----'",
+        "                             )(  l\\ o ('..-.",
+        "                       _..--' _'-' '--'.-. |",
+        "                __,,-'' _,,-''            \\ \\",
+        "               f'. _,,-'                   \\ \\",
+        "              ()--  |                       \\ \\",
+        "                \\.  |                       /  \\",
+        "                  \\ \\                      |._  |",
+        "                   \\ \\                     |  ()|",
+        "                    \\ \\                     \\  /",
+        "                     ) `-.                   | |",
+        "                    // .__)                  | |",
+        "                 _.//7'                      | |",
+        "               '---'                         j_| `",
+        "                                            (| |",
+        "                                             |  \\",
+        "                                             |lllj",
+        "                                             |||||"
+    };
+
+    int ascii_lines = sizeof(skeleton_ascii) / sizeof(skeleton_ascii[0]);
+    int line_height = 20; // ajuster selon la taille de ton font
+    for (int i = 0; i < ascii_lines; i++) {
+        DrawTextEx(font, skeleton_ascii[i],
+                   (Vector2){centerX - 250, centerY - 200 + i * line_height}, 
+                   20, 1, mColor);
+    }
+    }
+    else {
         DrawTextEx(font, "   /\\_\\  ", (Vector2){centerX - 40, centerY - 50}, 24, 1, mColor);
         DrawTextEx(font, "  ( o.o) ", (Vector2){centerX - 40, centerY - 30}, 24, 1, mColor);
         DrawTextEx(font, "   > ^ < ", (Vector2){centerX - 40, centerY - 10}, 24, 1, mColor);

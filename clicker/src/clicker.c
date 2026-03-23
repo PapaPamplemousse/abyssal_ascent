@@ -92,17 +92,17 @@ void Clicker_UpdateMine(ClickerContext* clicker, int viewStartX, int viewWidth, 
 }
 
 void Clicker_RenderMine(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font) {
-    int colWidth = viewWidth / 4;
+    int colWidth = viewWidth / 3;
     
     // Titre
-    DrawAndCheckButtonCentered(font, "=== LA MINE PROFONDE ===", viewStartX + (viewWidth/2), 50, 40, LIGHTGRAY);
+    DrawAndCheckButtonCentered(font, "=== LA MINE PROFONDE ===", viewStartX + (viewWidth/2), 120, 40, LIGHTGRAY);
 
     // Ligne horizontale sous le titre
-    DrawLine(viewStartX, 120, viewStartX + viewWidth, 120, DARKGRAY);
+    DrawLine(viewStartX, 180, viewStartX + viewWidth, 180, DARKGRAY);
     
     // Lignes verticales de séparation
-    DrawLine(viewStartX + colWidth, 120, viewStartX + colWidth, screenHeight, DARKGRAY);
-    DrawLine(viewStartX + (colWidth * 2), 120, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
+    DrawLine(viewStartX + colWidth, 180, viewStartX + colWidth, screenHeight, DARKGRAY);
+    DrawLine(viewStartX + (colWidth * 2), 180, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
 
     // Affichage des statistiques d'auto-click
     int statsY = screenHeight * 0.8f;
@@ -184,14 +184,14 @@ void Clicker_RenderForest(ClickerContext* clicker, int viewStartX, int viewWidth
     int colWidth = viewWidth / 3;
     
     // Titre de la zone
-    DrawAndCheckButtonCentered(font, "=== LA FORET SOMBRE ===", viewStartX + (viewWidth/2), 50, 40, GREEN);
+    DrawAndCheckButtonCentered(font, "=== LA FORET SOMBRE ===", viewStartX + (viewWidth/2), 120, 40, GREEN);
 
     // Ligne horizontale sous le titre
-    DrawLine(viewStartX, 120, viewStartX + viewWidth, 120, DARKGRAY);
+    DrawLine(viewStartX, 180, viewStartX + viewWidth, 180, DARKGRAY);
     
     // Lignes verticales de séparation des 3 colonnes
-    DrawLine(viewStartX + colWidth, 120, viewStartX + colWidth, screenHeight, DARKGRAY);
-    DrawLine(viewStartX + (colWidth * 2), 120, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
+    DrawLine(viewStartX + colWidth, 180, viewStartX + colWidth, screenHeight, DARKGRAY);
+    DrawLine(viewStartX + (colWidth * 2), 180, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
 
     // Affichage des statistiques d'auto-click en bas
     int statsY = screenHeight * 0.8f;

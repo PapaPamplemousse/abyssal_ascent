@@ -63,7 +63,7 @@ void Game_Update(GameContext* game) {
 
     int w = GetScreenWidth();
     int h = GetScreenHeight();
-    int viewStartX = w * 0.20f;
+    int viewStartX = w * 0.25f;
     int viewWidth = w * 0.55f;
 
     bool pressedQuit = (key == KEY_Q || key == KEY_A);
@@ -356,20 +356,19 @@ void Game_Render(GameContext* game) {
             DrawTextEx(game->uiFont, "[Q] Retour au Camp", (Vector2){startX, h - 80}, 20, 1, GRAY);
         }
         else if (game->currentState == STATE_MINE) {
-            Clicker_RenderMine(&game->clicker, w * 0.20f, w * 0.55f, h, game->uiFont);
+            Clicker_RenderMine(&game->clicker, w * 0.25f, w * 0.55f, h, game->uiFont);
             
-            int cx = (w * 0.20f) + ((w * 0.55f) / 2);
+            int cx = (w * 0.25f) + ((w * 0.55f) / 2);
             DrawTextEx(game->uiFont, "[Q] Retour au Campement", (Vector2){cx - 150, h - 50}, 20, 1, GRAY);
         }
         else if (game->currentState == STATE_FOREST) {
-            Clicker_RenderForest(&game->clicker, w * 0.20f, w * 0.55f, h, game->uiFont);
+            Clicker_RenderForest(&game->clicker, w * 0.25f, w * 0.55f, h, game->uiFont);
             
-            int cx = (w * 0.20f) + ((w * 0.55f) / 2);
+            int cx = (w * 0.25f) + ((w * 0.55f) / 2);
             DrawTextEx(game->uiFont, "[Q] Retour au Campement", (Vector2){cx - 150, h - 50}, 20, 1, GRAY);
         }
         else if (game->currentState == STATE_DUNGEON) {
             if (game->combat.is_active) {
-                // Si en combat, on ne dessine que le monstre au centre
                 int cx = (w * 0.25f) + ((w * 0.55f) / 2); // Centre de la zone de jeu
                 int cy = h / 2;
                 Combat_RenderCenter(&game->combat, game->uiFont, cx, cy);

@@ -140,7 +140,7 @@ void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int 
     char dist2 = GetTileAhead(dungeon, 2);
     char dist3 = GetTileAhead(dungeon, 3);
 
-    int viewStartX = (int)(screenWidth * 0.20f);
+    int viewStartX = (int)(screenWidth * 0.25f);
     int viewWidth = (int)(screenWidth * 0.55f);
     int centerX = viewStartX + (viewWidth / 2);
     
@@ -148,38 +148,43 @@ void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int 
     if (dungeon->floor_level % 10 == 0) sprintf(title, "=== ANTRE DU BOSS (Etage %d) ===", dungeon->floor_level);
     else sprintf(title, "=== DONJON PROFOND (Etage %d) ===", dungeon->floor_level);
     
-    DrawTextCentered(uiFont, title, centerX, 50, 40, 1, RED);
+    DrawTextCentered(uiFont, title, centerX, 120, 40, 1, RED);
 
     int startY = (int)(screenHeight * 0.25f);
     int fontSize = 50; 
     int spacing = 1; 
 
-    // --- DESSIN DES MURS (dungeonFont) ---
     if (dist1 == '#') {
-        DrawTextCentered(dungeonFont, "  ███████████████████  ", centerX, startY, fontSize, spacing, WHITE);
-        DrawTextCentered(dungeonFont, "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", centerX, startY + fontSize, fontSize, spacing, WHITE);
-        DrawTextCentered(dungeonFont, "  █▓  ▓▓▓▓▓▓▓▓▓  ▓█  ", centerX, startY + (fontSize*2), fontSize, spacing, WHITE);
-        DrawTextCentered(dungeonFont, "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", centerX, startY + (fontSize*3), fontSize, spacing, WHITE);
-        DrawTextCentered(dungeonFont, "  ███████████████████  ", centerX, startY + (fontSize*4), fontSize, spacing, WHITE);
-    } else if (dist2 == '#') {
-        DrawTextCentered(dungeonFont, "   ▓\\            /▓   ", centerX, startY, fontSize, spacing, GRAY);
-        DrawTextCentered(dungeonFont, "   ▓▓\\████████/▓▓   ", centerX, startY + fontSize, fontSize, spacing, GRAY);
-        DrawTextCentered(dungeonFont, "   ▓▓ |▓▓▓▓▓▓| ▓▓   ", centerX, startY + (fontSize*2), fontSize, spacing, GRAY);
-        DrawTextCentered(dungeonFont, "   ▓▓/████████\\▓▓   ", centerX, startY + (fontSize*3), fontSize, spacing, GRAY);
-        DrawTextCentered(dungeonFont, "   ▓/            \\▓   ", centerX, startY + (fontSize*4), fontSize, spacing, GRAY);
-    } else if (dist3 == '#') {
-        DrawTextCentered(dungeonFont, "    ░\\          /░    ", centerX, startY, fontSize, spacing, DARKGRAY);
-        DrawTextCentered(dungeonFont, "    ░▓\\██████/▓░    ", centerX, startY + fontSize, fontSize, spacing, DARKGRAY);
-        DrawTextCentered(dungeonFont, "    ░ |▓▓▓▓▓| ░    ", centerX, startY + (fontSize*2), fontSize, spacing, DARKGRAY);
-        DrawTextCentered(dungeonFont, "    ░▓/██████\\▓░    ", centerX, startY + (fontSize*3), fontSize, spacing, DARKGRAY);
-        DrawTextCentered(dungeonFont, "    ░/          \\░    ", centerX, startY + (fontSize*4), fontSize, spacing, DARKGRAY);
-    } else {
-        DrawTextCentered(dungeonFont, "     .            .     ", centerX, startY, fontSize, spacing, DARKGRAY);
-        DrawTextCentered(dungeonFont, "       .        .       ", centerX, startY + fontSize, fontSize, spacing, DARKGRAY);
-        DrawTextCentered(dungeonFont, "                       ", centerX, startY + (fontSize*2), fontSize, spacing, DARKGRAY);
-        DrawTextCentered(dungeonFont, "       .        .       ", centerX, startY + (fontSize*3), fontSize, spacing, DARKGRAY);
-        DrawTextCentered(dungeonFont, "     .            .     ", centerX, startY + (fontSize*4), fontSize, spacing, DARKGRAY);
-    }
+    DrawTextCentered(dungeonFont, "  █████████████████████████████████████████████  ", centerX, startY, fontSize, spacing, WHITE);
+    DrawTextCentered(dungeonFont, "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", centerX, startY + fontSize, fontSize, spacing, WHITE);
+    DrawTextCentered(dungeonFont, "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ", centerX, startY + (fontSize*2), fontSize, spacing, WHITE);
+    DrawTextCentered(dungeonFont, "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ", centerX, startY + (fontSize*3), fontSize, spacing, WHITE);
+    DrawTextCentered(dungeonFont, "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", centerX, startY + (fontSize*4), fontSize, spacing, WHITE);
+    DrawTextCentered(dungeonFont, "  █████████████████████████████████████████████  ", centerX, startY + (fontSize*5), fontSize, spacing, WHITE);
+
+} else if (dist2 == '#') {
+    DrawTextCentered(dungeonFont, "    ▓\\                              /▓    ", centerX, startY, fontSize, spacing, GRAY);
+    DrawTextCentered(dungeonFont, "    ▓▓\\██████████████████████████/▓▓    ", centerX, startY + fontSize, fontSize, spacing, GRAY);
+    DrawTextCentered(dungeonFont, "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ", centerX, startY + (fontSize*2), fontSize, spacing, GRAY);
+    DrawTextCentered(dungeonFont, "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ", centerX, startY + (fontSize*3), fontSize, spacing, GRAY);
+    DrawTextCentered(dungeonFont, "    ▓▓/██████████████████████████\\▓▓    ", centerX, startY + (fontSize*4), fontSize, spacing, GRAY);
+    DrawTextCentered(dungeonFont, "    ▓/                              \\▓    ", centerX, startY + (fontSize*5), fontSize, spacing, GRAY);
+
+} else if (dist3 == '#') {
+    DrawTextCentered(dungeonFont, "      ░\\                          /░      ", centerX, startY, fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      ░▓\\██████████████████████/▓░      ", centerX, startY + fontSize, fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ", centerX, startY + (fontSize*2), fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ", centerX, startY + (fontSize*3), fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      ░▓/██████████████████████\\▓░      ", centerX, startY + (fontSize*4), fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      ░/                          \\░      ", centerX, startY + (fontSize*5), fontSize, spacing, DARKGRAY);
+
+} else {
+    DrawTextCentered(dungeonFont, "      █░                        ░█      ", centerX, startY, fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + fontSize, fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + (fontSize*2), fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + (fontSize*3), fontSize, spacing, DARKGRAY);
+    DrawTextCentered(dungeonFont, "      █░                        ░█      ", centerX, startY + (fontSize*4), fontSize, spacing, DARKGRAY);
+}
 
     // --- DESSIN DES OBJETS EN SURIMPRESSION (uiFont) ---
     // On dessine l'escalier ou le boss par-dessus le couloir vide
