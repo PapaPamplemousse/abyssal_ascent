@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "id": "rusty_sword",
+      "name_en": "Rusty Sword",
+      "name_fr": "Epee Rouillee",
+      "type": "HAND_1",
+      "stats": { "hp": 0, "atk": 3, "mana": 0, "spd": 0.0, "fog": 0 },
+      "stat_inc": { "hp": 0, "atk": 2, "mana": 0, "spd": 0.0, "fog": 0 },
+      "upgrade": { "fer": { "base": 20, "inc": 10 }, "bois": { "base": 5, "inc": 5 } },
+      "ascii": [ "   /| ________________", "O|===|*___________>  ", "   \\| " ]
+    },
+    {
+      "id": "torch",
+      "name_en": "Dungeon Torch",
+      "name_fr": "Torche de Donjon",
+      "type": "HAND_2",
+      "stats": { "hp": 0, "atk": 1, "mana": 0, "spd": 0.0, "fog": 2 },
+      "stat_inc": { "hp": 0, "atk": 1, "mana": 0, "spd": 0.0, "fog": 0 },
+      "upgrade": { "bois": { "base": 15, "inc": 10 }, "herbes": { "base": 5, "inc": 2 } },
+      "ascii": [ " ( ", " * ", " | " ]
+    },
+    {
+      "id": "leather_armor",
+      "name_en": "Leather Armor",
+      "name_fr": "Armure en Cuir",
+      "type": "ARMOR",
+      "stats": { "hp": 15, "atk": 0, "mana": 0, "spd": 0.0, "fog": 0 },
+      "stat_inc": { "hp": 10, "atk": 0, "mana": 0, "spd": 0.0, "fog": 0 },
+      "upgrade": { "viande": { "base": 30, "inc": 15 }, "fer": { "base": 10, "inc": 5 } },
+      "ascii": [ " / \\ ", "|   |", " \\_/ " ]
+    },
+    {
+      "id": "heavy_axe",
+      "name_en": "Heavy Axe",
+      "name_fr": "Hache Lourde (2 Mains)",
+      "type": "HAND_2H",
+      "stats": { "hp": 0, "atk": 8, "mana": 0, "spd": -0.2, "fog": 0 },
+      "stat_inc": { "hp": 0, "atk": 4, "mana": 0, "spd": 0.0, "fog": 0 },
+      "upgrade": { "fer": { "base": 50, "inc": 25 }, "bois": { "base": 20, "inc": 10 } },
+      "ascii": [ "  ,  ", " /|\\ ", "  |  " ]
+    },
+    {
+      "id": "leather_gloves",
+      "name_en": "Leather Gloves",
+      "name_fr": "Gants en Cuir",
+      "type": "GLOVES",
+      "stats": { "hp": 5, "atk": 0, "mana": 0, "spd": 0.0, "fog": 0 },
+      "stat_inc": { "hp": 5, "atk": 0, "mana": 0, "spd": 0.0, "fog": 0 },
+      "upgrade": { "viande": { "base": 20, "inc": 10 }, "fer": { "base": 5, "inc": 5 } },
+      "ascii": [ " ( ) ", "|   |", " \\_/ " ]
+    }
+  ]
+}

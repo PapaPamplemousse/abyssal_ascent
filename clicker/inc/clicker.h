@@ -3,16 +3,18 @@
 
 #include "raylib.h"
 
-typedef struct {
+typedef struct
+{
     // Ressources brutes
     int herbes, fer, viande, or, bois, cristaux;
     // Niveaux des auto-clickers (Ex: Mineurs, Bûcherons)
     int auto_herbes, auto_fer, auto_viande, auto_or, auto_bois, auto_cristaux;
 } PlayerResources;
 
-typedef struct {
+typedef struct
+{
     PlayerResources inventory;
-    float autoTimer; // Chronomètre pour générer les ressources automatiques
+    float           autoTimer; // Chronomètre pour générer les ressources automatiques
 } ClickerContext;
 
 void Clicker_Init(ClickerContext* clicker);

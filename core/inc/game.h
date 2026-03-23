@@ -2,30 +2,32 @@
 #define GAME_H
 
 #include <stdbool.h>
-#include "raylib.h" 
+#include "raylib.h"
 #include "../../clicker/inc/clicker.h"
 #include "../../combat/inc/combat.h"
 
-typedef enum {
+typedef enum
+{
     STATE_MENU,
     STATE_CAMP,
-    STATE_MINE,    
+    STATE_MINE,
     STATE_FOREST,
-    STATE_FORGE,      
-    STATE_ALCHEMIST,  
-    STATE_ARCHIFORGE,   
+    STATE_FORGE,
+    STATE_ALCHEMIST,
+    STATE_ARCHIFORGE,
     STATE_DUNGEON,
+    STATE_INVENTORY,
     STATE_GAMEOVER
 } GameState;
 
-
-typedef struct {
-    GameState currentState;
-    bool isRunning;
-    Font uiFont;    
-    Font dungeonFont; 
+typedef struct
+{
+    GameState      currentState;
+    bool           isRunning;
+    Font           uiFont;
+    Font           dungeonFont;
     ClickerContext clicker;
-    CombatContext combat;
+    CombatContext  combat;
 } GameContext;
 
 void Game_Init(GameContext* game);

@@ -1,199 +1,526 @@
 #include "dungeon.h"
 #include <stdio.h>
+#include <string.h>
+#include "../../utils/inc/lang.h"
+#include "../../utils/inc/cJSON.h"
+#include "../../combat/inc/combat.h"
 
-void Dungeon_Generate(DungeonContext* dungeon) {
-    // 1. On remplit tout de murs ('#')
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            dungeon->map[y][x] = '#';
+// Bases de données globales
+#define MAX_AMBIANCE 20
+#define MAX_EVENTS 20
+
+extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
+extern int g_potionCount;
+
+char g_ambiance_en[MAX_AMBIANCE][128];
+char g_ambiance_fr[MAX_AMBIANCE][128];
+int  g_ambianceCount = 0;
+
+EventRoomTemplate g_eventDB[MAX_EVENTS];
+int               g_eventCount = 0;
+
+static void Dungeon_UpdateFog(DungeonContext* dungeon, int fog_bonus);
+
+void LoadDungeonDB(const char* ambiance_path, const char* rooms_path)
+{
+    // 1. Charger l'ambiance
+    char* buf1 = LoadFileText(ambiance_path);
+    if (buf1)
+    {
+        cJSON* json = cJSON_Parse(buf1);
+        cJSON* arr  = cJSON_GetObjectItemCaseSensitive(json, "ambiance");
+        cJSON* item;
+        g_ambianceCount = 0;
+        cJSON_ArrayForEach(item, arr)
+        {
+            if (g_ambianceCount >= MAX_AMBIANCE)
+                break;
+            strcpy(g_ambiance_en[g_ambianceCount], cJSON_GetObjectItem(item, "en")->valuestring);
+            strcpy(g_ambiance_fr[g_ambianceCount], cJSON_GetObjectItem(item, "fr")->valuestring);
+            g_ambianceCount++;
+        }
+        cJSON_Delete(json);
+        UnloadFileText(buf1);
+    }
+
+    // 2. Charger les salles d'événements
+    char* buf2 = LoadFileText(rooms_path);
+    if (buf2)
+    {
+        cJSON* json = cJSON_Parse(buf2);
+        cJSON* arr  = cJSON_GetObjectItemCaseSensitive(json, "rooms");
+        cJSON* item;
+        g_eventCount = 0;
+        cJSON_ArrayForEach(item, arr)
+        {
+            if (g_eventCount >= MAX_EVENTS)
+                break;
+            EventRoomTemplate* t = &g_eventDB[g_eventCount];
+            strcpy(t->id, cJSON_GetObjectItem(item, "id")->valuestring);
+            strcpy(t->name_en, cJSON_GetObjectItem(item, "name_en")->valuestring);
+            strcpy(t->name_fr, cJSON_GetObjectItem(item, "name_fr")->valuestring);
+            strcpy(t->type, cJSON_GetObjectItem(item, "type")->valuestring);
+            t->amount = cJSON_GetObjectItem(item, "amount")->valueint;
+            strcpy(t->flavor_en, cJSON_GetObjectItem(item, "flavor_en")->valuestring);
+            strcpy(t->flavor_fr, cJSON_GetObjectItem(item, "flavor_fr")->valuestring);
+            // Ascii art
+            cJSON* asciiArray   = cJSON_GetObjectItem(item, "ascii");
+            cJSON* line         = NULL;
+            t->ascii_line_count = 0;
+            if (asciiArray)
+            {
+                cJSON_ArrayForEach(line, asciiArray)
+                {
+                    if (t->ascii_line_count < MAX_ASCII_LINES)
+                    {
+                        strcpy(t->ascii[t->ascii_line_count], line->valuestring);
+                        t->ascii_line_count++;
+                    }
+                }
+            }
+
+            g_eventCount++;
+        }
+        cJSON_Delete(json);
+        UnloadFileText(buf2);
+    }
+}
+
+// --- LA FORMULE DE CHECKPOINT ---
+void Dungeon_Enter(DungeonContext* dungeon)
+{
+    // La formule : a1 = 1, an = 10(n-1) -> ex: 1, 10, 20...
+    int checkpoint = (dungeon->highest_floor >= 10) ? (dungeon->highest_floor / 10) * 10 : 1;
+
+    dungeon->floor_level = checkpoint;
+    dungeon->room_type   = ROOM_NORMAL;
+    Dungeon_Generate(dungeon); // Génère la carte
+}
+
+void Dungeon_Generate(DungeonContext* dungeon)
+{
+    // 1. Initialisation des murs et... du brouillard de guerre !
+    for (int y = 0; y < MAP_HEIGHT; y++)
+    {
+        for (int x = 0; x < MAP_WIDTH; x++)
+        {
+            dungeon->map[y][x]      = '#';
+            dungeon->explored[y][x] = false;
         }
     }
 
-    int startX = MAP_WIDTH / 2;
-    int startY = MAP_HEIGHT / 2;
-    dungeon->playerX = startX;
-    dungeon->playerY = startY;
+    // 2. Positionnement du joueur
+    int startX         = MAP_WIDTH / 2;
+    int startY         = MAP_HEIGHT / 2;
+    dungeon->playerX   = startX;
+    dungeon->playerY   = startY;
     dungeon->playerDir = DIR_NORTH;
 
-    // 2. Si c'est un étage de BOSS (Multiple de 10)
-    if (dungeon->floor_level % 10 == 0) {
+    // 3. Révèle la zone de départ
+    Dungeon_UpdateFog(dungeon, 0);
+
+    // Salles Spéciales (Boss ou Événement)
+    if (dungeon->room_type == ROOM_BOSS || dungeon->room_type == ROOM_EVENT)
+    {
         // Crée une arène de 5x5
-        for (int y = startY - 3; y <= startY + 1; y++) {
-            for (int x = startX - 2; x <= startX + 2; x++) {
+        for (int y = startY - 3; y <= startY + 1; y++)
+        {
+            for (int x = startX - 2; x <= startX + 2; x++)
                 dungeon->map[y][x] = '.';
-            }
         }
-        // Place le joueur en bas et le Boss en haut
         dungeon->playerY = startY + 1;
-        dungeon->map[startY - 2][startX] = 'B'; // 'B' = Boss
+
+        if (dungeon->room_type == ROOM_BOSS)
+        {
+            dungeon->map[startY - 2][startX] = 'B';
+        }
+        else
+        {
+            // Pour les événements, on place l'Entité au centre, et l'escalier derrière !
+            // Ainsi le joueur peut l'esquiver par les côtés s'il ne veut pas acheter.
+            dungeon->map[startY - 2][startX] = 'E';
+            dungeon->map[startY - 3][startX] = '>';
+        }
         return;
     }
 
-    // 3. Sinon, Génération Procédurale (Drunkard's Walk)
-    int x = startX;
-    int y = startY;
+    // Sinon, Génération Procédurale (Drunkard's Walk)
+    int x              = startX;
+    int y              = startY;
     dungeon->map[y][x] = '.';
-    
-    int maxTiles = (MAP_WIDTH * MAP_HEIGHT) / 4; // Environ 110 cases de vide
+
+    int maxTiles     = (MAP_WIDTH * MAP_HEIGHT) / 4;
     int tilesCreated = 1;
 
-    while (tilesCreated < maxTiles) {
+    while (tilesCreated < maxTiles)
+    {
         int dir = GetRandomValue(0, 3);
-        if (dir == 0 && y > 2) y--;
-        else if (dir == 1 && y < MAP_HEIGHT - 3) y++;
-        else if (dir == 2 && x > 2) x--;
-        else if (dir == 3 && x < MAP_WIDTH - 3) x++;
+        if (dir == 0 && y > 2)
+            y--;
+        else if (dir == 1 && y < MAP_HEIGHT - 3)
+            y++;
+        else if (dir == 2 && x > 2)
+            x--;
+        else if (dir == 3 && x < MAP_WIDTH - 3)
+            x++;
 
-        if (dungeon->map[y][x] == '#') {
+        if (dungeon->map[y][x] == '#')
+        {
             dungeon->map[y][x] = '.';
             tilesCreated++;
         }
     }
-    
-    // Le dernier point creusé devient l'escalier '>'
+
     dungeon->map[y][x] = '>';
 }
 
-void Dungeon_Init(DungeonContext* dungeon) {
-    dungeon->floor_level = 1;
-    Dungeon_Generate(dungeon);
+void Dungeon_Init(DungeonContext* dungeon)
+{
+    dungeon->floor_level   = 1;
+    dungeon->highest_floor = 1;
+    dungeon->room_type     = ROOM_NORMAL;
 }
 
-void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key) {
-    int nextX = dungeon->playerX;
-    int nextY = dungeon->playerY;
+void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
+{
+    int  nextX    = dungeon->playerX;
+    int  nextY    = dungeon->playerY;
     bool hasMoved = false; // <-- LA CORRECTION EST ICI
 
-    if (key == KEY_Z || key == KEY_W) {
-        if (dungeon->playerDir == DIR_NORTH) nextY--;
-        else if (dungeon->playerDir == DIR_SOUTH) nextY++;
-        else if (dungeon->playerDir == DIR_EAST) nextX++;
-        else if (dungeon->playerDir == DIR_WEST) nextX--;
+    if (key == KEY_UP)
+    {
+        if (dungeon->playerDir == DIR_NORTH)
+            nextY--;
+        else if (dungeon->playerDir == DIR_SOUTH)
+            nextY++;
+        else if (dungeon->playerDir == DIR_EAST)
+            nextX++;
+        else if (dungeon->playerDir == DIR_WEST)
+            nextX--;
         hasMoved = true; // Le joueur a tenté d'avancer
-    } 
-    else if (key == KEY_Q || key == KEY_A) {
-        dungeon->playerDir = (dungeon->playerDir + 3) % 4; 
-        return; 
     }
-    else if (key == KEY_D) {
-        dungeon->playerDir = (dungeon->playerDir + 1) % 4; 
+    else if (key == KEY_LEFT)
+    {
+        dungeon->playerDir = (dungeon->playerDir + 3) % 4;
+        Dungeon_UpdateFog(dungeon, game->combat.player.fog_bonus);
         return;
     }
-    else if (key == KEY_F) {
+    else if (key == KEY_RIGHT)
+    {
+        dungeon->playerDir = (dungeon->playerDir + 1) % 4;
+        Dungeon_UpdateFog(dungeon, game->combat.player.fog_bonus);
+        return;
+    }
+    else if (key == KEY_Q || key == KEY_A)
+    {
         game->currentState = STATE_CAMP;
+        Dungeon_UpdateFog(dungeon, game->combat.player.fog_bonus);
         return;
     }
 
     // On ne vérifie la case QUE si le joueur s'est physiquement déplacé
-    if (hasMoved && nextX >= 0 && nextX < MAP_WIDTH && nextY >= 0 && nextY < MAP_HEIGHT) {
+    if (hasMoved && nextX >= 0 && nextX < MAP_WIDTH && nextY >= 0 && nextY < MAP_HEIGHT)
+    {
         char nextTile = dungeon->map[nextY][nextX];
-        
-        if (nextTile == '.' || nextTile == '>' || nextTile == 'B') {
-            // Le joueur avance sur la nouvelle case
+        if (nextTile == '.' || nextTile == '>' || nextTile == 'B' || nextTile == 'E')
+        {
             dungeon->playerX = nextX;
             dungeon->playerY = nextY;
 
-            // Interactions avec la case
-            if (nextTile == '>') {
-                dungeon->floor_level++;
+            Dungeon_UpdateFog(dungeon, game->combat.player.fog_bonus);
+
+            // 1. Prise d'un Escalier
+            if (nextTile == '>')
+            {
+                if (dungeon->room_type == ROOM_NORMAL)
+                {
+                    if (dungeon->floor_level > dungeon->highest_floor)
+                    {
+                        dungeon->highest_floor = dungeon->floor_level;
+                    }
+
+                    // Si le prochain étage est un multiple de 10 (Ex: on est au 9, on passe au 10)
+                    if ((dungeon->floor_level + 1) % 10 == 0)
+                    {
+                        dungeon->floor_level++;
+                        dungeon->room_type = ROOM_BOSS;
+                    }
+                    else
+                    {
+                        // Sinon, c'est forcément une salle d'événement (hors coffre)
+                        dungeon->room_type = ROOM_EVENT;
+                        if (g_eventCount > 0)
+                        {
+                            do
+                            {
+                                dungeon->current_event = g_eventDB[GetRandomValue(0, g_eventCount - 1)];
+                            } while (strcmp(dungeon->current_event.type, "CHEST") == 0);
+                        }
+                    }
+                }
+                else if (dungeon->room_type == ROOM_BOSS)
+                {
+                    // Après le boss, c'est FORCEMENT le coffre !
+                    dungeon->room_type = ROOM_EVENT;
+                    for (int i = 0; i < g_eventCount; i++)
+                    {
+                        if (strcmp(g_eventDB[i].type, "CHEST") == 0)
+                        {
+                            dungeon->current_event = g_eventDB[i];
+                            break;
+                        }
+                    }
+                }
+                else if (dungeon->room_type == ROOM_EVENT)
+                {
+                    // En sortant de la salle d'événement, on valide l'étage normal
+                    dungeon->floor_level++;
+                    dungeon->room_type = ROOM_NORMAL;
+                }
                 Dungeon_Generate(dungeon);
-                Combat_AddLog(&game->combat, "Vous descendez d'un etage...");
+                Combat_AddLog(&game->combat, T("LOG_DESCEND"));
             }
-            else if (nextTile == 'B') {
-                Combat_StartEncounter(&game->combat, MONSTER_BOSS_SKELETON_KING);
-                dungeon->map[nextY][nextX] = '.'; // Le boss disparait de la map
-                dungeon->map[nextY-1][nextX] = '>'; // Ouvre l'escalier derriere lui
+
+            // 2. Interaction avec un Événement 'E'
+            else if (nextTile == 'E')
+            {
+                bool eventSuccess = false;
+
+                if (strcmp(dungeon->current_event.type, "HEAL") == 0)
+                {
+                    game->combat.player.hp += dungeon->current_event.amount;
+                    if (game->combat.player.hp > game->combat.player.max_hp)
+                        game->combat.player.hp = game->combat.player.max_hp;
+                    eventSuccess = true;
+                }
+               else if (strcmp(dungeon->current_event.type, "MERCHANT") == 0)
+                {
+                    if (game->clicker.inventory.or >= dungeon->current_event.amount * (dungeon->floor_level / 2))
+                    {
+                        game->clicker.inventory.or -= dungeon->current_event.amount;
+                        
+                        // --- NOUVELLE LOGIQUE MARCHAND (Potion aléatoire & scalée) ---
+                        if (g_potionCount > 0) {
+                            // 1. Choisir une potion au hasard parmi celles existantes
+                            int rand_idx = GetRandomValue(0, g_potionCount - 1);
+
+                            // 2. Débloquer la potion (au cas où) et ajouter 1 à la quantité
+                            game->combat.player.potion_unlocked[rand_idx] = true;
+                            game->combat.player.potion_qty[rand_idx]++;
+
+                            // 3. Calculer un niveau aléatoire basé sur l'étage (max niveau 10)
+                            // Ex : Etage 25 -> Base 2. Peut donner une potion niveau 2, 3 ou 4.
+                            int base_lvl = dungeon->floor_level / 10;
+                            int max_possible = base_lvl + 2;
+                            if (max_possible > 10) max_possible = 10;
+                            
+                            int random_lvl = GetRandomValue(base_lvl, max_possible);
+
+                            // On met à jour le niveau de la potion SEULEMENT si la nouvelle est meilleure 
+                            // (On ne veut pas qu'une potion redescende de niveau)
+                            if (game->combat.player.potion_level[rand_idx] < random_lvl) {
+                                game->combat.player.potion_level[rand_idx] = random_lvl;
+                            }
+
+                            // 4. Afficher un joli message dans le log avec le nom et le niveau !
+                            char logMsg[128];
+                            sprintf(logMsg, "Achat : %s (Niv %d)", 
+                                g_isEnglish ? g_potionDB[rand_idx].name_en : g_potionDB[rand_idx].name_fr, 
+                                random_lvl);
+                            Combat_AddLog(&game->combat, logMsg);
+                        }
+
+                        eventSuccess = true;
+                    }
+                    else
+                    {
+                        Combat_AddLog(&game->combat, g_isEnglish ? "Not enough gold!" : "Pas assez d'or !");
+                    }
+                }
+                else if (strcmp(dungeon->current_event.type, "CHEST") == 0)
+                {
+                    // TODO: Code du Gacha
+                    eventSuccess = true;
+                }
+
+                if (eventSuccess)
+                {
+                    Combat_AddLog(&game->combat, g_isEnglish ? dungeon->current_event.flavor_en : dungeon->current_event.flavor_fr);
+                    dungeon->map[nextY][nextX] = '.'; // L'entité disparaît après utilisation
+                }
+                else
+                {
+                    // Si on a raté (pas d'or), on recule le joueur d'une case pour qu'il puisse réessayer ou partir
+                    dungeon->playerX = dungeon->playerX - (nextX - dungeon->playerX);
+                    dungeon->playerY = dungeon->playerY - (nextY - dungeon->playerY);
+                }
             }
-            else if (nextTile == '.') {
-                // Rencontre aléatoire normale (15% de chance) uniquement lors d'un pas
-                if (GetRandomValue(1, 100) > 85) {
-                    MonsterType randomMob = (MonsterType)GetRandomValue(MONSTER_RAT, MONSTER_ZOMBIE);
-                    Combat_StartEncounter(&game->combat, randomMob);
+
+            // 3. Boss
+            else if (nextTile == 'B')
+            {
+                Combat_StartEncounter(&game->combat, dungeon->floor_level, true);
+                dungeon->map[nextY][nextX]     = '.';
+                dungeon->map[nextY - 1][nextX] = '>';
+            }
+            // 4. Case vide (Monstres)
+            else if (nextTile == '.')
+            {
+                if (GetRandomValue(1, 100) > 85 && dungeon->room_type == ROOM_NORMAL)
+                {
+                    Combat_StartEncounter(&game->combat, dungeon->floor_level, false);
                 }
             }
         }
     }
 }
 
-char GetTileAhead(DungeonContext* dungeon, int distance) {
+char GetTileAhead(DungeonContext* dungeon, int distance)
+{
     int checkX = dungeon->playerX;
     int checkY = dungeon->playerY;
 
-    if (dungeon->playerDir == DIR_NORTH) checkY -= distance;
-    else if (dungeon->playerDir == DIR_SOUTH) checkY += distance;
-    else if (dungeon->playerDir == DIR_EAST) checkX += distance;
-    else if (dungeon->playerDir == DIR_WEST) checkX -= distance;
+    if (dungeon->playerDir == DIR_NORTH)
+        checkY -= distance;
+    else if (dungeon->playerDir == DIR_SOUTH)
+        checkY += distance;
+    else if (dungeon->playerDir == DIR_EAST)
+        checkX += distance;
+    else if (dungeon->playerDir == DIR_WEST)
+        checkX -= distance;
 
     if (checkX >= 0 && checkX < MAP_WIDTH && checkY >= 0 && checkY < MAP_HEIGHT)
         return dungeon->map[checkY][checkX];
     return '#';
 }
 
-void DrawTextCentered(Font font, const char* text, int centerX, int y, int fontSize, int spacing, Color color) {
+void DrawTextCentered(Font font, const char* text, int centerX, int y, int fontSize, int spacing, Color color)
+{
     Vector2 textSize = MeasureTextEx(font, text, (float)fontSize, (float)spacing);
-    Vector2 position = { centerX - (textSize.x / 2.0f), (float)y };
+    Vector2 position = {centerX - (textSize.x / 2.0f), (float)y};
     DrawTextEx(font, text, position, (float)fontSize, (float)spacing, color);
 }
 
-void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int screenWidth, int screenHeight) {
+void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int screenWidth, int screenHeight)
+{
     char dist1 = GetTileAhead(dungeon, 1);
     char dist2 = GetTileAhead(dungeon, 2);
     char dist3 = GetTileAhead(dungeon, 3);
 
     int viewStartX = (int)(screenWidth * 0.25f);
-    int viewWidth = (int)(screenWidth * 0.55f);
-    int centerX = viewStartX + (viewWidth / 2);
-    
+    int viewWidth  = (int)(screenWidth * 0.55f);
+    int centerX    = viewStartX + (viewWidth / 2);
+
     char title[64];
-    if (dungeon->floor_level % 10 == 0) sprintf(title, "=== ANTRE DU BOSS (Etage %d) ===", dungeon->floor_level);
-    else sprintf(title, "=== DONJON PROFOND (Etage %d) ===", dungeon->floor_level);
-    
+    if (dungeon->room_type == ROOM_BOSS)
+        sprintf(title, T("DUNGEON_TITLE_BOSS"), dungeon->floor_level);
+    else if (dungeon->room_type == ROOM_EVENT)
+        sprintf(title, "=== %s ===", g_isEnglish ? dungeon->current_event.name_en : dungeon->current_event.name_fr);
+    else
+        sprintf(title, T("DUNGEON_TITLE_DEEP"), dungeon->floor_level);
     DrawTextCentered(uiFont, title, centerX, 120, 40, 1, RED);
 
-    int startY = (int)(screenHeight * 0.25f);
-    int fontSize = 50; 
-    int spacing = 1; 
+    DrawTextCentered(uiFont, title, centerX, 120, 40, 1, RED);
 
-    if (dist1 == '#') {
-    DrawTextCentered(dungeonFont, "  █████████████████████████████████████████████  ", centerX, startY, fontSize, spacing, WHITE);
-    DrawTextCentered(dungeonFont, "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", centerX, startY + fontSize, fontSize, spacing, WHITE);
-    DrawTextCentered(dungeonFont, "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ", centerX, startY + (fontSize*2), fontSize, spacing, WHITE);
-    DrawTextCentered(dungeonFont, "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ", centerX, startY + (fontSize*3), fontSize, spacing, WHITE);
-    DrawTextCentered(dungeonFont, "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", centerX, startY + (fontSize*4), fontSize, spacing, WHITE);
-    DrawTextCentered(dungeonFont, "  █████████████████████████████████████████████  ", centerX, startY + (fontSize*5), fontSize, spacing, WHITE);
+    int startY   = (int)(screenHeight * 0.25f);
+    int fontSize = 50;
+    int spacing  = 1;
 
-} else if (dist2 == '#') {
-    DrawTextCentered(dungeonFont, "    ▓\\                              /▓    ", centerX, startY, fontSize, spacing, GRAY);
-    DrawTextCentered(dungeonFont, "    ▓▓\\██████████████████████████/▓▓    ", centerX, startY + fontSize, fontSize, spacing, GRAY);
-    DrawTextCentered(dungeonFont, "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ", centerX, startY + (fontSize*2), fontSize, spacing, GRAY);
-    DrawTextCentered(dungeonFont, "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ", centerX, startY + (fontSize*3), fontSize, spacing, GRAY);
-    DrawTextCentered(dungeonFont, "    ▓▓/██████████████████████████\\▓▓    ", centerX, startY + (fontSize*4), fontSize, spacing, GRAY);
-    DrawTextCentered(dungeonFont, "    ▓/                              \\▓    ", centerX, startY + (fontSize*5), fontSize, spacing, GRAY);
-
-} else if (dist3 == '#') {
-    DrawTextCentered(dungeonFont, "      ░\\                          /░      ", centerX, startY, fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      ░▓\\██████████████████████/▓░      ", centerX, startY + fontSize, fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ", centerX, startY + (fontSize*2), fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ", centerX, startY + (fontSize*3), fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      ░▓/██████████████████████\\▓░      ", centerX, startY + (fontSize*4), fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      ░/                          \\░      ", centerX, startY + (fontSize*5), fontSize, spacing, DARKGRAY);
-
-} else {
-    DrawTextCentered(dungeonFont, "      █░                        ░█      ", centerX, startY, fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + fontSize, fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + (fontSize*2), fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + (fontSize*3), fontSize, spacing, DARKGRAY);
-    DrawTextCentered(dungeonFont, "      █░                        ░█      ", centerX, startY + (fontSize*4), fontSize, spacing, DARKGRAY);
-}
+    if (dist1 == '#')
+    {
+        DrawTextCentered(dungeonFont, "  █████████████████████████████████████████████  ", centerX, startY, fontSize, spacing, WHITE);
+        DrawTextCentered(dungeonFont, "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", centerX, startY + fontSize, fontSize, spacing, WHITE);
+        DrawTextCentered(dungeonFont, "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ", centerX, startY + (fontSize * 2), fontSize, spacing, WHITE);
+        DrawTextCentered(dungeonFont, "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ", centerX, startY + (fontSize * 3), fontSize, spacing, WHITE);
+        DrawTextCentered(dungeonFont, "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", centerX, startY + (fontSize * 4), fontSize, spacing, WHITE);
+        DrawTextCentered(dungeonFont, "  █████████████████████████████████████████████  ", centerX, startY + (fontSize * 5), fontSize, spacing, WHITE);
+    }
+    else if (dist2 == '#')
+    {
+        DrawTextCentered(dungeonFont, "    ▓\\                              /▓    ", centerX, startY, fontSize, spacing, GRAY);
+        DrawTextCentered(dungeonFont, "    ▓▓\\██████████████████████████/▓▓    ", centerX, startY + fontSize, fontSize, spacing, GRAY);
+        DrawTextCentered(dungeonFont, "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ", centerX, startY + (fontSize * 2), fontSize, spacing, GRAY);
+        DrawTextCentered(dungeonFont, "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ", centerX, startY + (fontSize * 3), fontSize, spacing, GRAY);
+        DrawTextCentered(dungeonFont, "    ▓▓/██████████████████████████\\▓▓    ", centerX, startY + (fontSize * 4), fontSize, spacing, GRAY);
+        DrawTextCentered(dungeonFont, "    ▓/                              \\▓    ", centerX, startY + (fontSize * 5), fontSize, spacing, GRAY);
+    }
+    else if (dist3 == '#')
+    {
+        DrawTextCentered(dungeonFont, "      ░\\                          /░      ", centerX, startY, fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      ░▓\\██████████████████████/▓░      ", centerX, startY + fontSize, fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ", centerX, startY + (fontSize * 2), fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ", centerX, startY + (fontSize * 3), fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      ░▓/██████████████████████\\▓░      ", centerX, startY + (fontSize * 4), fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      ░/                          \\░      ", centerX, startY + (fontSize * 5), fontSize, spacing, DARKGRAY);
+    }
+    else
+    {
+        DrawTextCentered(dungeonFont, "      █░                        ░█      ", centerX, startY, fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + fontSize, fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + (fontSize * 2), fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      ░█                        █░      ", centerX, startY + (fontSize * 3), fontSize, spacing, DARKGRAY);
+        DrawTextCentered(dungeonFont, "      █░                        ░█      ", centerX, startY + (fontSize * 4), fontSize, spacing, DARKGRAY);
+    }
 
     // --- DESSIN DES OBJETS EN SURIMPRESSION (uiFont) ---
-    // On dessine l'escalier ou le boss par-dessus le couloir vide
-    if (dist1 == '>') DrawTextCentered(uiFont, "[ ESCALIER ]", centerX, startY + (fontSize*2), 30, 1, YELLOW);
-    else if (dist2 == '>') DrawTextCentered(uiFont, "[ escalier ]", centerX, startY + (fontSize*2), 20, 1, GRAY);
-    
-    if (dist1 == 'B') DrawTextCentered(uiFont, " ☠ BOSS ☠ ", centerX, startY + (fontSize*2), 50, 1, RED);
-    else if (dist2 == 'B') DrawTextCentered(uiFont, " ☠ ", centerX, startY + (fontSize*2), 30, 1, DARKGRAY);
+    // ... DESSIN DES OBJETS EN SURIMPRESSION (uiFont et dungeonFont) ...
+    if (dist1 == '>')
+        DrawTextCentered(uiFont, T("DUNGEON_STAIRS_CLOSE"), centerX, startY + (fontSize * 2), 30, 1, YELLOW);
+    else if (dist2 == '>')
+        DrawTextCentered(uiFont, T("DUNGEON_STAIRS_FAR"), centerX, startY + (fontSize * 2), 20, 1, GRAY);
 
-    DrawTextCentered(uiFont, "[Z] Avancer | [Q] Gauche | [D] Droite", centerX, screenHeight - 120, 24, 1, LIGHTGRAY);
-    DrawTextCentered(uiFont, "[F] Fuir vers le campement", centerX, screenHeight - 80, 24, 1, RED);
+    if (dist1 == 'B')
+        DrawTextCentered(uiFont, T("DUNGEON_BOSS_CLOSE"), centerX, startY + (fontSize * 2), 50, 1, RED);
+    else if (dist2 == 'B')
+        DrawTextCentered(uiFont, T("DUNGEON_BOSS_FAR"), centerX, startY + (fontSize * 2), 30, 1, DARKGRAY);
+
+    // DESSIN DU ASCII ART DE L'ÉVÉNEMENT
+    if (dist1 == 'E' || dist2 == 'E')
+    {
+        Color eColor = (strcmp(dungeon->current_event.type, "MERCHANT") == 0) ? GOLD : (strcmp(dungeon->current_event.type, "HEAL") == 0) ? GREEN : SKYBLUE;
+
+        int line_height = 20;
+        int evStartY    = startY + 20; // On l'affiche au milieu du couloir
+
+        for (int i = 0; i < dungeon->current_event.ascii_line_count; i++)
+        {
+            DrawTextCentered(dungeonFont, dungeon->current_event.ascii[i], centerX, evStartY + (i * line_height), 20, 1, eColor);
+        }
+
+        // Si on est à côté, on affiche le prix !
+        if (dist1 == 'E')
+        {
+            char prompt[100];
+            if (strcmp(dungeon->current_event.type, "MERCHANT") == 0)
+            {
+                sprintf(prompt, g_isEnglish ? "BUMP to Buy (-%d Gold)" : "BUMPER pour Acheter (-%d Or)", dungeon->current_event.amount);
+            }
+            else
+            {
+                sprintf(prompt, g_isEnglish ? "BUMP to Interact" : "BUMPER pour Interagir");
+            }
+            DrawTextCentered(uiFont, prompt, centerX, evStartY + (dungeon->current_event.ascii_line_count * line_height) + 20, 24, 1, YELLOW);
+        }
+    }
+
+    DrawTextCentered(uiFont, T("DUNGEON_CONTROLS_MOVE"), centerX, screenHeight - 120, 24, 1, LIGHTGRAY);
+    DrawTextCentered(uiFont, T("DUNGEON_CONTROLS_FLEE"), centerX, screenHeight - 80, 24, 1, RED);
+}
+
+void Dungeon_UpdateFog(DungeonContext* dungeon, int fog_bonus)
+{
+    // Le rayon de base est 1 (donc un carré de 3x3).
+    // Si on a une torche (+2), le rayon passe à 3 (carré de 7x7) !
+    int radius = 1 + fog_bonus;
+
+    for (int y = dungeon->playerY - radius; y <= dungeon->playerY + radius; y++)
+    {
+        for (int x = dungeon->playerX - radius; x <= dungeon->playerX + radius; x++)
+        {
+            if (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT)
+            {
+                dungeon->explored[y][x] = true;
+            }
+        }
+    }
 }

@@ -1,0 +1,141 @@
+{
+  "MENU_TITLE": { "fr": "=== ASCENSION ABYSSALE ===", "en": "=== ABYSSAL ASCENT ===" },
+  "MENU_PLAY": { "fr": "[1] Jouer", "en": "[1] Play" },
+  "MENU_QUIT": { "fr": "[Q] Quitter", "en": "[Q] Quit" },
+  "MENU_PROMPT": { "fr": "[1] Jouer\n\n[L] Langue (FR)\n\n[S] Sauvegarder\n\n[Q] Quitter", "en": "[1] Play\n\n[L] Language (EN)\n\n[S] Save\n\n[Q] Quit" },
+
+  "CAMP_TITLE": { "fr": "LE CAMPEMENT", "en": "THE CAMP" },
+  "CAMP_BTN_MINE": { "fr": "[1] Mine", "en": "[1] Mine" },
+  "CAMP_BTN_FOREST": { "fr": "[2] Foret", "en": "[2] Forest" },
+  "CAMP_BTN_FORGE": { "fr": "[3] La Forge (Equipement)", "en": "[3] The Forge (Gear)" },
+  "CAMP_BTN_ALCHEMIST": { "fr": "[4] L'Alchimiste", "en": "[4] The Alchemist" },
+  "CAMP_BTN_ARCHIFORGE": { "fr": "[5] L'Archiforge", "en": "[5] The Archforge" },
+  "CAMP_BTN_INVENTORY": { "fr": "[6] Inventaire", "en": "[6] Inventory" },
+  "CAMP_BTN_DUNGEON": { "fr": "[7] >>> DONJON <<<", "en": "[7] >>> DUNGEON <<<" },
+  "CAMP_BTN_MAIN_MENU": { "fr": "[Q] Menu Principal", "en": "[Q] Main Menu" },
+  "BTN_BACK_CAMP": { "fr": "[Q] Retour au Camp", "en": "[Q] Back to Camp" },
+  "BTN_BACK_CAMP_LONG": { "fr": "[Q] Retour au Campement", "en": "[Q] Back to Camp" },
+
+  "MINE_TITLE": { "fr": "=== LA MINE PROFONDE ===", "en": "=== THE DEEP MINE ===" },
+  "BUY_MINER": { "fr": "Acheter Mineur\n(-%d Fer)", "en": "Buy Miner\n(-%d Iron)" },
+  "BUY_PROSPECTOR": { "fr": "Acheter Chercheur\n(-%d Or)", "en": "Buy Prospector\n(-%d Gold)" },
+  "BUY_EXTRACTOR": { "fr": "Acheter Extracteur\n(-%d Cristal)", "en": "Buy Extractor\n(-%d Crystal)" },
+  "STAT_MINER": { "fr": "Mineurs: %d\n(+%d/sec)", "en": "Miners: %d\n(+%d/sec)" },
+  "STAT_PROSPECTOR": { "fr": "Chercheurs: %d\n(+%d/sec)", "en": "Prospectors: %d\n(+%d/sec)" },
+  "STAT_EXTRACTOR": { "fr": "Extracteurs: %d\n(+%d/sec)", "en": "Extractors: %d\n(+%d/sec)" },
+
+  "FOREST_TITLE": { "fr": "=== LA FORET SOMBRE ===", "en": "=== THE DARK FOREST ===" },
+  "BUY_HERBALIST": { "fr": "Acheter Herboriste\n(-%d Herbes)", "en": "Buy Herbalist\n(-%d Herbs)" },
+  "BUY_LUMBERJACK": { "fr": "Acheter Bucheron\n(-%d Bois, -%d Herb)", "en": "Buy Lumberjack\n(-%d Wood, -%d Herb)" },
+  "BUY_HUNTER": { "fr": "Acheter Chasseur\n(-%d Bois)", "en": "Buy Hunter\n(-%d Wood)" },
+  "STAT_HERBALIST": { "fr": "Herboristes: %d\n(+%d/sec)", "en": "Herbalists: %d\n(+%d/sec)" },
+  "STAT_LUMBERJACK": { "fr": "Bucherons: %d\n(+%d/sec)", "en": "Lumberjacks: %d\n(+%d/sec)" },
+  "STAT_HUNTER": { "fr": "Chasseurs: %d\n(+%d/sec)", "en": "Hunters: %d\n(+%d/sec)" },
+
+  "FORGE_TITLE": { "fr": "=== LA FORGE (Ameliorations) ===", "en": "=== THE FORGE (Upgrades) ===" },
+  "FORGE_UPGRADE_SWORD": { "fr": "> Ameliorer EPEE (Niv %d) -> (-%d Fer, -%d Bois)", "en": "> Upgrade SWORD (Lvl %d) -> (-%d Iron, -%d Wood)" },
+  "FORGE_UPGRADE_ARMOR": { "fr": "> Ameliorer ARMURE (Niv %d) -> (-%d Fer, -%d Viande)", "en": "> Upgrade ARMOR (Lvl %d) -> (-%d Iron, -%d Meat)" },
+
+  "ALCHEMIST_TITLE": { "fr": "=== L'ALCHIMISTE ===", "en": "=== THE ALCHEMIST ===" },
+  "ALCH_CRAFT_HEAL": { "fr": "> Crafter Potion de Soin (-10 Herbes)", "en": "> Craft Health Potion (-10 Herbs)" },
+  "ALCH_CRAFT_MANA": { "fr": "> Crafter Potion de Mana (-5 Herbes, -5 Cristaux)", "en": "> Craft Mana Potion (-5 Herbs, -5 Crystals)" },
+
+  "ARCHIFORGE_TITLE": { "fr": "=== L'ARCHIFORGE ===", "en": "=== THE ARCHFORGE ===" },
+  "ARCH_LEARN_FIREBALL": { "fr": "> Apprendre BOULE DE FEU (-50 Or, -50 Cristaux)", "en": "> Learn FIREBALL (-50 Gold, -50 Crystals)" },
+  "ARCH_OWNED_FIREBALL": { "fr": "> BOULE DE FEU (Acquis)", "en": "> FIREBALL (Owned)" },
+  "ARCH_LEARN_HEAL": { "fr": "> Apprendre SOIN (-50 Herbes, -50 Cristaux)", "en": "> Learn HEAL (-50 Herbs, -50 Crystals)" },
+  "ARCH_OWNED_HEAL": { "fr": "> SOIN (Acquis)", "en": "> HEAL (Owned)" },
+
+  "DUNGEON_TITLE_BOSS": { "fr": "=== ANTRE DU BOSS (Etage %d) ===", "en": "=== BOSS LAIR (Floor %d) ===" },
+  "DUNGEON_TITLE_DEEP": { "fr": "=== DONJON PROFOND (Etage %d) ===", "en": "=== DEEP DUNGEON (Floor %d) ===" },
+  "DUNGEON_STAIRS_CLOSE": { "fr": "[ ESCALIER ]", "en": "[ STAIRS ]" },
+  "DUNGEON_STAIRS_FAR": { "fr": "[ escalier ]", "en": "[ stairs ]" },
+  "DUNGEON_BOSS_CLOSE": { "fr": " ☠ BOSS ☠ ", "en": " ☠ BOSS ☠ " },
+  "DUNGEON_BOSS_FAR": { "fr": " ☠ ", "en": " ☠ " },
+  "DUNGEON_CONTROLS_MOVE": { "fr": "[^] Avancer | [<] Gauche | [>] Droite", "en": "[^] Move Forward | [<] Left | [>] Right" },
+  "DUNGEON_CONTROLS_FLEE": { "fr": "[Q] Fuir vers le campement", "en": "[Q] Flee to camp" },
+  "LOG_DESCEND": { "fr": "Vous descendez d'un etage...", "en": "You descend one floor..." },
+
+  "UI_PLAYER_STATS_HEADER": { "fr": "KAAN ASLANBAS - Niv %d  ( XP: %d/%d )", "en": "KAAN ASLANBAS - Lvl %d  ( XP: %d/%d )" },
+  "UI_COMBAT_STATS": { "fr": "HP: %d/%d  |  Mana: %d/%d  |  ATK: %d", "en": "HP: %d/%d  |  Mana: %d/%d  |  ATK: %d" },
+  "UI_INV_TITLE": { "fr": "[ INVENTAIRE / EQUIPEMENT ]", "en": "[ INVENTORY / GEAR ]" },
+  "UI_POTION_HEAL": { "fr": "(%d) Potion de Soin [UTILISER]", "en": "(%d) Health Potion [USE]" },
+  "LOG_DRINK_POTION": { "fr": "Vous buvez une Potion !", "en": "You drink a Potion!" },
+  "UI_SPELLS_TITLE": { "fr": "[ SORTS ]", "en": "[ SPELLS ]" },
+  "UI_SPELL_FIREBALL": { "fr": "(>) Boule de Feu (10 Mana)", "en": "(>) Fireball (10 Mana)" },
+  "UI_RESOURCES_TITLE": { "fr": "[ RESSOURCES ]", "en": "[ RESOURCES ]" },
+  
+  "RES_IRON": { "fr": "Fer: %d", "en": "Iron: %d" },
+  "RES_GOLD": { "fr": "Or: %d", "en": "Gold: %d" },
+  "RES_CRYSTALS": { "fr": "Cristaux: %d", "en": "Crystals: %d" },
+  "RES_HERBS": { "fr": "Herbes: %d", "en": "Herbs: %d" },
+  "RES_WOOD": { "fr": "Bois: %d", "en": "Wood: %d" },
+  "RES_MEAT": { "fr": "Viande: %d", "en": "Meat: %d" },
+  
+  "UI_LOG_TITLE": { "fr": "[ JOURNAL DE BATAILLE ]", "en": "[ BATTLE LOG ]" },
+  
+  "LOG_DEAD": { "fr": "VOUS ETES MORT", "en": "YOU DIED" },
+  "GAMEOVER_STATS_LOST": { "fr": "Vos statistiques de donjon sont perdues.", "en": "Your dungeon stats are lost." },
+  "GAMEOVER_RESPAWN": { "fr": "[ESPACE] pour renaitre au Campement", "en": "[SPACE] to respawn at Camp" },
+
+    "ART_IRON": { 
+    "fr": "   ______   \n  / ____ \\  \n | |FER | | \n | |____| | \n  \\______/  ", 
+    "en": "   ______   \n  / ____ \\  \n | |IRON| | \n | |____| | \n  \\______/  " 
+    },
+
+    "ART_GOLD": { 
+    "fr": "    ____    \n  /      \\  \n |  $$$$  | \n |   OR   | \n  \\______/  ", 
+    "en": "    ____    \n  /      \\  \n |  $$$$  | \n |  GOLD  | \n  \\______/  " 
+    },
+
+    "ART_CRYSTAL": { 
+    "fr": "     /\\     \n    /**\\    \n   /****\\   \n   \\****/   \n    \\__/    \n  CRISTAL   ", 
+    "en": "     /\\     \n    /**\\    \n   /****\\   \n   \\****/   \n    \\__/    \n  CRYSTAL   " 
+    },
+
+    "ART_HERBS": { 
+    "fr": "    ,-,     \n   /   \\    \n  (     )   \n   \\___/    \n    |||     \n  HERBES    ", 
+    "en": "    ,-,     \n   /   \\    \n  (     )   \n   \\___/    \n    |||     \n   HERBS    " 
+    },
+
+    "ART_WOOD": { 
+    "fr": "     /\\     \n    /**\\    \n   /****\\   \n  /______\\  \n     ||     \n     ||     \n    BOIS    ", 
+    "en": "     /\\     \n    /**\\    \n   /****\\   \n  /______\\  \n     ||     \n     ||     \n    WOOD    " 
+    },
+
+    "ART_MEAT": { 
+    "fr": "    ____    \n  /      \\  \n |  XXXX  | \n |  XXXX  | \n  \\______/  \n   VIANDE   ", 
+    "en": "    ____    \n  /      \\  \n |  XXXX  | \n |  XXXX  | \n  \\______/  \n    MEAT    " 
+    },
+
+  "LEVEL_UP": { "fr": "NIVEAU SUPERIEUR !", "en": "Level Up!" },
+  "WEAK_POINT": { "fr": "*** Point Faible ***", "en": "*** Weak Point ***" },
+  "ENEMY_DEFEATED": { "fr": "Ennemi Vaincu !", "en": "Enemy Defeated!" },
+  "MAP_TITLE": { "fr": "[ CARTE DE L'ETAGE ]", "en": "[ FLOOR MINIMAP ]" },
+
+  "UI_EQUIP_VISUAL": { "fr": "[ VISUEL EQUIPEMENT ]", "en": "[ VISUAL GEAR ]" },
+  "UI_INV_LIST": { "fr": "[ LISTE INVENTAIRE (Nouveaux en haut) ]", "en": "[ INVENTORY LIST (Newest top) ]" },
+  
+  "SLOT_HELMET": { "fr": "Tete", "en": "Head" },
+  "SLOT_ARMOR": { "fr": "Corps", "en": "Body" },
+  "SLOT_GLOVES": { "fr": "Mains", "en": "Hands" },
+  "SLOT_BOOTS": { "fr": "Pieds", "en": "Feet" },
+  "SLOT_HAND_1": { "fr": "Main1", "en": "Hand1" },
+  "SLOT_HAND_2": { "fr": "Main2", "en": "Hand2" },
+  
+  "UI_FORGE_LIST": { "fr": "[ EQUIPEMENT AMELIORABLE ]", "en": "[ UPGRADABLE GEAR ]" },
+  "UI_FORGE_CENTER": { "fr": "[ ATELIER D'AMELIORATION ]", "en": "[ UPGRADE WORKSHOP ]" },
+  "UI_EQUIP_TITLE": { "fr": "[ EQUIPEMENT ]", "en": "[ GEAR ]" },
+  "BTN_UPGRADE": { "fr": "AMELIORER", "en": "UPGRADE" },
+
+  "NEW_RUN": { "fr": "--- NOUVELLE RUN ---", "en": "--- NEW RUN ---" },
+  "LOG_HIT_PLAYER": { "fr": "Vous subissez %d degats !", "en": "You take %d damage!" },
+  "LOG_HIT_ENEMY": { "fr": "Vous infligez %d degats !", "en": "You deal %d damage!" },
+  "LOG_SPELL_PLAYER": { "fr": "Vous utilisez %s !", "en": "You cast %s!" },
+  "LOG_SPELL_ENEMY": { "fr": "L'ennemi utilise %s !", "en": "Enemy casts %s!" },
+  "LOG_LEVEL_UP": { "fr": "Vous montez au niveau %d !", "en": "You reach level %d!" },
+  "LOG_DEFEAT_ENEMY": { "fr": "Vous avez vaincu %s !", "en": "You defeated %s!" },
+  "LOG_GAIN_ITEM": { "fr": "Vous obtenez : %s !", "en": "You gain : %s!" },
+  "LOG_POISON_DAMAGE": { "fr": "--- Degats de Poison ! ---", "en": "--- Poison Damage ! ---" },
+  "WORD_UTILISE": { "fr": "UTILISE :", "en": "USE :" }
+}

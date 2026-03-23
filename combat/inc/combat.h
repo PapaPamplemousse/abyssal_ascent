@@ -4,74 +4,203 @@
 #include "raylib.h"
 #include <stdbool.h>
 
-// Statistiques de combat du joueur
+typedef enum
+{
+    SLOT_HELMET   = 0,
+    SLOT_ARMOR    = 1,
+    SLOT_GLOVES   = 2,
+    SLOT_LEGGINGS = 3,
+    SLOT_BOOTS    = 4,
+    SLOT_HAND_1   = 5,
+    SLOT_HAND_2   = 6,
+    SLOT_NONE     = -1
+} EquipSlot;
+
+#define MAX_ASCII_LINES 40
+#define MAX_MONSTERS_DB 50
+
+#define MAX_ITEMS_DB 100
+#define MAX_INVENTORY 50
+#define MAX_ITEM_ASCII_LINES 20
+#define MAX_SLOTS (SLOT_HAND_2 + 1)
+
+#define MAX_SPELLS_DB 20
+#define MAX_POTIONS_DB 20
+
+typedef enum { SPELL_DAMAGE, SPELL_HEAL, SPELL_POISON, SPELL_FREEZE, SPELL_VAMPIRISM, SPELL_STUN } EffectType;
+
 typedef struct {
-    int level;
-    int xp, max_xp;
-    int hp, max_hp;
-    int mana, max_mana;
-    int atk;
+    char id[32]; char name_en[32]; char name_fr[32];
+    EffectType type;
+    int base_val, inc_val; float base_dur, inc_dur;
+    int mana_cost;
+    int learn_gold, learn_crystal;
+    int upg_gold_base, upg_gold_inc;
+    int prep_crystal; // Coût pour l'équiper
+} SpellTemplate;
+
+typedef struct {
+    char id[32]; char name_en[32]; char name_fr[32];
+    EffectType type;
+    int base_val, inc_val;
+    int learn_gold;
+    int upg_gold_base, upg_gold_inc;
+    int craft_herbs_base, craft_herbs_inc;
+} PotionTemplate;
+
+// Structure chargée depuis items.json
+typedef struct
+{
+    char id[32];
+    char name_en[32];
+    char name_fr[32];
+    char type[32]; // "HELMET", "ARMOR", "HAND_1", "HAND_2", "HAND_2H", etc.
+
+    int   hp, atk, mana, fog;
+    float spd; // Base
+    int   inc_hp, inc_atk, inc_mana, inc_fog;
+    float inc_spd; // Par niveau
+
+    // Coûts d'amélioration { base, incrément }
+    int cost_fer_base, cost_fer_inc;
+    int cost_bois_base, cost_bois_inc;
+    int cost_or_base, cost_or_inc;
+    int cost_viande_base, cost_viande_inc;
+
+    char ascii[MAX_ITEM_ASCII_LINES][128];
+    int  ascii_line_count;
+
+} ItemTemplate;
+
+// L'objet physique dans l'inventaire du joueur
+typedef struct
+{
+    int template_idx; // L'index dans la base de données
+    int level;        // Niveau actuel de l'objet (0 = base)
+} OwnedItem;
+
+// Statistiques de combat du joueur
+typedef struct
+{
+    int   level;
+    int   xp, max_xp;
+    int   hp, max_hp;
+    int   mana, max_mana;
+    int   atk;
     float spd;
-    int potions_hp;
-    int potions_mana;
-    
     // Stats permanentes
-    int base_max_hp;
-    int base_max_mana;
-    int base_atk;
+    int   base_max_hp;
+    int   base_max_mana;
+    int   base_atk;
     float base_spd;
 
     // -Niveaux d'équipement ---
-    int eq_epee;
-    int eq_armure;
-    int eq_casque;
-    int eq_jambieres;
-    int eq_gants;
+    OwnedItem inventory[MAX_INVENTORY];
+    int       inventory_count;
+
+    // Contient l'index de l'objet dans 'inventory', ou -1 si vide
+    int equipped[MAX_SLOTS];
+
+    int acquisition_order[MAX_INVENTORY];
+
+    int fog_bonus; // Vision supplémentaire calculée
 
     // Sorts débloqués ---
-    bool spell_fireball;
-    bool spell_heal;
+    bool spell_unlocked[MAX_SPELLS_DB];
+    int spell_level[MAX_SPELLS_DB];
+    int equipped_spells[3]; // Contient l'ID, -1 si vide
+    
+    bool potion_unlocked[MAX_POTIONS_DB];
+    int potion_level[MAX_POTIONS_DB];
+    int potion_qty[MAX_POTIONS_DB];
+    int equipped_potions[3];
 } PlayerStats;
 
+typedef struct
+{
+    char id[32];
+    char name_en[32];
+    char name_fr[32];
+    char flavor_en[128];
+    char flavor_fr[128];
 
+    bool is_boss;
+    int  min_floor, max_floor;
+    int  boss_floor;
 
-// Types de monstres
-typedef enum { MONSTER_RAT, MONSTER_SKELETON, MONSTER_ZOMBIE, MONSTER_BOSS_SKELETON_KING } MonsterType;
+    int   hp, atk, xp;
+    float spd;
+
+    char ascii[MAX_ASCII_LINES][128];
+    int  ascii_line_count;
+} MonsterTemplate;
 
 // Structure d'un ennemi
-typedef struct {
-    char name[32];
-    int hp, max_hp;
-    int atk;
+typedef struct
+{
+    char  name[32];
+    char  flavor[128];
+    int   hp, max_hp;
+    int   atk;
     float spd;
-    int xp_yield; // XP donné à la mort
-    
-    // Pour le QTE (Point Faible)
-    bool qte_active;
-    float qte_timer;
-    Vector2 qte_pos; // Position du [X] à l'écran
+    int   xp_yield;
+
+    char ascii[MAX_ASCII_LINES][128];
+    int  ascii_line_count;
+
+    float poison_timer;
+    int poison_dmg; float poison_tick; // timer interne pour faire des dégâts chaque seconde
+
+    float freeze_timer; float freeze_slow_factor; // ex: 30 = -30% de vitesse
+    float stun_timer;
+
+    bool    qte_active;
+    float   qte_timer;
+    Vector2 qte_pos;
 } Enemy;
 
 // Contexte global du combat
-typedef struct {
+typedef struct
+{
     PlayerStats player;
-    Enemy current_enemy;
-    bool is_active;
-    
+    Enemy       current_enemy;
+    bool        is_active;
+
     // Timers d'auto-battle (quand ils atteignent 1.0, le personnage attaque)
     float player_attack_timer;
     float enemy_attack_timer;
-    
+
     // Journal de combat (historique des 5 dernières actions)
     char battle_log[5][64];
-    int log_index;
+    int  log_index;
+
+    //Effets Visuels
+    Color screen_flash_color;
+    float screen_flash_timer;
 } CombatContext;
 
+extern ItemTemplate g_itemDB[MAX_ITEMS_DB];
+extern int g_itemCount;
+
+extern SpellTemplate g_spellDB[MAX_SPELLS_DB];
+extern int g_spellCount;
+
+extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
+extern int g_potionCount;
+
+void LoadMonstersDB(const char* filepath);
+void LoadMagicDB(const char* spell_path, const char* potion_path);
+void LoadItemsDB(const char* filepath);
+
 void Combat_Init(CombatContext* combat);
-void Combat_StartEncounter(CombatContext* combat, MonsterType type);
+void Combat_StartEncounter(CombatContext* combat, int current_floor, bool is_boss_room);
 void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int centerY);
 void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int centerY);
 void Combat_AddLog(CombatContext* combat, const char* msg);
 void Combat_ResetRun(CombatContext* combat);
-void Combat_RecalculateStats(CombatContext* combat); 
+void Combat_RecalculateStats(CombatContext* combat);
+void Inventory_Add(CombatContext* combat, const char* item_id);
+void Inventory_Equip(CombatContext* combat, int inv_idx);
+void Inventory_Unequip(CombatContext* combat, EquipSlot slot);
+void Inventory_GetSortedIndices(CombatContext* combat, int* indices);
 #endif // COMBAT_H

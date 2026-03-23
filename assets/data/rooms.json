@@ -1,0 +1,54 @@
+{
+  "rooms": [
+    {
+      "id": "rest_camp",
+      "name_en": "Abandoned Camp",
+      "name_fr": "Campement Abandonne",
+      "type": "HEAL",
+      "amount": 50,
+      "flavor_en": "You rested at the camp. HP restored.",
+      "flavor_fr": "Vous vous reposez au camp. PV restaures.",
+      "ascii": [
+        "      (      ",
+        "     ) (     ",
+        "   (_____)   ",
+        "    |   |    "
+      ]
+    },
+    {
+      "id": "merchant_potions",
+      "name_en": "Wandering Merchant",
+      "name_fr": "Marchand Ambulant",
+      "type": "MERCHANT",
+      "amount": 50,
+      "flavor_en": "You bought a Healing Potion for 50 Gold.",
+      "flavor_fr": "Vous achetez une Potion pour 50 Or.",
+      "ascii": [
+        "    .---.    ",
+        "   / ___ \\   ",
+        "  ( (o o) )  ",
+        "   \\_ v _/   ",
+        "   / `-' \\   "
+      ]
+    },
+    {
+      "id": "chest_event",
+      "name_en": "Treasure Chest",
+      "name_fr": "Coffre au Tresor",
+      "type": "CHEST",
+      "amount": 0,
+      "flavor_en": "You open the chest... (Gacha to come!)",
+      "flavor_fr": "Vous ouvrez le coffre... (Gacha a venir!)",
+      "ascii": [
+        "   __________   ",
+        "  /\\____;;___\\  ",
+        " | /         /  ",
+        " `. ())oo() .   ",
+        "  |\\(%()*^^()^\\ ",
+        " | |-%-------| |",
+        "  \\ | %  ))   | |",
+        "   \\|%________|/ "
+      ]
+    }
+  ]
+}
