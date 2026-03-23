@@ -5,8 +5,9 @@
 
 #define MAP_WIDTH 21
 #define MAP_HEIGHT 21
-#define MAX_ASCII_LINES 40
-
+#ifndef MAX_ASCII_LINES
+#define MAX_ASCII_LINES 60
+#endif
 typedef enum
 {
     DIR_NORTH,

@@ -108,7 +108,7 @@ void Clicker_RenderMine(ClickerContext* clicker, int viewStartX, int viewWidth, 
     int colWidth = viewWidth / 3;
 
     // Titre
-    DrawAndCheckButtonCentered(font, T("MINE_TITLE"), viewStartX + (viewWidth / 2), 120, 40, LIGHTGRAY);
+    DrawAndCheckButtonCentered(font, T("MINE_TITLE"), viewStartX + (viewWidth / 2), 120, 50, LIGHTGRAY);
 
     // Ligne horizontale sous le titre
     DrawLine(viewStartX, 180, viewStartX + viewWidth, 180, DARKGRAY);
@@ -206,7 +206,7 @@ void Clicker_RenderForest(ClickerContext* clicker, int viewStartX, int viewWidth
     int colWidth = viewWidth / 3;
 
     // Titre de la zone
-    DrawAndCheckButtonCentered(font, T("FOREST_TITLE"), viewStartX + (viewWidth / 2), 120, 40, GREEN);
+    DrawAndCheckButtonCentered(font, T("FOREST_TITLE"), viewStartX + (viewWidth / 2), 120, 50, GREEN);
 
     // Ligne horizontale sous le titre
     DrawLine(viewStartX, 180, viewStartX + viewWidth, 180, DARKGRAY);

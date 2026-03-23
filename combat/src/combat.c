@@ -41,34 +41,32 @@ EffectType ParseEffectType(const char* str)
 // --- LE CHARGEUR JSON ---
 void LoadMonstersDB(const char* filepath)
 {
-    // 1. Lire le fichier
-    char* buffer = LoadFileText(filepath); // Fonction Raylib hyper pratique
-    if (!buffer)
-    {
-        printf("Erreur: Impossible de charger %s\n", filepath);
+    char* buffer = LoadFileText(filepath); 
+    if (!buffer) {
+        printf("[ERREUR] Impossible de lire le fichier %s\n", filepath);
         return;
     }
 
-    // 2. Parser avec cJSON
     cJSON* json = cJSON_Parse(buffer);
-    if (!json)
-    {
-        printf("Erreur de syntaxe JSON.\n");
+    if (!json) {
+        printf("[ERREUR] Syntaxe JSON invalide dans %s\n", filepath);
         UnloadFileText(buffer);
         return;
     }
 
-    // 3. Récupérer le tableau "monsters"
     cJSON* monstersArray = cJSON_GetObjectItemCaseSensitive(json, "monsters");
     cJSON* monsterNode   = NULL;
 
     g_monsterCount = 0;
+    printf("\n--- DEBUT LECTURE JSON MONSTRES ---\n");
 
-    // 4. Boucler sur chaque monstre
     cJSON_ArrayForEach(monsterNode, monstersArray)
     {
-        if (g_monsterCount >= MAX_MONSTERS_DB)
+        if (g_monsterCount >= MAX_MONSTERS_DB) {
+            printf("[ATTENTION] Limite de MAX_MONSTERS_DB (%d) atteinte !\n", MAX_MONSTERS_DB);
             break;
+        }
+        
         MonsterTemplate* t = &g_monsterDB[g_monsterCount];
 
         strcpy(t->id, cJSON_GetObjectItem(monsterNode, "id")->valuestring);
@@ -77,40 +75,71 @@ void LoadMonstersDB(const char* filepath)
         strcpy(t->flavor_en, cJSON_GetObjectItem(monsterNode, "flavor_en")->valuestring);
         strcpy(t->flavor_fr, cJSON_GetObjectItem(monsterNode, "flavor_fr")->valuestring);
 
-        t->is_boss = cJSON_GetObjectItem(monsterNode, "is_boss")->valueint; // cJSON utilise valueint pour les booleens (0/1)
-        if (t->is_boss)
-        {
-            t->boss_floor = cJSON_GetObjectItem(monsterNode, "boss_floor")->valueint;
+        cJSON* bossNode = cJSON_GetObjectItem(monsterNode, "is_boss");
+        t->is_boss = false; 
+        if (bossNode != NULL && bossNode->type == cJSON_True) {
+            t->is_boss = true;
         }
-        else
-        {
-            t->min_floor = cJSON_GetObjectItem(monsterNode, "min_floor")->valueint;
-            t->max_floor = cJSON_GetObjectItem(monsterNode, "max_floor")->valueint;
+
+        if (t->is_boss) {
+            cJSON* bFloor = cJSON_GetObjectItem(monsterNode, "boss_floor");
+            t->boss_floor = bFloor ? bFloor->valueint : 10;
+            t->min_floor = 0; // Sécurité
+            t->max_floor = 0; // Sécurité
+        } else {
+            cJSON* mMin = cJSON_GetObjectItem(monsterNode, "min_floor");
+            cJSON* mMax = cJSON_GetObjectItem(monsterNode, "max_floor");
+            t->min_floor = mMin ? mMin->valueint : 1;
+            t->max_floor = mMax ? mMax->valueint : 999;
+            t->boss_floor = 0; // Sécurité
         }
 
         cJSON* stats = cJSON_GetObjectItem(monsterNode, "stats");
-        t->hp        = cJSON_GetObjectItem(stats, "hp")->valueint;
-        t->atk       = cJSON_GetObjectItem(stats, "atk")->valueint;
-        t->spd       = cJSON_GetObjectItem(stats, "spd")->valuedouble;
-        t->xp        = cJSON_GetObjectItem(stats, "xp")->valueint;
+        if (stats) {
+            cJSON* hpNode = cJSON_GetObjectItem(stats, "hp");
+            cJSON* atkNode = cJSON_GetObjectItem(stats, "atk");
+            cJSON* spdNode = cJSON_GetObjectItem(stats, "spd");
+            cJSON* xpNode = cJSON_GetObjectItem(stats, "xp");
+
+            // On utilise valuedouble (très fiable) qu'on cast en int
+            t->hp  = hpNode ? (int)hpNode->valuedouble : 50;
+            t->atk = atkNode ? (int)atkNode->valuedouble : 5;
+            t->spd = spdNode ? spdNode->valuedouble : 1.0;
+            t->xp  = xpNode ? (int)xpNode->valuedouble : 10;
+        }
+
+        cJSON* colorArray = cJSON_GetObjectItem(monsterNode, "color");
+        if (colorArray && cJSON_GetArraySize(colorArray) >= 3) {
+            t->base_color.r = cJSON_GetArrayItem(colorArray, 0)->valueint;
+            t->base_color.g = cJSON_GetArrayItem(colorArray, 1)->valueint;
+            t->base_color.b = cJSON_GetArrayItem(colorArray, 2)->valueint;
+            t->base_color.a = 255; 
+        } else {
+            t->base_color = LIGHTGRAY; 
+        }
 
         cJSON* asciiArray   = cJSON_GetObjectItem(monsterNode, "ascii");
         cJSON* line         = NULL;
         t->ascii_line_count = 0;
-        cJSON_ArrayForEach(line, asciiArray)
-        {
-            if (t->ascii_line_count < MAX_ASCII_LINES)
-            {
-                strcpy(t->ascii[t->ascii_line_count], line->valuestring);
-                t->ascii_line_count++;
+        if (asciiArray) {
+            cJSON_ArrayForEach(line, asciiArray) {
+                if (t->ascii_line_count < MAX_ASCII_LINES) {
+                    strcpy(t->ascii[t->ascii_line_count], line->valuestring);
+                    t->ascii_line_count++;
+                }
             }
         }
+        
+        // LE PRINTF ESPION !
+        printf("[JSON] Lu: %s | Boss: %d | Etages: %d-%d (BossFloor: %d)\n", 
+               t->id, t->is_boss, t->min_floor, t->max_floor, t->boss_floor);
+
         g_monsterCount++;
     }
 
-    cJSON_Delete(json);     // Libérer la mémoire du parseur
-    UnloadFileText(buffer); // Libérer le fichier
-    printf("--- CHARGEMENT OK : %d monstres charges depuis le JSON ---\n", g_monsterCount);
+    cJSON_Delete(json);     
+    UnloadFileText(buffer); 
+    printf("--- FIN LECTURE JSON : %d monstres charges ---\n\n", g_monsterCount);
 }
 
 void LoadItemsDB(const char* filepath)
@@ -282,6 +311,7 @@ void Inventory_Add(CombatContext* combat, const char* item_id)
         {
             combat->player.inventory[combat->player.inventory_count].template_idx = i;
             combat->player.inventory[combat->player.inventory_count].level        = 0; // Niveau de base
+            combat->player.inventory[combat->player.inventory_count].effect = ITEM_EFFECT_NONE; // Sécurité 
             combat->player.inventory_count++;
 
             char log[64];
@@ -290,6 +320,24 @@ void Inventory_Add(CombatContext* combat, const char* item_id)
             return;
         }
     }
+}
+
+// fonction gatcha pour les coffres : ajoute un objet aléatoire de la base de données, avec un niveau et un effet aléatoires
+void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemEffect effect) {
+    if (combat->player.inventory_count >= MAX_INVENTORY) {
+        Combat_AddLog(combat, "Inventaire plein !");
+        return;
+    }
+    OwnedItem* item = &combat->player.inventory[combat->player.inventory_count];
+    item->template_idx = template_idx;
+    item->level = level;
+    item->effect = effect;
+    combat->player.inventory_count++;
+    
+    ItemTemplate* t = &g_itemDB[template_idx];
+    char log[64];
+    sprintf(log, "Loot: %s Niv %d", g_isEnglish ? t->name_en : t->name_fr, level);
+    Combat_AddLog(combat, log);
 }
 
 void Combat_Init(CombatContext* combat)
@@ -325,6 +373,15 @@ void Combat_Init(CombatContext* combat)
 
 void Combat_ResetRun(CombatContext* combat)
 {
+    // Si on avait équipé un objet trouvé dans le donjon avant de mourir, on le déséquipe ( à priori pas possible mais on sait jamais )!
+    for (int i = 0; i < MAX_SLOTS; i++) {
+        if (combat->player.equipped[i] >= combat->player.inventory_safe_count) {
+            combat->player.equipped[i] = -1;
+        }
+    }
+
+    combat->player.inventory_count = combat->player.inventory_safe_count;
+
     combat->player.level  = 1;
     combat->player.xp     = 0;
     combat->player.max_xp = 100;
@@ -336,6 +393,7 @@ void Combat_ResetRun(CombatContext* combat)
 
     combat->is_active = false;
     Combat_AddLog(combat, T("NEW_RUN"));
+    Combat_RecalculateStats(combat);
 }
 
 void Combat_AddLog(CombatContext* combat, const char* msg)
@@ -350,11 +408,13 @@ void Combat_AddLog(CombatContext* combat, const char* msg)
 
 void Combat_StartEncounter(CombatContext* combat, int current_floor, bool is_boss_room)
 {
-    combat->is_active           = true;
+    printf("\n=== DEBUT START ENCOUNTER ===\n");
+    printf("[ENCOUNTER] Etage du joueur : %d | Salle de Boss : %d\n", current_floor, is_boss_room);
+    printf("[ENCOUNTER] Monstres dispo en DB : %d\n", g_monsterCount);
+
     combat->player_attack_timer = 0.0f;
     combat->enemy_attack_timer  = 0.0f;
 
-    // 1. Trouver une liste de candidats valides pour cet étage
     MonsterTemplate* valid_candidates[MAX_MONSTERS_DB];
     int              candidate_count = 0;
 
@@ -364,28 +424,34 @@ void Combat_StartEncounter(CombatContext* combat, int current_floor, bool is_bos
 
         if (is_boss_room)
         {
-            if (t->is_boss && t->boss_floor == current_floor)
-            {
+            if (t->is_boss && t->boss_floor == current_floor) {
                 valid_candidates[candidate_count++] = t;
             }
         }
         else
         {
-            if (!t->is_boss && current_floor >= t->min_floor && current_floor <= t->max_floor)
-            {
+            // LE PRINTF POUR COMPRENDRE LE REJET :
+            if (!t->is_boss && current_floor >= t->min_floor && current_floor <= t->max_floor) {
                 valid_candidates[candidate_count++] = t;
+                printf("  -> [RETENU] %s (min: %d, max: %d)\n", t->id, t->min_floor, t->max_floor);
             }
         }
     }
 
-    // Sécurité anti-crash au cas où le JSON est vide
-    if (candidate_count == 0)
+    printf("[ENCOUNTER] Total candidats trouves : %d\n", candidate_count);
+
+    if (candidate_count == 0) {
+        printf("[ERREUR CRITIQUE] Aucun monstre valide pour l'etage %d !\n", current_floor);
+        Combat_AddLog(combat, "Erreur : Aucun monstre a cet etage !");
+        printf("=== FIN START ENCOUNTER (ECHEC) ===\n\n");
         return;
+    }
 
-    // 2. Tirer un monstre au hasard parmi les candidats valides
+    combat->is_active = true;
+
     MonsterTemplate* chosen = valid_candidates[GetRandomValue(0, candidate_count - 1)];
+    printf("[ENCOUNTER] Monstre choisi : %s\n", chosen->id);
 
-    // 3. Copier les données du Template vers l'Ennemi Actuel
     strcpy(combat->current_enemy.name, g_isEnglish ? chosen->name_en : chosen->name_fr);
     strcpy(combat->current_enemy.flavor, g_isEnglish ? chosen->flavor_en : chosen->flavor_fr);
 
@@ -394,29 +460,33 @@ void Combat_StartEncounter(CombatContext* combat, int current_floor, bool is_bos
     combat->current_enemy.atk      = chosen->atk;
     combat->current_enemy.spd      = chosen->spd;
     combat->current_enemy.xp_yield = chosen->xp;
+    combat->current_enemy.base_color = chosen->base_color;
 
     combat->current_enemy.ascii_line_count = chosen->ascii_line_count;
-    for (int i = 0; i < chosen->ascii_line_count; i++)
-    {
+    for (int i = 0; i < chosen->ascii_line_count; i++) {
         strcpy(combat->current_enemy.ascii[i], chosen->ascii[i]);
     }
 
     combat->current_enemy.qte_active = false;
     combat->current_enemy.qte_timer  = 2.0f;
-
     combat->current_enemy.poison_timer = 0.0f;
     combat->current_enemy.freeze_timer = 0.0f;
     combat->current_enemy.stun_timer   = 0.0f;
 
-    // Message d'ambiance !
     Combat_AddLog(combat, combat->current_enemy.flavor);
+    printf("=== FIN START ENCOUNTER (SUCCES) ===\n\n");
 }
-
 extern SpellTemplate  g_spellDB[MAX_SPELLS_DB];
 extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
 
 void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int centerY)
 {
+    static int debug_tick = 0;
+    if (debug_tick < 3) { 
+        printf("[RADAR COMBAT] Update en cours ! is_active = %d | HP Ennemi = %d\n", combat->is_active, combat->current_enemy.hp);
+        debug_tick++;
+    }
+
     if (!combat->is_active)
         return;
 
@@ -540,12 +610,23 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
 
     // --- 4. AUTO-ATTAQUE DU JOUEUR ---
     combat->player_attack_timer += deltaTime * combat->player.spd;
-    if (combat->player_attack_timer >= 1.0f)
-    {
+    if (combat->player_attack_timer >= 1.0f) {
         combat->current_enemy.hp -= combat->player.atk;
         char log[64];
-        sprintf(log, "Vous frappez (%d degats)", combat->player.atk);
+        sprintf(log, T("LOG_HIT_ENEMY"), combat->player.atk);
         Combat_AddLog(combat, log);
+        
+        // Effets Magiques à l'impact
+        if (combat->player.has_vamp_weapon) {
+            combat->player.hp += 2;
+            if (combat->player.hp > combat->player.max_hp) combat->player.hp = combat->player.max_hp;
+        }
+        if (combat->player.has_poison_weapon) {
+            combat->current_enemy.poison_timer = 3.0f;
+            combat->current_enemy.poison_dmg = 2;
+            combat->current_enemy.poison_tick = 1.0f;
+        }
+        
         combat->player_attack_timer -= 1.0f;
     }
 
@@ -680,7 +761,10 @@ void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int cent
     }
 
     // --- 2. COULEUR DYNAMIQUE DU MONSTRE ---
-    Color mColor = LIGHTGRAY;
+    // On utilise sa couleur de base chargée depuis le JSON !
+    Color mColor = combat->current_enemy.base_color; 
+    
+    // Les altérations d'état prennent le dessus sur la couleur d'origine
     if (combat->current_enemy.freeze_timer > 0) mColor = SKYBLUE;
     else if (combat->current_enemy.poison_timer > 0) mColor = LIME;
     else if (combat->current_enemy.stun_timer > 0) mColor = YELLOW;
@@ -731,35 +815,40 @@ void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int cent
     DrawTextEx(font, hpText, (Vector2){centerX - (tSize.x / 2), textY}, 24, 1, RED);
 }
 
-void Combat_RecalculateStats(CombatContext* combat)
-{
-    combat->player.base_max_hp   = 50;
-    combat->player.base_atk      = 5;
+void Combat_RecalculateStats(CombatContext* combat) {
+    combat->player.base_max_hp = 50;
+    combat->player.base_atk = 5;
     combat->player.base_max_mana = 20;
-    combat->player.base_spd      = 0.8f;
-    combat->player.fog_bonus     = 0;
+    combat->player.base_spd = 0.8f;
+    combat->player.fog_bonus = 0;
+    
+    combat->player.has_vamp_weapon = false;
+    combat->player.has_poison_weapon = false;
 
-    // CORRECTION : On boucle sur MAX_SLOTS pour inclure HAND_2 et LEGGINGS
-    for (int i = 0; i < MAX_SLOTS; i++)
-    {
+    for (int i = 0; i < MAX_SLOTS; i++) {
         int inv_idx = combat->player.equipped[i];
-        if (inv_idx != -1)
-        {
-            OwnedItem*    item = &combat->player.inventory[inv_idx];
-            ItemTemplate* t    = &g_itemDB[item->template_idx];
-
+        if (inv_idx != -1) {
+            OwnedItem* item = &combat->player.inventory[inv_idx];
+            ItemTemplate* t = &g_itemDB[item->template_idx];
+            
             combat->player.base_max_hp += t->hp + (item->level * t->inc_hp);
             combat->player.base_atk += t->atk + (item->level * t->inc_atk);
             combat->player.base_max_mana += t->mana + (item->level * t->inc_mana);
             combat->player.base_spd += t->spd + (item->level * t->inc_spd);
             combat->player.fog_bonus += t->fog + (item->level * t->inc_fog);
+
+            // --- APPLICATION DES EFFETS MAGIQUES ---
+            if (item->effect == ITEM_EFFECT_FIRE) combat->player.base_atk += 5;
+            if (item->effect == ITEM_EFFECT_SPEED) combat->player.base_spd += 0.3f;
+            if (item->effect == ITEM_EFFECT_VAMP) combat->player.has_vamp_weapon = true;
+            if (item->effect == ITEM_EFFECT_POISON) combat->player.has_poison_weapon = true;
         }
     }
-
-    combat->player.max_hp   = combat->player.base_max_hp;
+    
+    combat->player.max_hp = combat->player.base_max_hp;
     combat->player.max_mana = combat->player.base_max_mana;
-    combat->player.atk      = combat->player.base_atk;
-    combat->player.spd      = combat->player.base_spd;
+    combat->player.atk = combat->player.base_atk;
+    combat->player.spd = combat->player.base_spd;
 }
 
 void Inventory_Equip(CombatContext* combat, int inv_idx)

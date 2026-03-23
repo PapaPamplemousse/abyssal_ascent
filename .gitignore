@@ -45,3 +45,6 @@ CMakeUserPresets.json
 
 # Dependency files
 *.d
+
+
+save.json

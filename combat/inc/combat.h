@@ -16,10 +16,12 @@ typedef enum
     SLOT_NONE     = -1
 } EquipSlot;
 
-#define MAX_ASCII_LINES 40
-#define MAX_MONSTERS_DB 50
+#ifndef MAX_ASCII_LINES
+#define MAX_ASCII_LINES 60
+#endif
+#define MAX_MONSTERS_DB 150
 
-#define MAX_ITEMS_DB 100
+#define MAX_ITEMS_DB 150
 #define MAX_INVENTORY 50
 #define MAX_ITEM_ASCII_LINES 20
 #define MAX_SLOTS (SLOT_HAND_2 + 1)
@@ -28,6 +30,14 @@ typedef enum
 #define MAX_POTIONS_DB 20
 
 typedef enum { SPELL_DAMAGE, SPELL_HEAL, SPELL_POISON, SPELL_FREEZE, SPELL_VAMPIRISM, SPELL_STUN } EffectType;
+
+typedef enum {
+    ITEM_EFFECT_NONE = 0,
+    ITEM_EFFECT_FIRE = 1,   // +5 ATK
+    ITEM_EFFECT_POISON = 2, // Applique du poison à l'ennemi
+    ITEM_EFFECT_VAMP = 3,   // Soigne de 2 HP par frappe
+    ITEM_EFFECT_SPEED = 4   // +0.3 Vitesse d'attaque
+} ItemEffect;
 
 typedef struct {
     char id[32]; char name_en[32]; char name_fr[32];
@@ -77,6 +87,7 @@ typedef struct
 {
     int template_idx; // L'index dans la base de données
     int level;        // Niveau actuel de l'objet (0 = base)
+    ItemEffect effect; // Effet magique
 } OwnedItem;
 
 // Statistiques de combat du joueur
@@ -97,6 +108,11 @@ typedef struct
     // -Niveaux d'équipement ---
     OwnedItem inventory[MAX_INVENTORY];
     int       inventory_count;
+
+    // --- NOUVEAU : SAUVEGARDE DU LOOT ---
+    int       inventory_safe_count; 
+    bool      has_vamp_weapon;
+    bool      has_poison_weapon;
 
     // Contient l'index de l'objet dans 'inventory', ou -1 si vide
     int equipped[MAX_SLOTS];
@@ -131,6 +147,8 @@ typedef struct
     int   hp, atk, xp;
     float spd;
 
+    Color base_color;
+
     char ascii[MAX_ASCII_LINES][128];
     int  ascii_line_count;
 } MonsterTemplate;
@@ -144,6 +162,8 @@ typedef struct
     int   atk;
     float spd;
     int   xp_yield;
+
+    Color base_color;
 
     char ascii[MAX_ASCII_LINES][128];
     int  ascii_line_count;
@@ -203,4 +223,5 @@ void Inventory_Add(CombatContext* combat, const char* item_id);
 void Inventory_Equip(CombatContext* combat, int inv_idx);
 void Inventory_Unequip(CombatContext* combat, EquipSlot slot);
 void Inventory_GetSortedIndices(CombatContext* combat, int* indices);
+void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemEffect effect);
 #endif // COMBAT_H

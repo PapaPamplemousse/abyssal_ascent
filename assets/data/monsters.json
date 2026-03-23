@@ -1,35 +1,25 @@
 {
   "monsters": [
+
     {
       "id": "skeleton",
       "name_en": "Skeleton",
       "name_fr": "Squelette",
       "is_boss": false,
       "min_floor": 1,
-      "max_floor": 10,
-      "stats": { "hp": 45, "atk": 6, "spd": 0.6, "xp": 35 },
+      "max_floor": 4,
+      "color": [180, 180, 195],
+      "stats": { "hp": 55, "atk": 7, "spd": 0.6, "xp": 40 },
       "flavor_en": "Bones rattle in the dark...",
       "flavor_fr": "Des os cliquettent dans l'obscurite...",
       "ascii": [
-        "                                    (o o)",
-        "                                   /  V  \\",
-        "                                  /  ---  \\",
-        "                                 |  \\___/  |",
-        "                                 |         |",
-        "                              ___|         |___",
-        "                             /   \\         /   \\",
-        "                            |     \\_______/     |",
-        "                            |      /     \\      |",
-        "                             \\    /  | |  \\    /",
-        "                              \\__/   | |   \\__/",
-        "                                     | |",
-        "                                    /   \\",
-        "                                   /_____\\",
-        "                                    /   \\",
-        "                                   /     \\",
-        "                                  /       \\",
-        "                                 /  / \\    \\",
-        "                                /__/   \\____\\"
+        "                              .oOo.",
+        "                             (o . o)",
+        "                              )-=-(",
+        "                             / | | \\",
+        "                            /  | |  \\",
+        "                               | |",
+        "                              / . \\"
       ]
     },
 
@@ -39,53 +29,19 @@
       "name_fr": "Archer Squelette",
       "is_boss": false,
       "min_floor": 2,
-      "max_floor": 10,
-      "stats": { "hp": 35, "atk": 9, "spd": 0.9, "xp": 50 },
+      "max_floor": 6,
+      "color": [160, 175, 200],
+      "stats": { "hp": 45, "atk": 11, "spd": 1.0, "xp": 55 },
       "flavor_en": "Silent arrows strike from the dark.",
       "flavor_fr": "Des fleches silencieuses surgissent de l'ombre.",
       "ascii": [
-        "                                 (o o)",
-        "                                  \\ /",
-        "                                  | |",
-        "                              ____| |____",
-        "                             /    | |    \\",
-        "                            /     | |     \\",
-        "                                 /   \\",
-        "                                /_____\\" ,
-        "                                  ||",
-        "                                  ||=====>",
-        "                                  ||",
-        "                                 /  \\",
-        "                                /____\\"
-      ]
-    },
-
-    {
-      "id": "skeleton_mage",
-      "name_en": "Skeleton Mage",
-      "name_fr": "Mage Squelette",
-      "is_boss": false,
-      "min_floor": 4,
-      "max_floor": 10,
-      "stats": { "hp": 30, "atk": 12, "spd": 0.7, "xp": 65 },
-      "flavor_en": "Dark magic lingers in its bones.",
-      "flavor_fr": "Une magie noire hante ses os.",
-      "ascii": [
-        "                                 ____",
-        "                               .\"    \".",
-        "                              /  o  o  \\",
-        "                             |    --    |",
-        "                             |  \\____/  |",
-        "                              \\        /",
-        "                            __/\\______/\\__",
-        "                               /  ||  \\",
-        "                              /   ||   \\",
-        "                                  ||",
-        "                                  ||",
-        "                                 *||*",
-        "                                  ||",
-        "                                 /  \\",
-        "                                /____\\"
+        "                              .oOo.",
+        "                             (o . o)",
+        "                              )-=-(",
+        "                           --/=| |",
+        "                         ====>  | \\",
+        "                           --\\  |",
+        "                              \\ . \\"
       ]
     },
 
@@ -95,28 +51,129 @@
       "name_fr": "Gardien Squelette",
       "is_boss": false,
       "min_floor": 3,
-      "max_floor": 10,
-      "stats": { "hp": 80, "atk": 5, "spd": 0.4, "xp": 55 },
+      "max_floor": 8,
+      "color": [155, 165, 185],
+      "stats": { "hp": 100, "atk": 8, "spd": 0.4, "xp": 65 },
       "flavor_en": "An ancient protector that never rests.",
       "flavor_fr": "Un protecteur ancien qui ne repose jamais.",
       "ascii": [
-        "                                     (o o)",
-        "                                    /  V  \\",
-        "                                   /  ---  \\",
-        "                                  |  \\___/  |",
-        "                               ___|         |___",
-        "                              /   |         |   \\",
-        "                             |    |         |    |",
-        "                             |    |         |    |",
-        "                             |   /           \\   |",
-        "                             |  |   [===]     |  |",
-        "                              \\ |             | /",
-        "                               \\|             |/",
-        "                                |             |",
-        "                                |             |",
-        "                              __|             |__",
-        "                             /  |             |  \\",
-        "                            /___|             |___\\"
+        "                              .oOo.",
+        "                             (o . o)",
+        "                            __|-=-|__",
+        "                           [  | | |  ]",
+        "                           [__| | |__]",
+        "                               | |",
+        "                              / | \\"
+      ]
+    },
+
+    {
+      "id": "skeleton_mage",
+      "name_en": "Skeleton Mage",
+      "name_fr": "Mage Squelette",
+      "is_boss": false,
+      "min_floor": 4,
+      "max_floor": 9,
+      "color": [175, 155, 210],
+      "stats": { "hp": 50, "atk": 14, "spd": 0.8, "xp": 75 },
+      "flavor_en": "Dark magic lingers in its bones.",
+      "flavor_fr": "Une magie noire hante ses os.",
+      "ascii": [
+        "                            *  .oOo.  *",
+        "                             (o . o)",
+        "                            * )-=-( *",
+        "                             /| * |\\",
+        "                            * | * | *",
+        "                               | |",
+        "                              / . \\"
+      ]
+    },
+
+    {
+      "id": "bone_hound",
+      "name_en": "Bone Hound",
+      "name_fr": "Chien d'Os",
+      "is_boss": false,
+      "min_floor": 5,
+      "max_floor": 10,
+      "color": [195, 185, 170],
+      "stats": { "hp": 60, "atk": 13, "spd": 1.3, "xp": 80 },
+      "flavor_en": "It hunts by sound... and fear.",
+      "flavor_fr": "Il chasse au son... et a la peur.",
+      "ascii": [
+        "                            __   __",
+        "                           /  \\_/  \\",
+        "                          | (o) (o) |--.",
+        "                          |  .----.  |  )",
+        "                           \\_|_||_|_/--'",
+        "                            /  ||  \\",
+        "                           '   ''   '"
+      ]
+    },
+
+    {
+      "id": "necromancer",
+      "name_en": "Necromancer",
+      "name_fr": "Necromancien",
+      "is_boss": false,
+      "min_floor": 6,
+      "max_floor": 10,
+      "color": [160, 100, 220],
+      "stats": { "hp": 70, "atk": 16, "spd": 0.9, "xp": 100 },
+      "flavor_en": "He commands the dead.",
+      "flavor_fr": "Il commande les morts.",
+      "ascii": [
+        "                           _.-^^^-._",
+        "                          (  x   x  )",
+        "                           \\  ___  /",
+        "                         .--'|   |'--..",
+        "                        /   /| ^ |\\   \\",
+        "                       '   / |   | \\   '",
+        "                          /  '---'  \\"
+      ]
+    },
+
+    {
+      "id": "bone_golem",
+      "name_en": "Bone Golem",
+      "name_fr": "Golem d'Os",
+      "is_boss": false,
+      "min_floor": 7,
+      "max_floor": 10,
+      "color": [190, 175, 220],
+      "stats": { "hp": 140, "atk": 18, "spd": 0.3, "xp": 120 },
+      "flavor_en": "A massive construct of bones.",
+      "flavor_fr": "Une masse enorme d'ossements.",
+      "ascii": [
+        "                         .--[O O]--..",
+        "                        /|  .---.  |\\",
+        "                       / | /     \\ | \\",
+        "                      |  |/  | |  \\|  |",
+        "                      |  ||  | |  ||  |",
+        "                       \\ |\\  | |  /| /",
+        "                        \\|_\\_|_|_/_|/"
+      ]
+    },
+
+    {
+      "id": "skeleton_champion",
+      "name_en": "Skeleton Champion",
+      "name_fr": "Champion Squelette",
+      "is_boss": true,
+      "boss_floor": 5,
+      "color": [230, 220, 255],
+      "stats": { "hp": 180, "atk": 14, "spd": 0.8, "xp": 200 },
+      "flavor_en": "The strongest warrior of the fallen.",
+      "flavor_fr": "Le plus puissant guerrier dechu.",
+      "ascii": [
+        "                          _,-.oOOo.-,_",
+        "                         ( ( O   O ) )",
+        "                          `-.|=|.-'",
+        "                       .--[#|===|#]--..",
+        "                      / ##/  | |  \\## \\",
+        "                     | ##/   | |   \\## |",
+        "                      \\##/  /   \\  \\##/",
+        "                       ''  /     \\  ''"
       ]
     },
 
@@ -126,29 +183,2074 @@
       "name_fr": "Roi Squelette",
       "is_boss": true,
       "boss_floor": 10,
-      "stats": { "hp": 250, "atk": 15, "spd": 0.7, "xp": 300 },
+      "color": [255, 220, 80],
+      "stats": { "hp": 320, "atk": 20, "spd": 0.9, "xp": 400 },
       "flavor_en": "The fallen monarch demands your soul.",
       "flavor_fr": "Le monarque dechu reclame votre ame.",
       "ascii": [
-        "                                        .-.",
-        "                                       (o o)",
-        "                                       | O |",
-        "                                   ____|   |____",
-        "                                  /    \\   /    \\",
-        "                                 /  ^   ---   ^  \\",
-        "                                |   ( )     ( )   |",
-        "                                |       ^         |",
-        "                                 \\     ___       /",
-        "                              ____\\___/   \\_____/____",
-        "                             /        \\   /        \\",
-        "                            /__________\\_/__________\\",
-        "                                 /  /     \\  \\",
-        "                                /__/       \\__\\",
-        "                                  |   | |   |",
-        "                                  |   | |   |",
-        "                                 /____| |____\\",
-        "                                      |_|"
+        "                         /\\ /|\\ /\\",
+        "                        |  \\ /  |",
+        "                        |_(O O)_|",
+        "                          \\---/",
+        "                       .--[|=|]--..",
+        "                      /  /|   |\\  \\",
+        "                     |  / | + | \\  |",
+        "                     | /  '---'  \\ |",
+        "                      '    / \\    '"
+      ]
+    },
+
+    {
+      "id": "shadow_imp",
+      "name_en": "Shadow Imp",
+      "name_fr": "Diablotin d'Ombre",
+      "is_boss": false,
+      "min_floor": 11,
+      "max_floor": 15,
+      "color": [200, 80, 80],
+      "stats": { "hp": 70, "atk": 18, "spd": 1.4, "xp": 110 },
+      "flavor_en": "Fast and vicious creatures of the abyss.",
+      "flavor_fr": "Creatures rapides et vicieuses de l'abysse.",
+      "ascii": [
+        "                          /\\     /\\",
+        "                         /  \\___/  \\",
+        "                        ( >.     .< )",
+        "                         \\ '-.-' /",
+        "                         /|\\ | /|\\",
+        "                        / | \\|/ | \\",
+        "                           /   \\"
+      ]
+    },
+
+    {
+      "id": "abyss_hound",
+      "name_en": "Abyss Hound",
+      "name_fr": "Chien Abyssal",
+      "is_boss": false,
+      "min_floor": 12,
+      "max_floor": 18,
+      "color": [210, 70, 70],
+      "stats": { "hp": 90, "atk": 20, "spd": 1.5, "xp": 130 },
+      "flavor_en": "It devours everything in its path.",
+      "flavor_fr": "Il devore tout sur son passage.",
+      "ascii": [
+        "                          __    __",
+        "                         /  \\  /  \\",
+        "                        | >.| |.< |--.",
+        "                        |  .^^^.  |   )",
+        "                         \\_| | |_/---'",
+        "                          / /^\\ \\",
+        "                         ' /   \\ '"
+      ]
+    },
+
+    {
+      "id": "void_cultist",
+      "name_en": "Void Cultist",
+      "name_fr": "Cultiste du Vide",
+      "is_boss": false,
+      "min_floor": 13,
+      "max_floor": 20,
+      "color": [180, 60, 120],
+      "stats": { "hp": 80, "atk": 24, "spd": 1.0, "xp": 150 },
+      "flavor_en": "Whispers from the void guide him.",
+      "flavor_fr": "Les murmures du vide le guident.",
+      "ascii": [
+        "                         .~~~~~~~~~.",
+        "                        ( o ~ ~ ~ o )",
+        "                         '---___---'",
+        "                        .--|     |--..",
+        "                       /  /|~~~~~|\\  \\",
+        "                      '  / | ~~~ | \\  '",
+        "                        /  '-----'  \\"
+      ]
+    },
+
+    {
+      "id": "abyss_warrior",
+      "name_en": "Abyss Warrior",
+      "name_fr": "Guerrier Abyssal",
+      "is_boss": false,
+      "min_floor": 14,
+      "max_floor": 20,
+      "color": [220, 85, 55],
+      "stats": { "hp": 130, "atk": 22, "spd": 0.9, "xp": 170 },
+      "flavor_en": "A brutal fighter from the depths.",
+      "flavor_fr": "Un combattant brutal des profondeurs.",
+      "ascii": [
+        "                         .--(><)--..",
+        "                        ( > O  O < )",
+        "                         '--^^^^--'",
+        "                      .--[##|##]--..",
+        "                     / ##/  | |  \\## \\",
+        "                    | ##|   | |   |## |",
+        "                     \\##\\  _| |_  /##/",
+        "                      ''  |     |  ''"
+      ]
+    },
+
+    {
+      "id": "void_reaper",
+      "name_en": "Void Reaper",
+      "name_fr": "Faucheur du Vide",
+      "is_boss": false,
+      "min_floor": 15,
+      "max_floor": 20,
+      "color": [170, 50, 150],
+      "stats": { "hp": 100, "atk": 28, "spd": 1.2, "xp": 190 },
+      "flavor_en": "It harvests souls silently.",
+      "flavor_fr": "Il recolte les ames en silence.",
+      "ascii": [
+        "                       .             .",
+        "                        '.  (x x)  .'",
+        "                          '-\\---/.-'",
+        "                         ,--| | |--.",
+        "                        /  /| | |>  \\",
+        "                       ' >=| | |    '",
+        "                          /  ' '  \\"
+      ]
+    },
+
+    {
+      "id": "demon_knight",
+      "name_en": "Demon Knight",
+      "name_fr": "Chevalier Demon",
+      "is_boss": true,
+      "boss_floor": 15,
+      "color": [255, 120, 60],
+      "stats": { "hp": 260, "atk": 26, "spd": 1.0, "xp": 350 },
+      "flavor_en": "A cursed knight bound to the abyss.",
+      "flavor_fr": "Un chevalier maudit lie a l'abysse.",
+      "ascii": [
+        "                        /\\\\     //\\",
+        "                       ( ##\\   /## )",
+        "                       | (##) (##) |",
+        "                        '---###---'",
+        "                      .-[##|###|##]-.",
+        "                     /###/  | |  \\###\\",
+        "                    |###|   | |   |###|",
+        "                     \\###\\ _| |_ /###/",
+        "                      ''  /_____\\  ''"
+      ]
+    },
+
+    {
+      "id": "abyss_titan",
+      "name_en": "Abyss Titan",
+      "name_fr": "Titan Abyssal",
+      "is_boss": false,
+      "min_floor": 16,
+      "max_floor": 20,
+      "color": [60, 180, 220],
+      "stats": { "hp": 200, "atk": 24, "spd": 0.5, "xp": 220 },
+      "flavor_en": "A colossal being of darkness.",
+      "flavor_fr": "Une creature colossale des tenebres.",
+      "ascii": [
+        "                       .--[O   O]--..",
+        "                      /|   '---'   |\\",
+        "                     / |  .------.  | \\",
+        "                    |  | /  | |   \\ |  |",
+        "                    |  |/   | |    \\|  |",
+        "                    |  |    | |    |   |",
+        "                     \\ |___/   \\___| /",
+        "                      \\_____________/"
+      ]
+    },
+
+    {
+      "id": "abyss_lord",
+      "name_en": "Abyss Lord",
+      "name_fr": "Seigneur de l'Abysse",
+      "is_boss": true,
+      "boss_floor": 20,
+      "color": [100, 230, 255],
+      "stats": { "hp": 450, "atk": 32, "spd": 1.1, "xp": 600 },
+      "flavor_en": "The ruler of the abyss awaits you.",
+      "flavor_fr": "Le maitre de l'abysse vous attend.",
+      "ascii": [
+        "                      /\\\\  /|\\  //\\",
+        "                     ( \\\\  | |  // )",
+        "                      \\\\(O | | O)//",
+        "                       \\  '---'  /",
+        "                      .-[##|*|##]-.",
+        "                     / ##/ | | \\## \\",
+        "                    | ##/  | |  \\## |",
+        "                    | #/   | |   \\# |",
+        "                     \\#/__/   \\__\\#/",
+        "                      '  /     \\  '"
+      ]
+    },
+
+    {
+      "id": "spore_shambler",
+      "name_en": "Spore Shambler",
+      "name_fr": "Trainard a Spores",
+      "is_boss": false,
+      "min_floor": 21,
+      "max_floor": 25,
+      "color": [100, 200, 80],
+      "stats": { "hp": 160, "atk": 30, "spd": 0.5, "xp": 250 },
+      "flavor_en": "A walking mass of rot and spores.",
+      "flavor_fr": "Une masse ambulante de pourriture et de spores.",
+      "ascii": [
+        "                       . * . * . * .",
+        "                      * .oOOOOOo. *",
+        "                       ( .o . o. )",
+        "                      * \\ ~___~ / *",
+        "                       ./|     |\\.",
+        "                      * /|     |\\ *",
+        "                       ' |     | '",
+        "                        /       \\"
+      ]
+    },
+
+    {
+      "id": "thornwalker",
+      "name_en": "Thornwalker",
+      "name_fr": "Marchethorns",
+      "is_boss": false,
+      "min_floor": 21,
+      "max_floor": 26,
+      "color": [80, 170, 60],
+      "stats": { "hp": 130, "atk": 36, "spd": 0.7, "xp": 270 },
+      "flavor_en": "Its limbs are living blades.",
+      "flavor_fr": "Ses membres sont des lames vivantes.",
+      "ascii": [
+        "                      /\\ * /\\ * /\\",
+        "                     *  \\/   \\/  *",
+        "                        (o   o)",
+        "                     *  / ._. \\  *",
+        "                      >/|     |\\<",
+        "                     * >|     |< *",
+        "                      >/       \\<",
+        "                     /           \\"
+      ]
+    },
+
+    {
+      "id": "plague_witch",
+      "name_en": "Plague Witch",
+      "name_fr": "Sorciere de la Peste",
+      "is_boss": false,
+      "min_floor": 22,
+      "max_floor": 27,
+      "color": [140, 220, 60],
+      "stats": { "hp": 120, "atk": 42, "spd": 1.0, "xp": 300 },
+      "flavor_en": "She weaves curses from rotting vines.",
+      "flavor_fr": "Elle tisse des maledictions de lianes pourries.",
+      "ascii": [
+        "                        /\\~~/\\",
+        "                       /  \\/  \\",
+        "                      ( @    @ )",
+        "                       \\ .--. /",
+        "                      .-'|  |'-.",
+        "                     / * |  | * \\",
+        "                    ' *  '  '  * '",
+        "                        /    \\"
+      ]
+    },
+
+    {
+      "id": "root_horror",
+      "name_en": "Root Horror",
+      "name_fr": "Horreur Racinaire",
+      "is_boss": false,
+      "min_floor": 23,
+      "max_floor": 28,
+      "color": [60, 140, 40],
+      "stats": { "hp": 220, "atk": 38, "spd": 0.4, "xp": 320 },
+      "flavor_en": "Ancient roots hunger for blood.",
+      "flavor_fr": "Des racines anciennes ont soif de sang.",
+      "ascii": [
+        "                    \\  | /  | \\  |  /",
+        "                     \\ | /  \\  \\ | /",
+        "                      \\|/    \\  \\|/",
+        "                      (  O  O  )",
+        "                       \\ .--. /",
+        "                      --+|  |+--",
+        "                     /  ||  ||  \\",
+        "                    /  /||  ||\\  \\"
+      ]
+    },
+
+    {
+      "id": "fungal_colossus",
+      "name_en": "Fungal Colossus",
+      "name_fr": "Colosse Fongique",
+      "is_boss": false,
+      "min_floor": 24,
+      "max_floor": 29,
+      "color": [170, 230, 100],
+      "stats": { "hp": 300, "atk": 44, "spd": 0.3, "xp": 370 },
+      "flavor_en": "A towering fungal monstrosity.",
+      "flavor_fr": "Une monstruosite fongique colossale.",
+      "ascii": [
+        "                    . * . * . * . * .",
+        "                   * .oOOOOOOOOOo. *",
+        "                    (  O       O  )",
+        "                   * \\   .-.   / *",
+        "                    .-\\--|  |--/-.",
+        "                   /####|  |####\\",
+        "                  |#####|  |#####|",
+        "                   \\####|  |####/",
+        "                    '  /    \\  '"
+      ]
+    },
+
+    {
+      "id": "green_warden",
+      "name_en": "Green Warden",
+      "name_fr": "Gardien Vert",
+      "is_boss": true,
+      "boss_floor": 25,
+      "color": [180, 255, 100],
+      "stats": { "hp": 520, "atk": 40, "spd": 0.7, "xp": 700 },
+      "flavor_en": "The cursed guardian of the dying forest.",
+      "flavor_fr": "Le gardien maudit de la foret mourante.",
+      "ascii": [
+        "                   /\\ * /|\\ * /\\",
+        "                  * \\/  | |  \\/ *",
+        "                  /\\( O | | O )/\\",
+        "                 *  \\ \\ '-' / /  *",
+        "                  .-+\\|     |/+--.",
+        "                 /###\\|     |/###\\",
+        "                |####||     ||####|",
+        "                 \\###/|     |\\###/",
+        "                  ' /  \\   /  \\ '",
+        "                   /    \\ /    \\"
+      ]
+    },
+
+    {
+      "id": "corrupted_dryad",
+      "name_en": "Corrupted Dryad",
+      "name_fr": "Dryade Corrompue",
+      "is_boss": false,
+      "min_floor": 25,
+      "max_floor": 29,
+      "color": [90, 200, 130],
+      "stats": { "hp": 180, "atk": 48, "spd": 1.1, "xp": 390 },
+      "flavor_en": "Once beautiful, now a vessel of rot.",
+      "flavor_fr": "Jadis belle, maintenant un vase de pourriture.",
+      "ascii": [
+        "                      /\\ . /\\",
+        "                     / .*. \\",
+        "                    ( @ . @ )",
+        "                     \\ '-' /",
+        "                    ./|   |\\..",
+        "                   / .|   |. \\",
+        "                  ' . |   | . '",
+        "                      /   \\"
+      ]
+    },
+
+    {
+      "id": "soul_reaper_vine",
+      "name_en": "Soul Reaper Vine",
+      "name_fr": "Liane Arracheuse d'Ames",
+      "is_boss": false,
+      "min_floor": 26,
+      "max_floor": 30,
+      "color": [50, 160, 80],
+      "stats": { "hp": 160, "atk": 54, "spd": 1.3, "xp": 420 },
+      "flavor_en": "Tendrils reach out and drain life.",
+      "flavor_fr": "Des vrilles s'etendent et drainent la vie.",
+      "ascii": [
+        "                  ~ ~ ~   ~ ~ ~",
+        "                 ~  .oOOOo.  ~",
+        "                ~  ( X   X )  ~",
+        "                 ~ \\ '---' / ~",
+        "                ~  /|~~~~~|\\ ~",
+        "               ~~ /~|     |~\\ ~~",
+        "              ~ ~/~ |     | ~\\~ ~",
+        "                ~   /     \\  ~"
+      ]
+    },
+
+    {
+      "id": "ancient_treant",
+      "name_en": "Ancient Treant",
+      "name_fr": "Treant Ancestral",
+      "is_boss": false,
+      "min_floor": 27,
+      "max_floor": 30,
+      "color": [110, 180, 70],
+      "stats": { "hp": 380, "atk": 50, "spd": 0.3, "xp": 460 },
+      "flavor_en": "A millennium-old tree that walks and kills.",
+      "flavor_fr": "Un arbre millenaire qui marche et tue.",
+      "ascii": [
+        "                 /\\ /\\ /\\ /\\ /\\",
+        "                /  V  V  V  V  \\",
+        "               /  /  /  \\  \\  \\ \\",
+        "              (  ( O       O )  )",
+        "               \\ \\ '-------' / /",
+        "               .--\\|       |/--..",
+        "              /####|       |####\\",
+        "             |#####|       |#####|",
+        "              \\####|       |####/",
+        "               '' /         \\ ''"
+      ]
+    },
+
+    {
+      "id": "forest_lich",
+      "name_en": "Forest Lich",
+      "name_fr": "Liche Forestiere",
+      "is_boss": false,
+      "min_floor": 28,
+      "max_floor": 30,
+      "color": [160, 255, 120],
+      "stats": { "hp": 220, "atk": 58, "spd": 1.0, "xp": 500 },
+      "flavor_en": "An undead mage bound to the cursed wood.",
+      "flavor_fr": "Un mage-mort-vivant lie a la foret maudite.",
+      "ascii": [
+        "                    * . * . *",
+        "                   . oOOOOo .",
+        "                  * ( X . X ) *",
+        "                   . \\ ._. / .",
+        "                  * .--|  |--. *",
+        "                   . /|~*~|\\ .",
+        "                  * ' |   | ' *",
+        "                      /   \\"
+      ]
+    },
+
+    {
+      "id": "world_tree_avatar",
+      "name_en": "World Tree Avatar",
+      "name_fr": "Avatar de l'Arbre-Monde",
+      "is_boss": true,
+      "boss_floor": 30,
+      "color": [200, 255, 80],
+      "stats": { "hp": 900, "atk": 55, "spd": 0.8, "xp": 1200 },
+      "flavor_en": "The dying world tree lashes out at all life.",
+      "flavor_fr": "L'arbre-monde mourant s'acharne contre toute vie.",
+      "ascii": [
+        "              /\\/\\/\\ . /\\/\\/\\",
+        "             /  V  V V V  V  \\",
+        "            / */  /   \\  \\ * \\",
+        "           * / ( O     O ) \\ *",
+        "            /   \\ '---' /   \\",
+        "           * .--+|     |+--. *",
+        "            /###\\|     |/###\\",
+        "           |#####|     |#####|",
+        "           |#####|     |#####|",
+        "            \\###/ \\   / \\###/",
+        "             '   /     \\   '"
+      ]
+    },
+
+    {
+      "id": "frost_specter",
+      "name_en": "Frost Specter",
+      "name_fr": "Spectre de Givre",
+      "is_boss": false,
+      "min_floor": 31,
+      "max_floor": 35,
+      "color": [140, 210, 255],
+      "stats": { "hp": 260, "atk": 62, "spd": 1.1, "xp": 540 },
+      "flavor_en": "A ghost born of absolute cold.",
+      "flavor_fr": "Un fantome ne du froid absolu.",
+      "ascii": [
+        "                    . * . * . *",
+        "                   *  .-~~~-.  *",
+        "                  . ( *o . o* ) .",
+        "                   *  '~~~~~'  *",
+        "                  . /|       |\\ .",
+        "                 * / |  ~~~  | \\ *",
+        "                  '  |       |  '",
+        "                    ~~~     ~~~"
+      ]
+    },
+
+    {
+      "id": "ice_wolf",
+      "name_en": "Ice Wolf",
+      "name_fr": "Loup de Glace",
+      "is_boss": false,
+      "min_floor": 31,
+      "max_floor": 36,
+      "color": [160, 225, 255],
+      "stats": { "hp": 230, "atk": 68, "spd": 1.6, "xp": 560 },
+      "flavor_en": "Its breath freezes the air around you.",
+      "flavor_fr": "Son souffle gele l'air autour de vous.",
+      "ascii": [
+        "                       ___   ___",
+        "                      /   \\_/   \\",
+        "                    _| (*) (*) |_--.",
+        "                   / |  .~~~.  |   )",
+        "                  '  \\_| | | |_/--'",
+        "                      /  | |  \\",
+        "                     '   ' '   '"
+      ]
+    },
+
+    {
+      "id": "blizzard_golem",
+      "name_en": "Blizzard Golem",
+      "name_fr": "Golem Blizzard",
+      "is_boss": false,
+      "min_floor": 32,
+      "max_floor": 37,
+      "color": [100, 190, 240],
+      "stats": { "hp": 420, "atk": 65, "spd": 0.4, "xp": 600 },
+      "flavor_en": "A living storm encased in ice.",
+      "flavor_fr": "Une tempete vivante emprisonnee dans la glace.",
+      "ascii": [
+        "                    *   *   *   *",
+        "                   *.--[* *]--..*",
+        "                  * |  '---'  | *",
+        "                   *|.-------.|*",
+        "                   *||  | |  ||*",
+        "                   *||  | |  ||*",
+        "                    *\\  | |  /*",
+        "                     *\\_|_|_/*",
+        "                      * * * *"
+      ]
+    },
+
+    {
+      "id": "glacial_witch",
+      "name_en": "Glacial Witch",
+      "name_fr": "Sorciere Glaciale",
+      "is_boss": false,
+      "min_floor": 33,
+      "max_floor": 38,
+      "color": [180, 235, 255],
+      "stats": { "hp": 280, "atk": 74, "spd": 0.9, "xp": 640 },
+      "flavor_en": "She shapes ice into instruments of death.",
+      "flavor_fr": "Elle modele la glace en instruments de mort.",
+      "ascii": [
+        "                      *~*~*~*",
+        "                     *  .oOo.  *",
+        "                    ~  (*.  .*)  ~",
+        "                     *  '---'  *",
+        "                    ~.-'|   |'-.*",
+        "                   * /  |***|  \\ *",
+        "                  ~ '   '---'   ' ~",
+        "                      /     \\"
+      ]
+    },
+
+    {
+      "id": "frozen_knight",
+      "name_en": "Frozen Knight",
+      "name_fr": "Chevalier Gele",
+      "is_boss": false,
+      "min_floor": 34,
+      "max_floor": 39,
+      "color": [80, 160, 220],
+      "stats": { "hp": 400, "atk": 70, "spd": 0.6, "xp": 680 },
+      "flavor_en": "Entombed in ice for centuries, it still fights.",
+      "flavor_fr": "Enterre dans la glace depuis des siecles, il se bat encore.",
+      "ascii": [
+        "                      *   *   *",
+        "                     *.oOOOo.*",
+        "                    * (*   *) *",
+        "                      '--*--'",
+        "                    .-[*|=|*]-.",
+        "                   /***/ | \\***\\",
+        "                  |***|  |  |***|",
+        "                   \\**/_-|-_\\**/",
+        "                    ' /  |  \\ '",
+        "                      *  *  *"
+      ]
+    },
+
+    {
+      "id": "frost_wyrm",
+      "name_en": "Frost Wyrm",
+      "name_fr": "Wyrm de Givre",
+      "is_boss": true,
+      "boss_floor": 35,
+      "color": [200, 245, 255],
+      "stats": { "hp": 750, "atk": 72, "spd": 1.0, "xp": 1100 },
+      "flavor_en": "A young dragon of eternal ice.",
+      "flavor_fr": "Un jeune dragon de glace eternelle.",
+      "ascii": [
+        "                 *       *       *",
+        "                  \\ *   /\\ *   / ",
+        "                 * \\ * /  \\ * / *",
+        "                  *(O\\ /    \\ /O)*",
+        "                 * ( \\/  /\\  \\/ ) *",
+        "                  *.\\  /    \\  /.*",
+        "                 * * \\/  /\\  \\/ * *",
+        "                      /    \\",
+        "                    */      \\*"
+      ]
+    },
+
+    {
+      "id": "avalanche_elemental",
+      "name_en": "Avalanche Elemental",
+      "name_fr": "Elementaire d'Avalanche",
+      "is_boss": false,
+      "min_floor": 35,
+      "max_floor": 39,
+      "color": [120, 200, 255],
+      "stats": { "hp": 360, "atk": 76, "spd": 0.5, "xp": 700 },
+      "flavor_en": "An avalanche given terrible form.",
+      "flavor_fr": "Une avalanche a qui on a donne une forme terrible.",
+      "ascii": [
+        "                  * * * * * * *",
+        "                 * .oOOOOOOOo. *",
+        "                * ( O       O ) *",
+        "                 * \\ '-----' / *",
+        "                  *.\\|     |/.*",
+        "                 * *||     ||* *",
+        "                  * ||     || *",
+        "                   */ \\   / \\*",
+        "                    *   * *   *"
+      ]
+    },
+
+    {
+      "id": "ice_lich",
+      "name_en": "Ice Lich",
+      "name_fr": "Liche de Glace",
+      "is_boss": false,
+      "min_floor": 36,
+      "max_floor": 40,
+      "color": [150, 220, 255],
+      "stats": { "hp": 320, "atk": 82, "spd": 0.9, "xp": 740 },
+      "flavor_en": "Its phylactery is a block of eternal ice.",
+      "flavor_fr": "Sa phylactere est un bloc de glace eternelle.",
+      "ascii": [
+        "                    * . * . * .",
+        "                   . .oOOOo. .",
+        "                  * (*.   .*) *",
+        "                   . '-----' .",
+        "                  *.--|   |--.*",
+        "                 * / |***| \\ *",
+        "                  '  '*.*'  '",
+        "                    /     \\"
+      ]
+    },
+
+    {
+      "id": "frozen_colossus",
+      "name_en": "Frozen Colossus",
+      "name_fr": "Colosse Gele",
+      "is_boss": false,
+      "min_floor": 37,
+      "max_floor": 40,
+      "color": [80, 175, 235],
+      "stats": { "hp": 560, "atk": 78, "spd": 0.3, "xp": 780 },
+      "flavor_en": "A mountain of ancient ice and hatred.",
+      "flavor_fr": "Une montagne de glace ancienne et de haine.",
+      "ascii": [
+        "                  *  *  *  *  *",
+        "                 *.--[O   O]--..*",
+        "                * |   '---'   | *",
+        "               * .|-----------|. *",
+        "              * * |####|*|####| * *",
+        "               * *|####| |####|* *",
+        "                * |####| |####| *",
+        "               * *|###/   \\###|* *",
+        "                * '__/     \\__' *",
+        "                 *  *  *  *  *"
+      ]
+    },
+
+    {
+      "id": "eternal_dragon",
+      "name_en": "Eternal Dragon",
+      "name_fr": "Dragon Eternel",
+      "is_boss": true,
+      "boss_floor": 40,
+      "color": [220, 255, 255],
+      "stats": { "hp": 1400, "atk": 90, "spd": 1.0, "xp": 2000 },
+      "flavor_en": "The immortal dragon of the frozen throne.",
+      "flavor_fr": "Le dragon immortel du trone gele.",
+      "ascii": [
+        "               *  *  *  *  *  *  *",
+        "              * /\\ *   /|\\ *  /\\ *",
+        "             * /  \\ * / | \\ */  \\ *",
+        "            *(  *  \\/  |  \\/  *  )*",
+        "           * \\ *  /O\\     /O\\ * / *",
+        "            *  \\ /   \\   /   \\ / *",
+        "           * *  V   .-'---'.  V  * *",
+        "            *  .-\\--|       |/--.  *",
+        "           * /####\\|         |/####\\ *",
+        "          * |#####||         ||#####| *",
+        "           * \\###/ \\         / \\###/ *",
+        "            *  '   /         \\   ' *"
+      ]
+    },
+
+    {
+      "id": "fallen_seraph",
+      "name_en": "Fallen Seraph",
+      "name_fr": "Seraphon Dechu",
+      "is_boss": false,
+      "min_floor": 41,
+      "max_floor": 45,
+      "color": [255, 230, 120],
+      "stats": { "hp": 380, "atk": 95, "spd": 1.2, "xp": 850 },
+      "flavor_en": "A six-winged angel stripped of grace.",
+      "flavor_fr": "Un ange a six ailes prive de sa grace.",
+      "ascii": [
+        "                /\\         /\\",
+        "               /  \\  /\\  /  \\",
+        "              / *  \\/  \\/  * \\",
+        "             *  ( O  '--'  O )  *",
+        "              \\  \\ '-----' /  /",
+        "               \\*./|     |\\.*/ ",
+        "              /  / |  *  | \\  \\",
+        "             ' /   '-----'   \\ '",
+        "                /     *     \\"
+      ]
+    },
+
+    {
+      "id": "divine_construct",
+      "name_en": "Divine Construct",
+      "name_fr": "Construct Divin",
+      "is_boss": false,
+      "min_floor": 41,
+      "max_floor": 46,
+      "color": [255, 210, 80],
+      "stats": { "hp": 500, "atk": 90, "spd": 0.6, "xp": 880 },
+      "flavor_en": "A holy weapon that turned against its maker.",
+      "flavor_fr": "Une arme sacree qui s'est retournee contre son createur.",
+      "ascii": [
+        "                   +---------+",
+        "                 +-+  *   *  +-+",
+        "                 | ( O     O ) |",
+        "                 +-+  '---'  +-+",
+        "                   +-|     |-+",
+        "                  /##|  +  |##\\",
+        "                 |###|     |###|",
+        "                  \\##|  +  |##/",
+        "                   +-|     |-+",
+        "                     +-----+"
+      ]
+    },
+
+    {
+      "id": "void_angel",
+      "name_en": "Void Angel",
+      "name_fr": "Ange du Vide",
+      "is_boss": false,
+      "min_floor": 42,
+      "max_floor": 47,
+      "color": [255, 180, 60],
+      "stats": { "hp": 360, "atk": 105, "spd": 1.3, "xp": 920 },
+      "flavor_en": "Divinity consumed by the abyss.",
+      "flavor_fr": "La divinite consumee par l'abyme.",
+      "ascii": [
+        "               *\\    /|\\ *  /\\  *",
+        "              * \\   / | \\ /  \\ *",
+        "             * * \\ /  |  X    \\ *",
+        "              *  (O\\  | /  O)  *",
+        "             *   \\ '--+--' /   *",
+        "              *  /|  | |  |\\ *",
+        "             *  / | *| |* | \\ *",
+        "              *   '--|--|--'  *",
+        "             *       | |       *"
+      ]
+    },
+
+    {
+      "id": "judgment_knight",
+      "name_en": "Judgment Knight",
+      "name_fr": "Chevalier du Jugement",
+      "is_boss": false,
+      "min_floor": 43,
+      "max_floor": 48,
+      "color": [255, 245, 160],
+      "stats": { "hp": 600, "atk": 100, "spd": 0.8, "xp": 960 },
+      "flavor_en": "It judges all it finds unworthy.",
+      "flavor_fr": "Il juge tout ce qu'il trouve indigne.",
+      "ascii": [
+        "                    +  *  +",
+        "                   +.oOOOo.+",
+        "                  * (O * O) *",
+        "                   + '---' +",
+        "                 +-[*|   |*]-+",
+        "                /***/ * * \\***\\",
+        "               |***|   *   |***|",
+        "               |***|   *   |***|",
+        "                \\**/_-* *-_\\**/",
+        "                 + / _____ \\ +",
+        "                  /         \\"
+      ]
+    },
+
+    {
+      "id": "herald_of_ruin",
+      "name_en": "Herald of Ruin",
+      "name_fr": "Heraut de la Ruine",
+      "is_boss": true,
+      "boss_floor": 45,
+      "color": [255, 255, 160],
+      "stats": { "hp": 1100, "atk": 110, "spd": 1.1, "xp": 2000 },
+      "flavor_en": "It announces the end of all things.",
+      "flavor_fr": "Il annonce la fin de toutes choses.",
+      "ascii": [
+        "             /\\  *  /|\\ *  /\\",
+        "            /  \\ * / | \\ */  \\",
+        "           /  * \\/  *|*  \\/ * \\",
+        "          * /\\ (O \\  |  / O)/\\ *",
+        "           /  \\ '--+-+-+'  --  \\",
+        "          * .--\\|  | * |  |/--. *",
+        "           /####|  | * |  |####\\",
+        "          |#####|  |   |  |#####|",
+        "          |#####|  |   |  |#####|",
+        "           \\####|  |   |  |####/",
+        "            '  /\\  |   |  /\\  '",
+        "               /  /     \\  \\"
+      ]
+    },
+
+    {
+      "id": "celestial_abomination",
+      "name_en": "Celestial Abomination",
+      "name_fr": "Abomination Celeste",
+      "is_boss": false,
+      "min_floor": 45,
+      "max_floor": 49,
+      "color": [255, 200, 100],
+      "stats": { "hp": 520, "atk": 115, "spd": 0.7, "xp": 1020 },
+      "flavor_en": "Heaven and void merged into something wrong.",
+      "flavor_fr": "Le ciel et le vide fusionnes en quelque chose d'impur.",
+      "ascii": [
+        "              +  *  +  *  +  *  +",
+        "             * /\\ . /|\\  . /\\ *",
+        "            + /  \\./   \\./  \\ +",
+        "           * ( *  (O   O)  * ) *",
+        "            +  \\  \\ '-' /  /  +",
+        "           * .-+\\--|   |--/+-. *",
+        "            /##*\\  |   |  /*##\\",
+        "           |##*##| |   | |##*##|",
+        "            \\##*/ _|   |_ \\*##/",
+        "             +  /         \\  +",
+        "            *  *           *  *"
+      ]
+    },
+
+    {
+      "id": "arc_devourer",
+      "name_en": "Arc Devourer",
+      "name_fr": "Devoreur d'Arches",
+      "is_boss": false,
+      "min_floor": 46,
+      "max_floor": 49,
+      "color": [255, 160, 40],
+      "stats": { "hp": 480, "atk": 120, "spd": 1.1, "xp": 1060 },
+      "flavor_en": "It feeds on divine energy itself.",
+      "flavor_fr": "Il se nourrit de l'energie divine elle-meme.",
+      "ascii": [
+        "              + * + * + * + *",
+        "             * .oOOOOOOOOo. *",
+        "            + ( O *  *  * O ) +",
+        "           * ( / '-------' \\ ) *",
+        "            + /|  * + * +  |\\ +",
+        "           * / | + * + * + | \\ *",
+        "            +  |           |  +",
+        "           * * |           | * *",
+        "            +   \\         /   +",
+        "           *  *  *       *  *  *"
+      ]
+    },
+
+    {
+      "id": "prime_seraphim",
+      "name_en": "Prime Seraphim",
+      "name_fr": "Seraphim Primordial",
+      "is_boss": false,
+      "min_floor": 47,
+      "max_floor": 49,
+      "color": [255, 250, 200],
+      "stats": { "hp": 620, "atk": 125, "spd": 1.0, "xp": 1100 },
+      "flavor_en": "The highest rank of angels, utterly lost.",
+      "flavor_fr": "Le plus haut rang des anges, completement perdu.",
+      "ascii": [
+        "          /\\  *  /\\ * /|\\ */\\ *  /\\",
+        "         /  \\*/  \\*/ | \\*/  \\*/  \\",
+        "        / * /\\ * /\\  |  /\\ * /\\ * \\",
+        "       * / (  O  \\   |  /  O  ) \\ *",
+        "        +   \\ '--+---+---+'  /   +",
+        "       *  .--\\|  |   *   |  |/--. *",
+        "        /####\\|  |   *   |  |/####\\",
+        "       |######|  |       |  |######|",
+        "        \\####/ \\  \\     /  / \\####/",
+        "         +   /  *  *---*  *  \\  +",
+        "        *   /               \\   *"
+      ]
+    },
+
+    {
+      "id": "god_destroyer",
+      "name_en": "God Destroyer",
+      "name_fr": "Destructeur de Dieux",
+      "is_boss": true,
+      "boss_floor": 50,
+      "color": [255, 255, 255],
+      "stats": { "hp": 2500, "atk": 150, "spd": 1.2, "xp": 5000 },
+      "flavor_en": "It has killed gods. You are nothing.",
+      "flavor_fr": "Il a tue des dieux. Vous n'etes rien.",
+      "ascii": [
+        "       /\\ * /\\ * /|\\ * /\\ * /\\",
+        "      /  \\*/  \\*/ | \\*/  \\*/  \\",
+        "     / * /\\  /\\   |   /\\  /\\ * \\",
+        "    * / /  \\/  \\  |  /  \\/  \\ \\ *",
+        "   + *( * ( O  \\  |  /  O ) * )* +",
+        "  * + *\\ * \\ '--+---+'  / * /* + *",
+        "   + * .+-\\--|   | *  |  |/--+-. +",
+        "  * + /##*##\\|   | *  |  |/##*##\\ +*",
+        " + * |###*###|   |    |  |###*###| *+",
+        "  * +|###*###|   |    |  |###*###|+ *",
+        " + * |##*##/ \\  / \\  / \\ \\##*##| *+",
+        "  * + \\#*#/   \\/   \\/   \\  \\#*#/ + *",
+        "   +   ''  /               \\  ''  +",
+        "  *       *                 *       *"
+      ]
+    },
+    {
+      "id": "void_larva",
+      "name_en": "Void Larva",
+      "name_fr": "Larve du Vide",
+      "is_boss": false,
+      "min_floor": 51,
+      "max_floor": 55,
+      "color": [140, 30, 255],
+      "stats": { "hp": 420, "atk": 155, "spd": 1.3, "xp": 1150 },
+      "flavor_en": "Born before light. Hungry after it.",
+      "flavor_fr": "Nee avant la lumiere. Affamee apres elle.",
+      "ascii": [
+        "                    ( ( ( ( ( ) ) ) ) )",
+        "                   (   .         .   )",
+        "                  (  (  * . . *  )  )",
+        "                   (   '-------'   )",
+        "                    ) /|       |\\ (",
+        "                   ( / |  . .  | \\ )",
+        "                  ( /  |       |  \\ )",
+        "                   (   '-~~~~~-'   )",
+        "                    ) ) ) ) ( ( ( ("
+      ]
+    },
+
+    {
+      "id": "primordial_shade",
+      "name_en": "Primordial Shade",
+      "name_fr": "Ombre Primordiale",
+      "is_boss": false,
+      "min_floor": 51,
+      "max_floor": 56,
+      "color": [160, 40, 255],
+      "stats": { "hp": 380, "atk": 162, "spd": 1.5, "xp": 1180 },
+      "flavor_en": "A shadow that predates all light.",
+      "flavor_fr": "Une ombre qui precede toute lumiere.",
+      "ascii": [
+        "                  ~   ~   ~   ~   ~",
+        "                ~  .oOOOOOOOOOo.  ~",
+        "               ~  ( *         * )  ~",
+        "                ~  \\ * . . * /  ~",
+        "               ~  ./|~~~~~~~~~|\\.  ~",
+        "                ~ / |         | \\ ~",
+        "               ~   |  ~   ~   |   ~",
+        "                ~   \\         /   ~",
+        "                  ~   ~   ~   ~   ~"
+      ]
+    },
+
+    {
+      "id": "nullborn",
+      "name_en": "Nullborn",
+      "name_fr": "Ne du Neant",
+      "is_boss": false,
+      "min_floor": 52,
+      "max_floor": 57,
+      "color": [120, 20, 240],
+      "stats": { "hp": 460, "atk": 168, "spd": 0.9, "xp": 1220 },
+      "flavor_en": "It should not exist. Yet here it is.",
+      "flavor_fr": "Il ne devrait pas exister. Pourtant le voila.",
+      "ascii": [
+        "                  ? ? ? ? ? ? ? ? ?",
+        "                ?  .---.   .---.  ?",
+        "               ?  ( * * ) ( * * )  ?",
+        "                ?  '---'   '---'  ?",
+        "               ?  .----.------.  ?",
+        "              ?  / ?  /       \\  \\ ?",
+        "             ?  / ? /    ?    \\ ? \\ ?",
+        "              ?    /    ? ?    \\    ?",
+        "               ?  ?  ?  ? ?  ?  ?  ?"
+      ]
+    },
+
+    {
+      "id": "abyss_prophet",
+      "name_en": "Abyss Prophet",
+      "name_fr": "Prophete de l'Abyme",
+      "is_boss": false,
+      "min_floor": 53,
+      "max_floor": 58,
+      "color": [180, 60, 255],
+      "stats": { "hp": 440, "atk": 175, "spd": 1.0, "xp": 1260 },
+      "flavor_en": "It has seen the end and welcomes it.",
+      "flavor_fr": "Il a vu la fin et l'accueille.",
+      "ascii": [
+        "                   * ~ * ~ * ~ *",
+        "                  ~ .oOOOOOOo. ~",
+        "                 * ( X  . .  X ) *",
+        "                  ~  '--___--'  ~",
+        "                 * .-'|     |'-. *",
+        "                ~/ * /|~~~~~|\\ * \\~",
+        "               * /   | * * * |   \\ *",
+        "                ~    '--~~~~~--'    ~",
+        "                 *   /       \\   *"
+      ]
+    },
+
+    {
+      "id": "void_behemoth",
+      "name_en": "Void Behemoth",
+      "name_fr": "Behemoth du Vide",
+      "is_boss": false,
+      "min_floor": 54,
+      "max_floor": 59,
+      "color": [200, 80, 255],
+      "stats": { "hp": 700, "atk": 170, "spd": 0.4, "xp": 1300 },
+      "flavor_en": "An ancient mass of screaming void.",
+      "flavor_fr": "Une masse ancienne de vide hurlant.",
+      "ascii": [
+        "                ( ( ( ( ( ( ( ( ( (",
+        "               ( .oOOOOOOOOOOOOo. )",
+        "              ( ( O             O ) )",
+        "               (  \\   .-----.   /  )",
+        "              ( .-\\---|     |---/-. )",
+        "             ( / ##\\  |     |  /## \\ )",
+        "            ( | ###|  |     |  |### | )",
+        "             ( \\ ##/  |     |  \\##/ )",
+        "              ( '-/____|     |____\\-' )",
+        "               ( ( ( ( ( ( ( ( ( ("
+      ]
+    },
+
+    {
+      "id": "first_demon",
+      "name_en": "First Demon",
+      "name_fr": "Premier Demon",
+      "is_boss": true,
+      "boss_floor": 55,
+      "color": [220, 100, 255],
+      "stats": { "hp": 1600, "atk": 178, "spd": 1.1, "xp": 3000 },
+      "flavor_en": "The very first corruption given form.",
+      "flavor_fr": "La toute premiere corruption mise en forme.",
+      "ascii": [
+        "              /\\~  * ~ * ~  ~/\\",
+        "             /  \\~  /   \\  ~/  \\",
+        "            / *  \\/  *  *\\/  * \\",
+        "           *  /\\ (X \\   / X) /\\ *",
+        "          ~ * /  \\ '--~~~--' /  \\ * ~",
+        "           * .--\\|  |   |  |/--. *",
+        "          ~/###\\|  |   |  |/###\\~",
+        "         * |####|  |   |  |####| *",
+        "          ~|####|  |   |  |####|~",
+        "         * \\###/ \\ |   | / \\###/ *",
+        "          ~  ''  /~\\   /~\\  ''  ~",
+        "               ~   ~ ~   ~"
+      ]
+    },
+
+    {
+      "id": "unraveler",
+      "name_en": "Unraveler",
+      "name_fr": "Defileur",
+      "is_boss": false,
+      "min_floor": 55,
+      "max_floor": 59,
+      "color": [150, 50, 255],
+      "stats": { "hp": 500, "atk": 182, "spd": 1.1, "xp": 1340 },
+      "flavor_en": "It dismantles matter thread by thread.",
+      "flavor_fr": "Il demantele la matiere fil par fil.",
+      "ascii": [
+        "                - - - - - - - - -",
+        "               -  .oOOOOOOOOo.  -",
+        "              - ( -  O . . O  - ) -",
+        "               -  \\  '-----'  /  -",
+        "              -  /-|---------|--\\  -",
+        "             - / - | - - - - | - \\ -",
+        "            -   -  | - - - - |  -   -",
+        "             -      \\ - - - /      -",
+        "              - - - - - - - - - - -"
+      ]
+    },
+
+    {
+      "id": "chaos_herald",
+      "name_en": "Chaos Herald",
+      "name_fr": "Heraut du Chaos",
+      "is_boss": false,
+      "min_floor": 56,
+      "max_floor": 60,
+      "color": [190, 70, 255],
+      "stats": { "hp": 520, "atk": 188, "spd": 1.2, "xp": 1380 },
+      "flavor_en": "Order collapses in its wake.",
+      "flavor_fr": "L'ordre s'effondre sur son passage.",
+      "ascii": [
+        "                 % % % % % % % %",
+        "                % .oOOOOOOOOo. %",
+        "               % ( % X  .  X % ) %",
+        "                %  \\  '---'  /  %",
+        "               % .--|       |--. %",
+        "              % /% /| % % % |\\ %\\ %",
+        "             %   /  | % % % |  \\   %",
+        "              %     '-------'     %",
+        "               % %  /       \\  % %"
+      ]
+    },
+
+    {
+      "id": "elder_nullfiend",
+      "name_en": "Elder Nullfiend",
+      "name_fr": "Nullfiend Ancien",
+      "is_boss": false,
+      "min_floor": 57,
+      "max_floor": 60,
+      "color": [210, 90, 255],
+      "stats": { "hp": 650, "atk": 193, "spd": 0.7, "xp": 1430 },
+      "flavor_en": "It remembers nothing. It destroys everything.",
+      "flavor_fr": "Il ne se souvient de rien. Il detruit tout.",
+      "ascii": [
+        "              ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+        "             ~ .oOOOOOOOOOOOOo. ~",
+        "            ~ ( ~  O       O  ~ ) ~",
+        "             ~  \\   '-----'   /  ~",
+        "            ~ .-\\--|         |/--. ~",
+        "           ~ /##~\\ |         | /~##\\ ~",
+        "          ~ |###~| |         | |~###| ~",
+        "           ~ \\##~/ |         | \\~##/ ~",
+        "            ~  '-/--\\       /--\\-'  ~",
+        "             ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~"
+      ]
+    },
+
+    {
+      "id": "the_unnamed",
+      "name_en": "The Unnamed",
+      "name_fr": "L'Innomme",
+      "is_boss": true,
+      "boss_floor": 60,
+      "color": [230, 120, 255],
+      "stats": { "hp": 2200, "atk": 200, "spd": 1.0, "xp": 4000 },
+      "flavor_en": "Language breaks down trying to describe it.",
+      "flavor_fr": "Le langage s'effondre en tentant de le decrire.",
+      "ascii": [
+        "          ~  ~  ~  ~  ~  ~  ~  ~  ~",
+        "         ~ /\\~  /\\ * /|\\ * /\\ ~/\\ ~",
+        "          /  \\~/  \\* | * /  \\~/  \\",
+        "         / *  /\\  /\\ | /\\ /\\  /\\ * \\",
+        "        * * / *(X  \\/~|~/\\/  X)* \\ * *",
+        "         ~ *  \\ * '--~*~--' */ * ~ ",
+        "        ~ * .--\\--|  |   |  |/--. * ~",
+        "         ~ /##~##\\|  |   |  |/##~##\\ ~",
+        "        ~ |###~###|  |   |  |###~###| ~",
+        "         ~ \\##~##/ \\ |   | / \\##~##/ ~",
+        "          ~  ''~'' / \\   / \\ ''~''  ~",
+        "           ~  ~  ~   ~ ~ ~   ~  ~  ~"
+      ]
+    },
+
+    {
+      "id": "bile_horror",
+      "name_en": "Bile Horror",
+      "name_fr": "Horreur Biliaire",
+      "is_boss": false,
+      "min_floor": 61,
+      "max_floor": 65,
+      "color": [220, 50, 60],
+      "stats": { "hp": 680, "atk": 205, "spd": 0.8, "xp": 1500 },
+      "flavor_en": "A walking organ, bloated and ravenous.",
+      "flavor_fr": "Un organe ambulant, gonfle et vorace.",
+      "ascii": [
+        "                   . , . , . , .",
+        "                  , .oOOOOOOo. ,",
+        "                 . ( O  . .  O ) .",
+        "                  ,  \\ '---' /  ,",
+        "                 . ,-.|     |.-, .",
+        "                , /,,,|     |,,,\\ ,",
+        "               . /,,, |     | ,,,\\ .",
+        "                ,  ,  '-----'  ,  ,",
+        "                 . , . , . , . , ."
+      ]
+    },
+
+    {
+      "id": "vein_crawler",
+      "name_en": "Vein Crawler",
+      "name_fr": "Rampeur de Veines",
+      "is_boss": false,
+      "min_floor": 61,
+      "max_floor": 66,
+      "color": [210, 40, 50],
+      "stats": { "hp": 580, "atk": 212, "spd": 1.6, "xp": 1530 },
+      "flavor_en": "It travels through the titan's dead veins.",
+      "flavor_fr": "Il voyage dans les veines mortes du titan.",
+      "ascii": [
+        "                    vvvvvvvvvvv",
+        "                   v .oOOOOo. v",
+        "                  v ( >.  .< ) v",
+        "                   v \\  --  / v",
+        "                  v /|'----'|\\ v",
+        "                 v / |vvvvvv| \\ v",
+        "                v   |vvvvvvv|   v",
+        "                 v   \\ vvv /   v",
+        "                  v v v v v v v"
+      ]
+    },
+
+    {
+      "id": "organ_sentinel",
+      "name_en": "Organ Sentinel",
+      "name_fr": "Sentinelle Organique",
+      "is_boss": false,
+      "min_floor": 62,
+      "max_floor": 67,
+      "color": [230, 70, 70],
+      "stats": { "hp": 800, "atk": 208, "spd": 0.5, "xp": 1570 },
+      "flavor_en": "The titan's immune system still fights.",
+      "flavor_fr": "Le systeme immunitaire du titan combat encore.",
+      "ascii": [
+        "                   o O o O o O o",
+        "                  O .oOOOOOOo. O",
+        "                 o ( O  . .  O ) o",
+        "                  O \\  .---.  / O",
+        "                 o .-\\O|   |O/-. o",
+        "                O /OOO|     |OOO\\ O",
+        "               o |OOOO|     |OOOO| o",
+        "                O \\OOO|     |OOO/ O",
+        "                 o  '-\\     /-'  o",
+        "                  O o O o O o O o"
+      ]
+    },
+
+    {
+      "id": "flesh_titan",
+      "name_en": "Flesh Titan",
+      "name_fr": "Titan de Chair",
+      "is_boss": false,
+      "min_floor": 63,
+      "max_floor": 68,
+      "color": [240, 90, 55],
+      "stats": { "hp": 1100, "atk": 215, "spd": 0.3, "xp": 1620 },
+      "flavor_en": "A chunk of the titan, broken off and raging.",
+      "flavor_fr": "Un morceau du titan, detache et en rage.",
+      "ascii": [
+        "                 , , , , , , , , ,",
+        "                , .oOOOOOOOOOo. ,",
+        "               , ( O           O ) ,",
+        "              ,  (  '----------'  )  ,",
+        "             , .-\\|              |/-. ,",
+        "            , /,,,|              |,,,\\ ,",
+        "           , |,,,,|              |,,,,| ,",
+        "            , \\,,,|              |,,,/ ,",
+        "             ,  '-|,,,,,,,,,,,,,|'--  ,",
+        "              ,   /______________\\   ,",
+        "               , , , , , , , , , , ,"
+      ]
+    },
+
+    {
+      "id": "titan_heartbeat",
+      "name_en": "Titan Heartbeat",
+      "name_fr": "Battement du Titan",
+      "is_boss": true,
+      "boss_floor": 65,
+      "color": [255, 80, 80],
+      "stats": { "hp": 2000, "atk": 220, "spd": 1.4, "xp": 3800 },
+      "flavor_en": "The dead god's heart still pumps — in hatred.",
+      "flavor_fr": "Le coeur du dieu mort bat encore — de haine.",
+      "ascii": [
+        "              , , , , , , , , , , ,",
+        "             , /\\  , , , , , ,  /\\ ,",
+        "            , /  \\ , . . . , /  \\ ,",
+        "           , /    V    .    V    \\ ,",
+        "          , (  ,  (O . | . O)  , ) ,",
+        "           ,  \\  , \\ '--+--' / ,  / ,",
+        "          , .--\\--|  |  |  |  |/--. ,",
+        "         , /,,,,\\|  |  |  |  |/,,,,\\ ,",
+        "        , |,,,,,||  |  |  |  ||,,,,,| ,",
+        "         , \\,,,,/|  |  |  |  |\\,,,,/ ,",
+        "          ,  '' / \\  \\  |  /  / \\ ''  ,",
+        "           , , ,   , , , , ,   , , , ,"
+      ]
+    },
+
+    {
+      "id": "marrow_wraith",
+      "name_en": "Marrow Wraith",
+      "name_fr": "Spectre de Moelle",
+      "is_boss": false,
+      "min_floor": 65,
+      "max_floor": 69,
+      "color": [235, 100, 75],
+      "stats": { "hp": 720, "atk": 225, "spd": 1.3, "xp": 1660 },
+      "flavor_en": "Born from the marrow of dead gods.",
+      "flavor_fr": "Ne de la moelle des dieux morts.",
+      "ascii": [
+        "                  , . , . , . ,",
+        "                 . .oOOOOOOo. .",
+        "                , ( X  . .  X ) ,",
+        "                 .  '---___---'  .",
+        "                , .--|       |--. ,",
+        "               . / , |  ,,,  | , \\ .",
+        "              ,   ,  | ,,,,,, |  ,   ,",
+        "               .     '--------'     .",
+        "                , . , . , . , . , . ,"
+      ]
+    },
+
+    {
+      "id": "plague_tendril",
+      "name_en": "Plague Tendril",
+      "name_fr": "Vrille Pestilentielle",
+      "is_boss": false,
+      "min_floor": 66,
+      "max_floor": 70,
+      "color": [215, 60, 85],
+      "stats": { "hp": 600, "atk": 232, "spd": 1.5, "xp": 1700 },
+      "flavor_en": "A tendril of corrupted titan tissue.",
+      "flavor_fr": "Une vrille de tissu titanesque corrompu.",
+      "ascii": [
+        "              ^ ^ ^ ^ ^ ^ ^ ^ ^",
+        "             ^ .oOOOOOOOOOOo. ^",
+        "            ^ ( ^  O . . O  ^ ) ^",
+        "             ^  \\ ^ '---' ^ /  ^",
+        "            ^ ./|^---------^|\\.  ^",
+        "           ^ / |^           ^| \\ ^",
+        "          ^   |^   ^ ^ ^ ^   ^|   ^",
+        "           ^   \\ ^         ^ /   ^",
+        "            ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+      ]
+    },
+
+    {
+      "id": "titan_eye",
+      "name_en": "Titan's Eye",
+      "name_fr": "Oeil du Titan",
+      "is_boss": false,
+      "min_floor": 67,
+      "max_floor": 70,
+      "color": [255, 120, 60],
+      "stats": { "hp": 750, "atk": 240, "spd": 0.6, "xp": 1750 },
+      "flavor_en": "The titan's eye still sees. Still judges.",
+      "flavor_fr": "L'oeil du titan voit encore. Juge encore.",
+      "ascii": [
+        "                 , . , . , . , .",
+        "                . /oOOOOOOOOo\\ .",
+        "               , /oOOOOOOOOOOo\\ ,",
+        "              . /oOO( O . O )OOo\\ .",
+        "             , /oOOO \\ '---' / OOo\\ ,",
+        "              \\oOOOO '-._.-' OOOo/",
+        "               \\oOOOOOOOOOOOOOo/",
+        "                \\oOOOOOOOOOOo/",
+        "                 '. , . , . ,'"
+      ]
+    },
+
+    {
+      "id": "dead_god_soul",
+      "name_en": "Dead God's Soul",
+      "name_fr": "Ame du Dieu Mort",
+      "is_boss": true,
+      "boss_floor": 70,
+      "color": [255, 100, 50],
+      "stats": { "hp": 2800, "atk": 245, "spd": 0.9, "xp": 5000 },
+      "flavor_en": "The god is dead. Its soul refuses to accept it.",
+      "flavor_fr": "Le dieu est mort. Son ame refuse de l'accepter.",
+      "ascii": [
+        "           , , , , , , , , , , , , ,",
+        "          , /\\ , /\\ , /|\\ , /\\ , /\\ ,",
+        "         , /  V  \\ , | , /  V  \\ ,",
+        "        , /  ,  , \\ , | , /  ,  , \\ ,",
+        "       , ( ,  , (O \\  |  / O)  ,  , ) ,",
+        "        ,  \\ ,  \\ '---.---.--' / ,  / ,",
+        "       , .--\\--|  |   |   |   |/--. ,",
+        "      , /,,,,\\|  |   |   |   |/,,,,\\ ,",
+        "     , |,,,,,||  |   |   |   ||,,,,,| ,",
+        "      , \\,,,,/|  |   |   |   |\\,,,,/ ,",
+        "       ,  '' /  /   / , \\   \\  \\ ''  ,",
+        "        ,   /  / , /   ,  \\ ,\\  \\   ,",
+        "         , , , , , , , , , , , , , , ,"
+      ]
+    },
+
+    {
+      "id": "time_echo",
+      "name_en": "Time Echo",
+      "name_fr": "Echo Temporel",
+      "is_boss": false,
+      "min_floor": 71,
+      "max_floor": 75,
+      "color": [255, 200, 50],
+      "stats": { "hp": 700, "atk": 252, "spd": 1.4, "xp": 1820 },
+      "flavor_en": "A copy of something that has not yet happened.",
+      "flavor_fr": "La copie de quelque chose qui n'est pas encore arrive.",
+      "ascii": [
+        "                  > > > > > > >",
+        "                 > .oOOOOOOo. >",
+        "                > ( > O . O > ) >",
+        "                 >  \\ '---' /  >",
+        "                > .--|     |--. >",
+        "               > / > |>>>>>| > \\ >",
+        "              >    > |>>>>>| >    >",
+        "               >     \\>>>>>/ >    >",
+        "                > > > > > > > > >"
+      ]
+    },
+
+    {
+      "id": "paradox_knight",
+      "name_en": "Paradox Knight",
+      "name_fr": "Chevalier Paradoxe",
+      "is_boss": false,
+      "min_floor": 71,
+      "max_floor": 76,
+      "color": [255, 185, 30],
+      "stats": { "hp": 850, "atk": 258, "spd": 0.9, "xp": 1860 },
+      "flavor_en": "It exists in two moments at once.",
+      "flavor_fr": "Il existe dans deux instants simultanement.",
+      "ascii": [
+        "                  = = = = = = =",
+        "                 =.oOOOOOOOOo.=",
+        "                = (= O  .  O =) =",
+        "                 =  '--===--'  =",
+        "                = .-[=|   |=]-. =",
+        "               = /==/ | = | \\==\\ =",
+        "              =  |==|  | = |  |==|  =",
+        "               = \\==/  '---'  \\==/ =",
+        "                =  = = = = = =  ="
+      ]
+    },
+
+    {
+      "id": "temporal_beast",
+      "name_en": "Temporal Beast",
+      "name_fr": "Bete Temporelle",
+      "is_boss": false,
+      "min_floor": 72,
+      "max_floor": 77,
+      "color": [255, 210, 60],
+      "stats": { "hp": 920, "atk": 264, "spd": 1.7, "xp": 1900 },
+      "flavor_en": "Its form flickers between past and future.",
+      "flavor_fr": "Sa forme vacille entre passe et futur.",
+      "ascii": [
+        "                 >>> . . . <<<",
+        "                >   .oOOOo.   <",
+        "               > > ( * O O * ) < <",
+        "                >   .--------.   <",
+        "               > >>/|        |\\<<< <",
+        "              > > / |>><  <<>| \\ < <",
+        "             >   /  |        |  \\   <",
+        "              >      \\------/      <",
+        "               > > > > > < < < < <"
+      ]
+    },
+
+    {
+      "id": "age_devourer",
+      "name_en": "Age Devourer",
+      "name_fr": "Devoreur d'Ages",
+      "is_boss": false,
+      "min_floor": 73,
+      "max_floor": 78,
+      "color": [250, 225, 80],
+      "stats": { "hp": 800, "atk": 272, "spd": 1.0, "xp": 1950 },
+      "flavor_en": "It consumes eons like breath.",
+      "flavor_fr": "Il consume des eons comme on respire.",
+      "ascii": [
+        "               ( ( ( > < ) ) )",
+        "              ( (.oOOOOOOOo.) )",
+        "             ( ( O >  .  < O ) )",
+        "              (  \\ > '---' < / )",
+        "             ( .-\\>|       |</-. )",
+        "            ( />>\\| > > > > |/>>\\) )",
+        "           (  |>>>|         |>>>|  )",
+        "            ( \\>>/           \\>>/ )",
+        "             ( ( ( > > > < < < ) ) )"
+      ]
+    },
+
+    {
+      "id": "chrono_lich",
+      "name_en": "Chrono Lich",
+      "name_fr": "Chrono-Liche",
+      "is_boss": true,
+      "boss_floor": 75,
+      "color": [255, 240, 100],
+      "stats": { "hp": 2400, "atk": 278, "spd": 1.2, "xp": 4500 },
+      "flavor_en": "It has died a thousand times. It always comes back.",
+      "flavor_fr": "Il est mort mille fois. Il revient toujours.",
+      "ascii": [
+        "             > > > > > > > > > > >",
+        "            > /\\  > /\\ * /|\\ * /\\ > \\",
+        "           > /  \\ > /  \\> | </  \\ > /",
+        "          > / >  \\/  > / > | \\ >  \\/ > \\",
+        "         > * (>  (O >\\  |  /> O)> )  * >",
+        "          >  \\ >  \\ '--+---+--' / > /  >",
+        "         > .--\\>--|  | > < |  |/--<. >",
+        "        > />>><\\  |  | > < |  |  />>>> \\",
+        "       > |>>>>>|  |  | > < |  |  |>>>>>| >",
+        "        > \\>>>>/  |  | > < |  |  \\>>>>/ >",
+        "         >  ''  >  \\  \\   /  /  > ''  >",
+        "          > > > > > > > > > > > > > >"
+      ]
+    },
+
+    {
+      "id": "loop_fiend",
+      "name_en": "Loop Fiend",
+      "name_fr": "Fiend de Boucle",
+      "is_boss": false,
+      "min_floor": 75,
+      "max_floor": 79,
+      "color": [245, 215, 60],
+      "stats": { "hp": 860, "atk": 282, "spd": 1.1, "xp": 1990 },
+      "flavor_en": "Trapped in a moment, endlessly violent.",
+      "flavor_fr": "Piege dans un instant, infiniment violent.",
+      "ascii": [
+        "                O = O = O = O",
+        "               = .oOOOOOOo. =",
+        "              O ( = O . O = ) O",
+        "               =  \\ '---' /  =",
+        "              O .--|=====|--. O",
+        "             = /O= |=====| =O\\ =",
+        "            O   =  |=====|  =   O",
+        "             =      \\=====/      =",
+        "              O = O = O = O = O ="
+      ]
+    },
+
+    {
+      "id": "future_ghost",
+      "name_en": "Future Ghost",
+      "name_fr": "Fantome du Futur",
+      "is_boss": false,
+      "min_floor": 76,
+      "max_floor": 80,
+      "color": [255, 230, 110],
+      "stats": { "hp": 760, "atk": 290, "spd": 1.5, "xp": 2040 },
+      "flavor_en": "The echo of your own death, sent back.",
+      "flavor_fr": "L'echo de votre propre mort, renvoye en arriere.",
+      "ascii": [
+        "                  . > . > . > .",
+        "                 > .oOOOOOOo. <",
+        "                . ( > X . X < ) .",
+        "                 >  '-------'  <",
+        "                . .>|         |<. .",
+        "               > . /| > > > > |\\ . <",
+        "              .   / |         | \\   .",
+        "               >     \\-------/     <",
+        "                . > . > . > . > . >"
+      ]
+    },
+
+    {
+      "id": "time_eater",
+      "name_en": "Time Eater",
+      "name_fr": "Mangeur de Temps",
+      "is_boss": false,
+      "min_floor": 77,
+      "max_floor": 80,
+      "color": [255, 220, 40],
+      "stats": { "hp": 1000, "atk": 296, "spd": 0.8, "xp": 2090 },
+      "flavor_en": "Hours pour into its maw and vanish.",
+      "flavor_fr": "Les heures s'engouffrent dans sa gueule et disparaissent.",
+      "ascii": [
+        "               > > > > > > > > >",
+        "              > .oOOOOOOOOOOo. >",
+        "             > ( >  O     O  > ) >",
+        "            >  (   \\ '---' /   )  >",
+        "           > .-\\>--|       |--</-. >",
+        "          > />>>\\  |       |  />>>\\>",
+        "         > |>>>>|  |       |  |>>>>| >",
+        "          > \\>>>/  |       |  \\>>>/ >",
+        "           >  '-/__/         \\ __\\-'  >",
+        "            > > > > > > > > > > > > >"
+      ]
+    },
+
+    {
+      "id": "epoch_destroyer",
+      "name_en": "Epoch Destroyer",
+      "name_fr": "Destructeur d'Epoques",
+      "is_boss": true,
+      "boss_floor": 80,
+      "color": [255, 250, 130],
+      "stats": { "hp": 3200, "atk": 302, "spd": 1.0, "xp": 6000 },
+      "flavor_en": "It ends ages with a thought.",
+      "flavor_fr": "Il met fin aux epoques d'une simple pensee.",
+      "ascii": [
+        "          > > > > > > > > > > > > >",
+        "         > /\\ > /\\ > /|\\ > /\\ > /\\ >",
+        "        > /  V  \\ > / | \\ >  V  \\ >",
+        "       > / > /\\  V  > | > V /\\  \\ > \\",
+        "      > * > (  (O>\\  |  /<O)  ) > * >",
+        "       >  \\ > \\ '>--+---+--<' / > /  >",
+        "      > .--\\>--|  |  |   |  |/--<. >",
+        "     > />>>>>\\  | >|  |   | |< |  />>>>> \\>",
+        "    > |>>>>>>|  | >|  |   | |< |  |>>>>>>| >",
+        "     > \\>>>>>/  | >|  |   | |< |  \\>>>>>/ >",
+        "      >  ''  > / > \\  \\   /  / \\ > ''  >",
+        "       > > > >   > > > > > > >   > > > >"
+      ]
+    },
+
+    {
+      "id": "void_phantom",
+      "name_en": "Void Phantom",
+      "name_fr": "Fantome du Vide",
+      "is_boss": false,
+      "min_floor": 81,
+      "max_floor": 85,
+      "color": [180, 250, 255],
+      "stats": { "hp": 900, "atk": 310, "spd": 1.5, "xp": 2160 },
+      "flavor_en": "It passes through walls. Through flesh. Through hope.",
+      "flavor_fr": "Il traverse les murs. La chair. L'espoir.",
+      "ascii": [
+        "                  . : . : . : .",
+        "                 : .oOOOOOOo. :",
+        "                . ( :O  . O: ) .",
+        "                 :  '-------'  :",
+        "                . .:|       |:. .",
+        "               : . /|: : : :|\\. :",
+        "              .   / |         | \\   .",
+        "               :     \\:::::::/ :    :",
+        "                . : . : . : . : . :."
+      ]
+    },
+
+    {
+      "id": "cosmic_leviathan",
+      "name_en": "Cosmic Leviathan",
+      "name_fr": "Leviathan Cosmique",
+      "is_boss": false,
+      "min_floor": 81,
+      "max_floor": 86,
+      "color": [160, 240, 255],
+      "stats": { "hp": 1400, "atk": 305, "spd": 0.6, "xp": 2200 },
+      "flavor_en": "A sea-serpent the size of a solar system.",
+      "flavor_fr": "Un serpent de mer de la taille d'un systeme solaire.",
+      "ascii": [
+        "                 . : . : . : . :",
+        "             ___.:._____________.:._",
+        "            /   :  .oOOOOOOOOo.  :  \\",
+        "           /  :  (  O         O  )  : \\",
+        "          |  : (   \\ '---------' /  ) : |",
+        "           \\ :   \\  '-----------'  / : /",
+        "            \\___.:._____________.:.__/",
+        "                 : . : . : . : . :"
+      ]
+    },
+
+    {
+      "id": "null_weaver",
+      "name_en": "Null Weaver",
+      "name_fr": "Tisseur de Neant",
+      "is_boss": false,
+      "min_floor": 82,
+      "max_floor": 87,
+      "color": [200, 255, 255],
+      "stats": { "hp": 1000, "atk": 318, "spd": 1.1, "xp": 2250 },
+      "flavor_en": "It weaves reality out of existence.",
+      "flavor_fr": "Il tisse la realite hors de l'existence.",
+      "ascii": [
+        "              : : : : : : : : :",
+        "             : .oOOOOOOOOOOo. :",
+        "            : ( :  O . . O  : ) :",
+        "             :  \\  '-----'  /  :",
+        "            : .-\\:|       |:/-. :",
+        "           : / : |: : : :|  : \\ :",
+        "          :   :  |: : : :|  :   :",
+        "           :      \\::::::/      :",
+        "            : : : : : : : : : : :"
+      ]
+    },
+
+    {
+      "id": "star_devourer",
+      "name_en": "Star Devourer",
+      "name_fr": "Devoreur d'Etoiles",
+      "is_boss": false,
+      "min_floor": 83,
+      "max_floor": 88,
+      "color": [220, 255, 255],
+      "stats": { "hp": 1200, "atk": 325, "spd": 0.7, "xp": 2310 },
+      "flavor_en": "It feeds on the light of dying stars.",
+      "flavor_fr": "Il se nourrit de la lumiere des etoiles mourantes.",
+      "ascii": [
+        "          : . * . : . * . : . * . :",
+        "         * .oOOOOOOOOOOOOOOOOo. *",
+        "        : ( :  O             O  : ) :",
+        "         *  \\  :  '---------'  :  / *",
+        "        : .-\\:|               |:/-. :",
+        "       * /::::|               |:::::\\ *",
+        "      :  |::::| * * * * * * * |::::|  :",
+        "       * \\::::/               \\::::/ *",
+        "        :  '-/                 \\-'  :",
+        "         * . * . : . * . : . * . * ."
+      ]
+    },
+
+    {
+      "id": "the_formless",
+      "name_en": "The Formless",
+      "name_fr": "L'Informe",
+      "is_boss": true,
+      "boss_floor": 85,
+      "color": [230, 255, 255],
+      "stats": { "hp": 2800, "atk": 332, "spd": 1.2, "xp": 5500 },
+      "flavor_en": "No shape. No mind. Pure destructive will.",
+      "flavor_fr": "Aucune forme. Aucun esprit. Pure volonte destructrice.",
+      "ascii": [
+        "         : : : : : : : : : : : : :",
+        "        : /\\  : /\\ : /|\\ : /\\ : /\\ :",
+        "       : /  \\ : /  \\: | :/  \\ : /  \\ :",
+        "      : / :  \\/  : /  |  \\ :  \\/ : \\ :",
+        "     : * :(  (O : \\ : | : / : O) :) * :",
+        "      :  \\ : \\ ':--+---+--:' / : /  :",
+        "     : .--\\:--|  | : : : |  |/--:. :",
+        "    : /:::::\\ |  | : : : |  | /::::: \\:",
+        "   : |::::::|  |  | : : : |  |  |::::::| :",
+        "    : \\:::::/  |  | : : : |  |  \\:::::/ :",
+        "     :  ''  :  \\  \\  : :  /  /  : ''  :",
+        "      : : : : : : : : : : : : : : : : :"
+      ]
+    },
+
+    {
+      "id": "dark_matter_fiend",
+      "name_en": "Dark Matter Fiend",
+      "name_fr": "Fiend de Matiere Noire",
+      "is_boss": false,
+      "min_floor": 85,
+      "max_floor": 89,
+      "color": [200, 250, 255],
+      "stats": { "hp": 1150, "atk": 338, "spd": 0.9, "xp": 2380 },
+      "flavor_en": "It is composed of the universe's hidden mass.",
+      "flavor_fr": "Il est compose de la masse cachee de l'univers.",
+      "ascii": [
+        "             . : . : . : . : .",
+        "            : .oOOOOOOOOOOo. :",
+        "           . ( :  O . . O  : ) .",
+        "            :  \\ : '---' : /  :",
+        "           . .--|: : : : :|--. .",
+        "          : /::::|         |:::::\\ :",
+        "         .  |::::|         |::::|  .",
+        "          : \\::::|         |::::/ :",
+        "           .  '-/           \\-'  .",
+        "            : . : . : . : . : . :"
+      ]
+    },
+
+    {
+      "id": "event_horizon",
+      "name_en": "Event Horizon",
+      "name_fr": "Horizon des Evenements",
+      "is_boss": false,
+      "min_floor": 86,
+      "max_floor": 90,
+      "color": [240, 255, 255],
+      "stats": { "hp": 1050, "atk": 345, "spd": 1.3, "xp": 2440 },
+      "flavor_en": "Cross it and nothing returns.",
+      "flavor_fr": "Le franchir et rien ne revient.",
+      "ascii": [
+        "            ( ( ( ( ( ( ( ( ( ( ( (",
+        "           ( .oOOOOOOOOOOOOOOOo. )",
+        "          ( ( O               O ) )",
+        "         ( (  \\ '-------------' )  ) (",
+        "        ( ( .-\\|               |/-. ) )",
+        "       ( ( /:::\\ |             | /::::: \\) )",
+        "      ( ( |::::| |             | |::::| ) )",
+        "       ( ( \\:::/  \\           /  \\:::/ ) )",
+        "        ( (  '-/___\\_________/___ \\-' ) )",
+        "         ( ( ( ( ( ( ( ( ( ( ( ( ( ( ("
+      ]
+    },
+
+    {
+      "id": "universe_shard",
+      "name_en": "Universe Shard",
+      "name_fr": "Eclat d'Univers",
+      "is_boss": false,
+      "min_floor": 87,
+      "max_floor": 90,
+      "color": [255, 255, 255],
+      "stats": { "hp": 1300, "atk": 352, "spd": 0.6, "xp": 2510 },
+      "flavor_en": "A broken fragment of the universe's foundation.",
+      "flavor_fr": "Un fragment brise de la fondation de l'univers.",
+      "ascii": [
+        "            : * : * : * : * : * :",
+        "           * .oOOOOOOOOOOOOo. *",
+        "          : ( :  O         O  : ) :",
+        "           *  \\  '---------'  / *",
+        "          : .--|:            :|--. :",
+        "         * / * |:            :| * \\ *",
+        "        :   *  |:   * * * *  :|  *   :",
+        "         *      \\:           :/ *    *",
+        "          :  *   '-----------'  *  :",
+        "           : * : * : * : * : * : * :"
+      ]
+    },
+
+    {
+      "id": "oblivion",
+      "name_en": "Oblivion",
+      "name_fr": "L'Oubli",
+      "is_boss": true,
+      "boss_floor": 90,
+      "color": [255, 255, 255],
+      "stats": { "hp": 4000, "atk": 360, "spd": 1.0, "xp": 7500 },
+      "flavor_en": "Nothingness that became aware of itself.",
+      "flavor_fr": "Le neant qui a pris conscience de lui-meme.",
+      "ascii": [
+        "        : : : : : : : : : : : : : : :",
+        "       : /\\ : /\\ : /|\\ : /\\ : /\\ : /\\ :",
+        "      : /  \\:/  \\:/ | \\:/  \\:/  \\:/ \\ :",
+        "     : / : /\\ : /\\  |  /\\ : /\\: \\ : \\ :",
+        "    : * :(  (O: \\ : | : / :O)  ): * :",
+        "     :  \\ : \\'--:-+-:--:-+--':/ : /  :",
+        "    : .--\\:--|  |  : : :  |  |/--:. :",
+        "   : /:::::| |  |  : : :  |  | |::::::\\ :",
+        "  : |::::::| |  |  : : :  |  | |::::::| :",
+        "   : \\:::::/  |  |  : : :  |  |  \\:::::/ :",
+        "    :  '' :  /  /  : : :  \\  \\  : '' :",
+        "     : : :/  :  :  : : :  :  :  \\: : :",
+        "      : : : : : : : : : : : : : : : : :"
+      ]
+    },
+
+    {
+      "id": "sin_fragment",
+      "name_en": "Sin Fragment",
+      "name_fr": "Fragment du Peche",
+      "is_boss": false,
+      "min_floor": 91,
+      "max_floor": 95,
+      "color": [255, 230, 255],
+      "stats": { "hp": 1400, "atk": 370, "spd": 1.2, "xp": 2600 },
+      "flavor_en": "A piece of the original corruption, still burning.",
+      "flavor_fr": "Un morceau de la corruption originelle, qui brule encore.",
+      "ascii": [
+        "              + * + * + * + * +",
+        "             * .oOOOOOOOOOo. *",
+        "            + ( + O  . .  O + ) +",
+        "             *  \\ + '---' + /  *",
+        "            + .--|+       +|--. +",
+        "           * / + |+ + + + +| + \\ *",
+        "          +   +  |+ + + + +|  +   +",
+        "           *      \\+++++++/      *",
+        "            + * + * + * + * + * +"
+      ]
+    },
+
+    {
+      "id": "void_sovereign",
+      "name_en": "Void Sovereign",
+      "name_fr": "Souverain du Vide",
+      "is_boss": false,
+      "min_floor": 91,
+      "max_floor": 96,
+      "color": [240, 200, 255],
+      "stats": { "hp": 1600, "atk": 378, "spd": 0.8, "xp": 2680 },
+      "flavor_en": "It rules the space between existence and nothing.",
+      "flavor_fr": "Il regne sur l'espace entre l'existence et le neant.",
+      "ascii": [
+        "              * ~ * ~ * ~ * ~ *",
+        "             ~ .oOOOOOOOOOOo. ~",
+        "            * ( * O       O * ) *",
+        "             ~  \\ * '---' * /  ~",
+        "            * .-\\*|       |*/-. *",
+        "           ~ /~*~\\ | ~ ~ ~ | /~*~\\ ~",
+        "          *  |~*~| |       | |~*~|  *",
+        "           ~ \\~*/  |       |  \\~*/ ~",
+        "            *  '-/_\\       /_\\-'  *",
+        "             * ~ * ~ * ~ * ~ * ~ *"
+      ]
+    },
+
+    {
+      "id": "creation_wraith",
+      "name_en": "Creation Wraith",
+      "name_fr": "Spectre de la Creation",
+      "is_boss": false,
+      "min_floor": 92,
+      "max_floor": 97,
+      "color": [255, 210, 255],
+      "stats": { "hp": 1500, "atk": 388, "spd": 1.3, "xp": 2760 },
+      "flavor_en": "What was made is now unmade and angry.",
+      "flavor_fr": "Ce qui a ete fait est maintenant defait et en colere.",
+      "ascii": [
+        "             + * + * + * + * + *",
+        "            * .oOOOOOOOOOOOo. *",
+        "           + ( + X   .   X + ) +",
+        "            *  \\ + '-----' + /  *",
+        "           + .--|+         +|--. +",
+        "          * / + |+  + + +  +| + \\ *",
+        "         +   +  |+         +|  +   +",
+        "          *      \\++++++++++/      *",
+        "           + * + * + * + * + * + * +"
+      ]
+    },
+
+    {
+      "id": "prime_horror",
+      "name_en": "Prime Horror",
+      "name_fr": "Horreur Primordiale",
+      "is_boss": false,
+      "min_floor": 93,
+      "max_floor": 98,
+      "color": [255, 180, 255],
+      "stats": { "hp": 1800, "atk": 396, "spd": 0.9, "xp": 2850 },
+      "flavor_en": "It was the first nightmare of the first mind.",
+      "flavor_fr": "Il etait le premier cauchemar du premier esprit.",
+      "ascii": [
+        "           ~ + ~ + ~ + ~ + ~ + ~",
+        "          + .oOOOOOOOOOOOOOo. +",
+        "         ~ ( ~ O           O ~ ) ~",
+        "        +  (  \\ ~ '-------' ~ /  )  +",
+        "       ~ .-\\~+|               |+~/-. ~",
+        "      + /~+~~\\ |               | /~~+~\\ +",
+        "     ~  |~~+~| |               | |~+~~|  ~",
+        "      + \\~+~~/  \\             /  \\~~+~/ +",
+        "       ~  '-/~~~~\\-----------/~~~~\\-'  ~",
+        "        + ~ + ~ + ~ + ~ + ~ + ~ + ~ + ~"
+      ]
+    },
+
+    {
+      "id": "throne_guardian",
+      "name_en": "Throne Guardian",
+      "name_fr": "Gardien du Trone",
+      "is_boss": false,
+      "min_floor": 94,
+      "max_floor": 99,
+      "color": [255, 160, 255],
+      "stats": { "hp": 2200, "atk": 405, "spd": 0.7, "xp": 2950 },
+      "flavor_en": "Nothing passes without its judgment.",
+      "flavor_fr": "Rien ne passe sans son jugement.",
+      "ascii": [
+        "           + * + * + * + * + * +",
+        "          * .oOOOOOOOOOOOOOOo. *",
+        "         + ( +  O         O  + ) +",
+        "          *  \\  + '---------' +  / *",
+        "         + .-\\+|               |+/-. +",
+        "        * /+#++\\ |               | /++#+\\ *",
+        "       +  |+#++| |               | |+#++|  +",
+        "        * \\+#++/  |             |  \\++#+/ *",
+        "         +  '-/++++\\           /++++\\-'  +",
+        "          * + * + * + * + * + * + * + * *"
+      ]
+    },
+
+    {
+      "id": "avatar_of_sin",
+      "name_en": "Avatar of Sin",
+      "name_fr": "Avatar du Peche",
+      "is_boss": true,
+      "boss_floor": 95,
+      "color": [255, 200, 255],
+      "stats": { "hp": 3800, "atk": 415, "spd": 1.2, "xp": 8000 },
+      "flavor_en": "The sin given flesh before flesh existed.",
+      "flavor_fr": "Le peche fait chair avant que la chair existe.",
+      "ascii": [
+        "          + ~ + ~ + ~ + ~ + ~ + ~ +",
+        "         ~ /\\ + /\\ + /|\\ + /\\ + /\\ ~",
+        "        + /  \\+/  \\+/ | \\+/  \\+/  \\ +",
+        "       ~ / + /\\  +/\\  |  /\\+  /\\ + \\ ~",
+        "      + * + (  (O +\\ + | + /+ O)  ) + * +",
+        "       ~  \\ + \\'++:-+-:++:+--':+ / + /  ~",
+        "      + .--\\+--|  | + + + |  |/--+. +",
+        "     ~ /+#++##\\ |  | + + + |  | /##+#++\\ ~",
+        "    + |+#++###| |  | + + + |  | |###+#++| +",
+        "     ~ \\+#++##/ |  | + + + |  | \\##+#++/ ~",
+        "      +  ''  + /  /  + + +  \\  \\  + ''  +",
+        "       ~ + ~ + ~ + ~ + ~ + ~ + ~ + ~ + ~"
+      ]
+    },
+
+    {
+      "id": "origin_abomination",
+      "name_en": "Origin Abomination",
+      "name_fr": "Abomination Originelle",
+      "is_boss": false,
+      "min_floor": 95,
+      "max_floor": 99,
+      "color": [255, 245, 255],
+      "stats": { "hp": 2000, "atk": 420, "spd": 1.0, "xp": 3050 },
+      "flavor_en": "The universe's first and greatest mistake.",
+      "flavor_fr": "La premiere et plus grande erreur de l'univers.",
+      "ascii": [
+        "            * + * + * + * + * + *",
+        "           + .oOOOOOOOOOOOOOOo. +",
+        "          * ( *  O           O  * ) *",
+        "           +  \\  * '---------' *  /  +",
+        "          * .--|*+             +*|--. *",
+        "         + / *+|\\ * + * + * + */|+* \\ +",
+        "        *   +  | \\*           */|  +   *",
+        "         +      |  \\*       */  |      +",
+        "          *     |    \\*---*/    |     *",
+        "           + * + * + * + * + * + * + * +"
+      ]
+    },
+
+    {
+      "id": "reality_render",
+      "name_en": "Reality Render",
+      "name_fr": "Dechireur de Realite",
+      "is_boss": false,
+      "min_floor": 96,
+      "max_floor": 99,
+      "color": [255, 255, 230],
+      "stats": { "hp": 2400, "atk": 430, "spd": 0.8, "xp": 3200 },
+      "flavor_en": "It tears holes in the fabric of what is real.",
+      "flavor_fr": "Il dechire des trous dans le tissu de ce qui est reel.",
+      "ascii": [
+        "          / / / / / / / / / / / /",
+        "         / .oOOOOOOOOOOOOOOOo. /",
+        "        / ( / O             O / ) /",
+        "       / (   \\ / '---------' \\ / )  /",
+        "      / ( .--\\|/             \\|/--.  ) /",
+        "     / ( /////\\               /////\\ ) /",
+        "    /  ( |/////|               |/////| ) /",
+        "     / ( \\/////__           __\\/////) /",
+        "      /   '-/////\\---------/////\\-'   /",
+        "       / / / / / / / / / / / / / / / /"
+      ]
+    },
+
+    {
+      "id": "the_first_sin",
+      "name_en": "The First Sin",
+      "name_fr": "Le Premier Peche",
+      "is_boss": true,
+      "boss_floor": 100,
+      "color": [255, 255, 255],
+      "stats": { "hp": 9999, "atk": 500, "spd": 1.5, "xp": 99999 },
+      "flavor_en": "Before light. Before dark. Before thought. There was this.",
+      "flavor_fr": "Avant la lumiere. Avant les tenebres. Avant la pensee. Il y avait cela.",
+      "ascii": [
+        "     * + ~ * + ~ * + ~ * + ~ * + ~ * + ~ *",
+        "    + /\\ * /\\ + /\\ * /|\\ * /\\ + /\\ * /\\ +",
+        "   ~ /  \\*/  \\~/  \\*/ | \\*/  \\~/  \\*/  \\ ~",
+        "  * / * /\\  */\\  *    |    *  /\\*  /\\ * \\ *",
+        " + * / (  (O *\\ * + ~ | ~ + * /O*) ) \\ * + *",
+        "  ~ * /  \\ * '---+---+---+---+---' / * \\ ~ *",
+        " * + .---\\*--|   | * ~ * ~ * |   |/--*+---. + *",
+        "+ ~ /+*+*+*\\ |   | * ~ * ~ * |   | /+*+*+*\\ ~ +",
+        "~ * |+*+*+*| |   |           |   | |+*+*+*| * ~",
+        "+ ~ |+*+*+*| |   |           |   | |+*+*+*| ~ +",
+        " * + \\+*+*+/ |   |           |   | \\+*+*+/ + *",
+        "  ~ *  '--/+*+\\   |           |   /+*+\\--'  * ~",
+        " * + ~ /+*+*+*+\\  |           |  /+*+*+*+\\ ~ + *",
+        "+ ~ * |+*+*+*+*+| |           | |+*+*+*+*+| * ~ +",
+        " ~ + * \\+*+*+*+/ \\ \\         / / \\+*+*+*+/ * + ~",
+        "  * ~ +   ''    /  \\---------/  \\    ''   + ~ *",
+        "   + * ~ + * ~ + * ~ + * ~ + * ~ + * ~ + * ~ +"
       ]
     }
+
   ]
 }

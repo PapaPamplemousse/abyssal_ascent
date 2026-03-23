@@ -14,6 +14,7 @@ static int selectedPotionIdx = -1;
 static void SaveGame(GameContext* game);
 static void LoadGame(GameContext* game);
 static bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool canAfford);
+static const char* GetEffectString(int effect);
 
 extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
 extern SpellTemplate g_spellDB[MAX_SPELLS_DB];
@@ -36,7 +37,7 @@ void Game_Init(GameContext* game)
     game->isRunning    = true;
 
     // 1. Chargement de la police pour l'Interface (l'ancienne)
-    game->uiFont = LoadFontEx("assets/fonts/ui.ttf", 40, 0, 250);
+    game->uiFont = LoadFontEx("assets/fonts/ui.ttf", 50, 0, 250);
 
     // 2. Chargement de la police pour le Donjon (la nouvelle avec les blocs)
     int  codepointCount = 95 + 32;
@@ -61,8 +62,6 @@ void Game_Init(GameContext* game)
     Combat_Init(&game->combat);
     Dungeon_Init(&myDungeon);
     LoadGame(game);
-    Inventory_Add(&game->combat, "rusty_sword");
-    Inventory_Add(&game->combat, "torch");
 }
 
 void Game_Close(GameContext* game)
@@ -142,6 +141,7 @@ void Game_Update(GameContext* game)
             {
                 game->currentState = STATE_DUNGEON;
                 Dungeon_Enter(&myDungeon);
+                game->combat.player.inventory_safe_count = game->combat.player.inventory_count;
             }
             else if (pressedQuit)
                 game->currentState = STATE_MENU;
@@ -321,7 +321,8 @@ void DrawGameUI(GameContext* game, int w, int h)
         {
             OwnedItem* item = &game->combat.player.inventory[inv_idx];
             ItemTemplate* t    = &g_itemDB[item->template_idx];
-            sprintf(eq_text, "%s: %s (+%d)", slot_names[i], g_isEnglish ? t->name_en : t->name_fr, item->level);
+            //sprintf(eq_text, "%s: %s (+%d)", slot_names[i], g_isEnglish ? t->name_en : t->name_fr, item->level);
+            sprintf(eq_text, "%s: %s%s (+%d)", slot_names[i], g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
             DrawTextEx(game->uiFont, eq_text, (Vector2){rightX, equipStartY + 45 + (i * 20)}, 20, 1, WHITE);
         }
     }
@@ -421,6 +422,8 @@ void Game_RenderInventory(GameContext* game, int w, int h)
     int visualWidth = centerWidth * 0.45f;
     int listWidth   = centerWidth * 0.55f;
 
+    (void)listWidth; // Non utilisé pour l'instant, mais on pourrait faire du responsive plus tard
+
     DrawLine(startX + visualWidth, 80, startX + visualWidth, h, DARKGRAY);
 
     // --- ZONE GAUCHE : VISUEL EQUIPEMENT ---
@@ -468,7 +471,8 @@ void Game_RenderInventory(GameContext* game, int w, int h)
                 is_eq = true;
 
         char btn_text[128];
-        sprintf(btn_text, "%s %s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, item->level);
+        //sprintf(btn_text, "%s %s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, item->level);
+        sprintf(btn_text, "%s %s%s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
 
         if (DoShopButton(game->uiFont, btn_text, listX, 150 + (i * 30), 20, true))
         {
@@ -525,9 +529,11 @@ void Game_RenderForge(GameContext* game, int w, int h)
                 is_eq = true;
 
         char itemText[128];
-        sprintf(itemText, "%s %s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, item->level);
-
+        //sprintf(itemText, "%s %s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, item->level);
+        sprintf(itemText, "%s %s%s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
         Color itemColor = (inv_idx == selectedForgeIdx) ? WHITE : GRAY; // Blanc si sélectionné pour upgrade
+        
+        (void)itemColor; // Non utilisé pour l'instant, mais on pourrait faire du responsive plus tard
 
         // DoShopButton pour la sélection
         if (DoShopButton(game->uiFont, itemText, listX, 150 + (i * 25), 18, true))
@@ -643,6 +649,7 @@ void Game_RenderForge(GameContext* game, int w, int h)
 
 void Game_RenderArchiforge(GameContext* game, int w, int h)
 {
+    (void)h; // Non utilisé pour l'instant, mais on pourrait faire du responsive plus tard
     int startX      = (w * 0.25f) + 30;
     int centerWidth = w * 0.55f;
     int listWidth   = centerWidth * 0.45f;
@@ -1026,14 +1033,29 @@ static void SaveGame(GameContext* game)
     cJSON_AddItemToObject(root, "equipped_potions", eq_po);
 
     //  4. Sauvegarde de l'Inventaire d'Equipement Physique ---
-    cJSON_AddNumberToObject(root, "inventory_count", game->combat.player.inventory_count);
+    // cJSON_AddNumberToObject(root, "inventory_count", game->combat.player.inventory_count);
+    
+    // cJSON* inv_arr = cJSON_CreateArray();
+    // for (int i = 0; i < game->combat.player.inventory_count; i++) {
+    //     cJSON* itemObj = cJSON_CreateObject();
+    //     // On sauvegarde l'identifiant du template et le niveau d'amélioration
+    //     cJSON_AddNumberToObject(itemObj, "template_idx", game->combat.player.inventory[i].template_idx);
+    //     cJSON_AddNumberToObject(itemObj, "level", game->combat.player.inventory[i].level);
+    //     cJSON_AddItemToArray(inv_arr, itemObj);
+    // }
+    // cJSON_AddItemToObject(root, "inventory", inv_arr);
+    int save_inv_count = (game->currentState == STATE_DUNGEON || game->currentState == STATE_GAMEOVER) 
+                         ? game->combat.player.inventory_safe_count 
+                         : game->combat.player.inventory_count;
+
+    cJSON_AddNumberToObject(root, "inventory_count", save_inv_count);
     
     cJSON* inv_arr = cJSON_CreateArray();
-    for (int i = 0; i < game->combat.player.inventory_count; i++) {
+    for (int i = 0; i < save_inv_count; i++) { // On boucle sur save_inv_count !
         cJSON* itemObj = cJSON_CreateObject();
-        // On sauvegarde l'identifiant du template et le niveau d'amélioration
         cJSON_AddNumberToObject(itemObj, "template_idx", game->combat.player.inventory[i].template_idx);
         cJSON_AddNumberToObject(itemObj, "level", game->combat.player.inventory[i].level);
+        cJSON_AddNumberToObject(itemObj, "effect", game->combat.player.inventory[i].effect); // Sauvegarde de l'effet
         cJSON_AddItemToArray(inv_arr, itemObj);
     }
     cJSON_AddItemToObject(root, "inventory", inv_arr);
@@ -1112,6 +1134,7 @@ static void LoadGame(GameContext* game)
                 if (i < MAX_INVENTORY) {
                     game->combat.player.inventory[i].template_idx = cJSON_GetObjectItem(itemNode, "template_idx")->valueint;
                     game->combat.player.inventory[i].level = cJSON_GetObjectItem(itemNode, "level")->valueint;
+                    game->combat.player.inventory[i].effect = cJSON_GetObjectItem(itemNode, "effect") ? cJSON_GetObjectItem(itemNode, "effect")->valueint : 0;
                     i++;
                 }
             }
@@ -1143,4 +1166,13 @@ bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool 
     DrawTextEx(font, text, (Vector2){x, y}, fontSize, 1, drawColor);
 
     return isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && canAfford;
+}
+
+
+static const char* GetEffectString(int effect) {
+    if (effect == 1) return " [Feu]";
+    if (effect == 2) return " [Poison]";
+    if (effect == 3) return " [Vamp]";
+    if (effect == 4) return " [Vif]";
+    return "";
 }

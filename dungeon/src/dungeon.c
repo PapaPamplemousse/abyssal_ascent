@@ -10,7 +10,8 @@
 #define MAX_EVENTS 20
 
 extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
-extern int g_potionCount;
+extern int            g_potionCount;
+extern int            g_itemCount;
 
 char g_ambiance_en[MAX_AMBIANCE][128];
 char g_ambiance_fr[MAX_AMBIANCE][128];
@@ -20,6 +21,7 @@ EventRoomTemplate g_eventDB[MAX_EVENTS];
 int               g_eventCount = 0;
 
 static void Dungeon_UpdateFog(DungeonContext* dungeon, int fog_bonus);
+
 
 void LoadDungeonDB(const char* ambiance_path, const char* rooms_path)
 {
@@ -91,7 +93,6 @@ void Dungeon_Enter(DungeonContext* dungeon)
 {
     // La formule : a1 = 1, an = 10(n-1) -> ex: 1, 10, 20...
     int checkpoint = (dungeon->highest_floor >= 10) ? (dungeon->highest_floor / 10) * 10 : 1;
-
     dungeon->floor_level = checkpoint;
     dungeon->room_type   = ROOM_NORMAL;
     Dungeon_Generate(dungeon); // Génère la carte
@@ -215,6 +216,8 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
     {
         game->currentState = STATE_CAMP;
         Dungeon_UpdateFog(dungeon, game->combat.player.fog_bonus);
+        // On sauvegarde le nombre d'objets, ce qui les valide définitivement !
+        game->combat.player.inventory_safe_count = game->combat.player.inventory_count;
         return;
     }
 
@@ -239,8 +242,8 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                         dungeon->highest_floor = dungeon->floor_level;
                     }
 
-                    // Si le prochain étage est un multiple de 10 (Ex: on est au 9, on passe au 10)
-                    if ((dungeon->floor_level + 1) % 10 == 0)
+                    // Si le prochain étage est un multiple de 5 (Ex: on est au 4, on passe au 5)
+                    if ((dungeon->floor_level + 1) % 5 == 0)
                     {
                         dungeon->floor_level++;
                         dungeon->room_type = ROOM_BOSS;
@@ -293,14 +296,15 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                         game->combat.player.hp = game->combat.player.max_hp;
                     eventSuccess = true;
                 }
-               else if (strcmp(dungeon->current_event.type, "MERCHANT") == 0)
+                else if (strcmp(dungeon->current_event.type, "MERCHANT") == 0)
                 {
                     if (game->clicker.inventory.or >= dungeon->current_event.amount * (dungeon->floor_level / 2))
                     {
                         game->clicker.inventory.or -= dungeon->current_event.amount;
-                        
+
                         // --- NOUVELLE LOGIQUE MARCHAND (Potion aléatoire & scalée) ---
-                        if (g_potionCount > 0) {
+                        if (g_potionCount > 0)
+                        {
                             // 1. Choisir une potion au hasard parmi celles existantes
                             int rand_idx = GetRandomValue(0, g_potionCount - 1);
 
@@ -310,23 +314,23 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
 
                             // 3. Calculer un niveau aléatoire basé sur l'étage (max niveau 10)
                             // Ex : Etage 25 -> Base 2. Peut donner une potion niveau 2, 3 ou 4.
-                            int base_lvl = dungeon->floor_level / 10;
+                            int base_lvl     = dungeon->floor_level / 10;
                             int max_possible = base_lvl + 2;
-                            if (max_possible > 10) max_possible = 10;
-                            
+                            if (max_possible > 10)
+                                max_possible = 10;
+
                             int random_lvl = GetRandomValue(base_lvl, max_possible);
 
-                            // On met à jour le niveau de la potion SEULEMENT si la nouvelle est meilleure 
+                            // On met à jour le niveau de la potion SEULEMENT si la nouvelle est meilleure
                             // (On ne veut pas qu'une potion redescende de niveau)
-                            if (game->combat.player.potion_level[rand_idx] < random_lvl) {
+                            if (game->combat.player.potion_level[rand_idx] < random_lvl)
+                            {
                                 game->combat.player.potion_level[rand_idx] = random_lvl;
                             }
 
                             // 4. Afficher un joli message dans le log avec le nom et le niveau !
                             char logMsg[128];
-                            sprintf(logMsg, "Achat : %s (Niv %d)", 
-                                g_isEnglish ? g_potionDB[rand_idx].name_en : g_potionDB[rand_idx].name_fr, 
-                                random_lvl);
+                            sprintf(logMsg, "Achat : %s (Niv %d)", g_isEnglish ? g_potionDB[rand_idx].name_en : g_potionDB[rand_idx].name_fr, random_lvl);
                             Combat_AddLog(&game->combat, logMsg);
                         }
 
@@ -339,7 +343,25 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                 }
                 else if (strcmp(dungeon->current_event.type, "CHEST") == 0)
                 {
-                    // TODO: Code du Gacha
+                    if (g_itemCount > 0)
+                    {
+                        // 1. Objet aléatoire
+                        int rand_item = GetRandomValue(0, g_itemCount - 1);
+
+                        // 2. Niveau calculé selon l'étage (Étage 25 = niv 5 à 7)
+                        int base_lvl = dungeon->floor_level / 5;
+                        int rand_lvl = base_lvl + GetRandomValue(0, 2);
+
+                        // 3. Effet "Spicy" (30% de chance d'avoir un effet magique)
+                        ItemEffect fx = ITEM_EFFECT_NONE;
+                        if (GetRandomValue(1, 100) <= 30)
+                        {
+                            fx = (ItemEffect)GetRandomValue(1, 4); // Tire un effet entre 1 et 4
+                        }
+
+                        Inventory_AddLoot(&game->combat, rand_item, rand_lvl, fx);
+                        Combat_AddLog(&game->combat, "*** COFFRE OUVERT ! ***");
+                    }
                     eventSuccess = true;
                 }
 
@@ -369,6 +391,7 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                 if (GetRandomValue(1, 100) > 85 && dungeon->room_type == ROOM_NORMAL)
                 {
                     Combat_StartEncounter(&game->combat, dungeon->floor_level, false);
+                    return;
                 }
             }
         }
@@ -418,9 +441,9 @@ void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int 
         sprintf(title, "=== %s ===", g_isEnglish ? dungeon->current_event.name_en : dungeon->current_event.name_fr);
     else
         sprintf(title, T("DUNGEON_TITLE_DEEP"), dungeon->floor_level);
-    DrawTextCentered(uiFont, title, centerX, 120, 40, 1, RED);
+    DrawTextCentered(uiFont, title, centerX, 120, 50, 1, RED);
 
-    DrawTextCentered(uiFont, title, centerX, 120, 40, 1, RED);
+    DrawTextCentered(uiFont, title, centerX, 120, 50, 1, RED);
 
     int startY   = (int)(screenHeight * 0.25f);
     int fontSize = 50;
@@ -524,3 +547,4 @@ void Dungeon_UpdateFog(DungeonContext* dungeon, int fog_bonus)
         }
     }
 }
+
