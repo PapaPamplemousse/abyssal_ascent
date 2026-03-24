@@ -51,6 +51,11 @@ void SaveGame(GameContext* game, DungeonContext* dungeon)
     cJSON_AddBoolToObject(root, "unlock_cristaux", game->clicker.inventory.unlock_cristaux);
     cJSON_AddBoolToObject(root, "unlock_viande", game->clicker.inventory.unlock_viande);
 
+    cJSON_AddNumberToObject(root, "boss_souls", game->combat.player.boss_souls);
+    cJSON_AddNumberToObject(root, "passive_hp", game->combat.player.passive_hp_level);
+    cJSON_AddNumberToObject(root, "passive_atk", game->combat.player.passive_atk_level);
+    cJSON_AddNumberToObject(root, "passive_loot", game->combat.player.passive_loot_level);
+
     #define SAVE_INT_ARRAY(name, arr, size) \
         do { \
             cJSON* jArr = cJSON_CreateArray(); \
@@ -179,6 +184,12 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
     // On utilise le pointeur dungeon
     cJSON* hf = cJSON_GetObjectItem(root, "highest_floor");
     if (hf) dungeon->highest_floor = hf->valueint;
+
+
+    cJSON* bsNode = cJSON_GetObjectItem(root, "boss_souls"); if(bsNode) game->combat.player.boss_souls = bsNode->valueint;
+    cJSON* phpNode = cJSON_GetObjectItem(root, "passive_hp"); if(phpNode) game->combat.player.passive_hp_level = phpNode->valueint;
+    cJSON* patkNode = cJSON_GetObjectItem(root, "passive_atk"); if(patkNode) game->combat.player.passive_atk_level = patkNode->valueint;
+    cJSON* plootNode = cJSON_GetObjectItem(root, "passive_loot"); if(plootNode) game->combat.player.passive_loot_level = plootNode->valueint;
 
     cJSON* fNode = cJSON_GetObjectItem(root, "fer"); if(fNode) game->clicker.inventory.fer = fNode->valueint;
     cJSON* oNode = cJSON_GetObjectItem(root, "or"); if(oNode) game->clicker.inventory.or = oNode->valueint;

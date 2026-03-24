@@ -113,6 +113,12 @@ typedef struct
     int   base_atk;
     float base_spd;
 
+    int boss_souls;         // Monnaie persistante
+    int passive_hp_level;   // +10% HP par niveau
+    int passive_atk_level;  // +10% ATK par niveau
+    int passive_mana_level; // +10% Mana par niveau
+    int passive_loot_level; // +2% chance de rareté par niveau
+
     // -Niveaux d'équipement ---
     OwnedItem inventory[MAX_INVENTORY];
     int       inventory_count;
@@ -170,6 +176,8 @@ typedef struct
     int   atk;
     float spd;
     int   xp_yield;
+
+    bool  is_boss;
 
     Color base_color;
 

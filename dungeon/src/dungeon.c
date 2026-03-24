@@ -301,10 +301,11 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
 
                         // --- NOUVEAU : LE TIRAGE DE LA RARETÉ ---
                         ItemRarity rarity = RARITY_COMMON;
+                        int luck_bonus = game->combat.player.passive_loot_level * 2;
                         int roll = GetRandomValue(1, 100);
-                        if (roll <= 5) rarity = RARITY_LEGENDARY;       // 5% Légendaire
-                        else if (roll <= 20) rarity = RARITY_EPIC;      // 15% Épique
-                        else if (roll <= 50) rarity = RARITY_RARE;      // 30% Rare
+                        if (roll <= 5 + luck_bonus) rarity = RARITY_LEGENDARY;
+                        else if (roll <= 20 + (luck_bonus * 2)) rarity = RARITY_EPIC;
+                        else if (roll <= 50 + (luck_bonus * 3)) rarity = RARITY_RARE;
                         // Reste (50%) = Commun
                         
                         // Ajout avec la rareté !

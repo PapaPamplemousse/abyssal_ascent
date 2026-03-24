@@ -21,6 +21,7 @@ typedef enum
     STATE_ARCHIFORGE,  /**< Archiforge (sorts) */
     STATE_DUNGEON,     /**< Exploration du donjon */
     STATE_INVENTORY,   /**< Inventaire */
+    STATE_ALTAR,       /**< Altar */
     STATE_GAMEOVER     /**< Écran de mort */
 } GameState;
 

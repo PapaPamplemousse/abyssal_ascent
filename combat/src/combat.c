@@ -185,7 +185,7 @@ void Combat_StartEncounter(CombatContext* combat, int current_floor, bool is_bos
     combat->current_enemy.spd      = chosen->spd;
     combat->current_enemy.xp_yield = chosen->xp;
     combat->current_enemy.base_color = chosen->base_color;
-
+    combat->current_enemy.is_boss = chosen->is_boss;
     combat->current_enemy.ascii_line_count = chosen->ascii_line_count;
     for (int i = 0; i < chosen->ascii_line_count; i++) {
         strcpy(combat->current_enemy.ascii[i], chosen->ascii[i]);
@@ -414,6 +414,11 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
         combat->is_active = false;
         Combat_AddLog(combat, T("ENEMY_DEFEATED"));
 
+        if (combat->current_enemy.is_boss) {
+            combat->player.boss_souls++;
+            Combat_AddLog(combat, "=> AME DE BOSS OBTENUE !");
+        }
+
         combat->player.xp += combat->current_enemy.xp_yield;
         if (combat->player.xp >= combat->player.max_xp)
         {
@@ -560,7 +565,7 @@ void Combat_RecalculateStats(CombatContext* combat) {
             if (item->rarity == RARITY_RARE) r_mult = 1.2f;
             else if (item->rarity == RARITY_EPIC) r_mult = 1.5f;
             else if (item->rarity == RARITY_LEGENDARY) r_mult = 2.0f;
-            
+
             // On applique le multiplicateur aux stats de l'objet !
             combat->player.base_max_hp += (int)((t->hp + (item->level * t->inc_hp)) * r_mult);
             combat->player.base_atk += (int)((t->atk + (item->level * t->inc_atk)) * r_mult);
@@ -574,7 +579,16 @@ void Combat_RecalculateStats(CombatContext* combat) {
             if (item->effect == ITEM_EFFECT_POISON) combat->player.has_poison_weapon = true;
         }
     }
-    
+
+    // Stats de renaissance 
+    float hp_mult = 1.0f + (combat->player.passive_hp_level * 0.10f); // +10% par niveau
+    float atk_mult = 1.0f + (combat->player.passive_atk_level * 0.10f); // +10% par niveau1
+    float mana_mult = 1.0f + (combat->player.passive_mana_level * 0.10f); // +10% par niveau1
+
+    combat->player.base_max_hp = (int)(combat->player.base_max_hp * hp_mult);
+    combat->player.base_atk = (int)(combat->player.base_atk * atk_mult);
+    combat->player.base_max_mana = (int)(combat->player.base_max_mana *mana_mult );
+
     combat->player.max_hp = combat->player.base_max_hp;
     combat->player.max_mana = combat->player.base_max_mana;
     combat->player.atk = combat->player.base_atk;

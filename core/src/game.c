@@ -126,33 +126,17 @@ void Game_Update(GameContext* game)
                 game->currentState = STATE_ALCHEMIST;
             else if (key == KEY_FIVE || key == KEY_KP_5)
                 game->currentState = STATE_ARCHIFORGE;
-            else if (key == KEY_I || key == KEY_KP_6)
+            else if (key == KEY_SIX || key == KEY_KP_6)
                 game->currentState = STATE_INVENTORY;
-            else if (key == KEY_SIX || key == KEY_KP_7)
+            else if (key == KEY_SEVEN || key == KEY_KP_7)
             {
                 game->currentState = STATE_DUNGEON;
                 Dungeon_Enter(&myDungeon);
                 game->combat.player.inventory_safe_count = game->combat.player.inventory_count;
             }
-            else if (key == KEY_G)
+            else if((key == KEY_EIGHT)|| (key == KEY_KP_8))
             {
-                // =========================================================
-                // --- MODE DEBUG / CHEAT (TOUCHE G) ---
-                // =========================================================
-                if (g_itemCount > 0) {
-                    // On génère 5 objets d'un coup !
-                    for (int i = 0; i < 5; i++) {
-                        int rand_item = GetRandomValue(0, g_itemCount - 1);
-                        int rand_lvl = GetRandomValue(1, 20); // Niveau entre 1 et 20
-                        ItemEffect fx = (ItemEffect)GetRandomValue(0, 4); // Effet aléatoire (0 = aucun, 4 = Vitesse)
-                        ItemRarity rarity = (ItemRarity)GetRandomValue(0, 3); // Rareté (0 = Commun, 3 = Légendaire)
-                        
-                        Inventory_AddLoot(&game->combat, rand_item, rand_lvl, fx, rarity);
-                    }
-                    // On valide ces objets pour qu'ils ne disparaissent pas
-                    game->combat.player.inventory_safe_count = game->combat.player.inventory_count;
-                    printf("[CHEAT] 5 objets ajoutes a l'inventaire !\n");
-                }
+                game->currentState = STATE_ALTAR;
             }
             else if (pressedQuit)
                 game->currentState = STATE_MENU;
@@ -189,6 +173,7 @@ void Game_Update(GameContext* game)
         case STATE_ALCHEMIST:
         case STATE_ARCHIFORGE:
         case STATE_INVENTORY:
+        case STATE_ALTAR :
             // Pour ces 3 menus, on quitte avec Q (ou A)
             if (pressedQuit)
                 game->currentState = STATE_CAMP;
@@ -282,14 +267,21 @@ void Game_Render(GameContext* game)
 
                 DrawTextEx(game->dungeonFont, fireAscii[i], (Vector2){pos.x + flickerX, pos.y}, asciiFontSize, spacing, col);
             }
-            DrawTextEx(game->uiFont, T("CAMP_BTN_MINE"), (Vector2){cx - 150, h - 320}, 24, 1, LIGHTGRAY);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_FOREST"), (Vector2){cx - 150, h - 280}, 24, 1, GREEN);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_FORGE"), (Vector2){cx - 150, h - 240}, 24, 1, ORANGE);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_ALCHEMIST"), (Vector2){cx - 150, h - 200}, 24, 1, PURPLE);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_ARCHIFORGE"), (Vector2){cx - 150, h - 160}, 24, 1, BLUE);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_INVENTORY"), (Vector2){cx - 150, h - 120}, 24, 1, YELLOW);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_DUNGEON"), (Vector2){cx - 150, h - 80}, 24, 1, RED);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_MAIN_MENU"), (Vector2){cx - 150, h - 40}, 20, 1, DARKGRAY);
+
+            // Colonne de gauche
+            DrawTextEx(game->uiFont, T("CAMP_BTN_MINE"),       (Vector2){cx - 250, h - 200}, 24, 1, LIGHTGRAY);
+            DrawTextEx(game->uiFont, T("CAMP_BTN_FOREST"),     (Vector2){cx - 250, h - 160}, 24, 1, GREEN);
+            DrawTextEx(game->uiFont, T("CAMP_BTN_FORGE"),      (Vector2){cx - 250, h - 120}, 24, 1, ORANGE);
+            DrawTextEx(game->uiFont, T("CAMP_BTN_ALCHEMIST"),  (Vector2){cx - 250, h - 80},  24, 1, PINK);
+
+            // Colonne de droite
+            DrawTextEx(game->uiFont, T("CAMP_BTN_ARCHIFORGE"), (Vector2){cx - 20,  h - 200}, 24, 1, BLUE);
+            DrawTextEx(game->uiFont, T("CAMP_BTN_INVENTORY"),  (Vector2){cx - 20,  h - 160}, 24, 1, YELLOW);
+            DrawTextEx(game->uiFont, T("CAMP_BTN_DUNGEON"),    (Vector2){cx - 20,  h - 120}, 24, 1, PURPLE);
+            DrawTextEx(game->uiFont, T("CAMP_BTN_ALTAR"),      (Vector2){cx - 20,  h - 80},  20, 1, RED);
+
+            // Bouton retour au centre en bas
+            DrawTextEx(game->uiFont, T("CAMP_BTN_MAIN_MENU"),  (Vector2){cx - 100, h - 40},  20, 1, DARKGRAY);
         }
         else if (game->currentState == STATE_FORGE)
         {
@@ -325,6 +317,11 @@ void Game_Render(GameContext* game)
 
             int cx = (w * 0.25f) + ((w * 0.55f) / 2);
             DrawTextEx(game->uiFont, T("BTN_BACK_CAMP"), (Vector2){cx - 150, h - 50}, 20, 1, GRAY);
+        }
+        else if(game->currentState == STATE_ALTAR)
+        {
+            Game_RenderAltar(game, w, h);
+            DrawTextEx(game->uiFont, T("BTN_BACK_CAMP"), (Vector2){startX, h - 80}, 20, 1, GRAY);
         }
         else if (game->currentState == STATE_DUNGEON)
         {

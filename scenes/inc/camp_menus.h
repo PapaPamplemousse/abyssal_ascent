@@ -43,4 +43,15 @@ void Game_RenderArchiforge(GameContext* game, int w, int h);
  */
 void Game_RenderAlchemist(GameContext* game, int w, int h);
 
+
+/**
+ * @brief Affiche l'écran de l'autel.
+ * @details Permet d'apprendre, améliorer, fabriquer et équiper des potions.
+ * @param[in,out] game Contexte du jeu
+ * @param[in] w Largeur de l'écran
+ * @param[in] h Hauteur de l'écran
+ * @note Fonction publique
+ */
+void Game_RenderAltar(GameContext* game, int w, int h);
+
 #endif // CAMP_MENUS_H

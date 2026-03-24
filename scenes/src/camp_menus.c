@@ -403,3 +403,107 @@ void Game_RenderAlchemist(GameContext* game, int w, int h)
         }
     }
 }
+
+
+void Game_RenderAltar(GameContext* game, int w, int h)
+{
+    int centerX = w / 2;
+    int centerY = h / 2;
+
+    // Titre et Âmes
+    DrawTextCentered(game->uiFont, "[ AUTEL DES ANCIENS ]", centerX, 40, 40, 1, PURPLE);
+    
+    char soulText[64];
+    sprintf(soulText, "Ames de Boss disponibles : %d", game->combat.player.boss_souls);
+    DrawTextCentered(game->uiFont, soulText, centerX, 90, 24, 1, WHITE);
+
+    // =========================================================
+    // 1. DESSIN DU PENTAGRAMME EN ASCII ART
+    // =========================================================
+
+    const char* pentagram[16] = {
+        "                   .                   ",
+        "                  / \\                  ",
+        "                 /   \\                 ",
+        "                /     \\                ",
+        "    ___________/       \\___________    ",
+        "    \\          \\       /          /    ",
+        "     \\          \\     /          /     ",
+        "      \\          \\   /          /      ",
+        "       \\          \\ /          /       ",
+        "        \\          * /        ",
+        "         \\        / \\        /         ",
+        "         /       /   \\       \\         ",
+        "        /       /     \\       \\        ",
+        "       /       /       \\       \\       ",
+        "      /       /         \\       \\      ",
+        "     /_______/           \\_______\\     "
+    };
+
+    int asciiLines = 16;
+    int fontSize = 32;   // PLUS GRAND ! (Avant: 20)
+    int lineHeight = 30; // Espacement vertical ajusté
+    int asciiTotalHeight = asciiLines * lineHeight;
+    int asciiStartY = centerY - (asciiTotalHeight / 2) + 30;
+
+    for (int i = 0; i < asciiLines; i++) {
+        Vector2 tSize = MeasureTextEx(game->uiFont, pentagram[i], fontSize, 1);
+        DrawTextEx(game->uiFont, pentagram[i], (Vector2){centerX - (tSize.x / 2), asciiStartY + (i * lineHeight)}, fontSize, 1, DARKPURPLE);
+    }
+
+    // =========================================================
+    // 2. BOUTONS DES PASSIFS (Placés aux extrémités)
+    // =========================================================
+    
+    // Position 1 : Haut Gauche (Vitalité)
+    int p1_x = centerX - 350;
+    int p1_y = asciiStartY + 50;
+    
+    char hpTxt[128];
+    sprintf(hpTxt, "Vitalite Ancestrale\nNiv %d : +%d%% HP Max", game->combat.player.passive_hp_level, game->combat.player.passive_hp_level * 10);
+    DrawTextCentered(game->uiFont, hpTxt, p1_x, p1_y, 20, 1, GREEN);
+    if (DoShopButton(game->uiFont, "[ Ameliorer (1 Ame) ]", p1_x - 100, p1_y + 45, 20, game->combat.player.boss_souls > 0)) {
+        game->combat.player.boss_souls--;
+        game->combat.player.passive_hp_level++;
+        Combat_RecalculateStats(&game->combat);
+    }
+
+    // Position 2 : Haut Droite (Force)
+    int p2_x = centerX + 350;
+    int p2_y = asciiStartY + 50;
+    
+    char atkTxt[128];
+    sprintf(atkTxt, "Force Titanesque\nNiv %d : +%d%% ATK", game->combat.player.passive_atk_level, game->combat.player.passive_atk_level * 10);
+    DrawTextCentered(game->uiFont, atkTxt, p2_x, p2_y, 20, 1, RED);
+    if (DoShopButton(game->uiFont, "[ Ameliorer (1 Ame) ]", p2_x - 100, p2_y + 45, 20, game->combat.player.boss_souls > 0)) {
+        game->combat.player.boss_souls--;
+        game->combat.player.passive_atk_level++;
+        Combat_RecalculateStats(&game->combat);
+    }
+
+    // Position 3 : Bas Gauche (Mana)
+    int p3_x = centerX - 350;
+    int p3_y = asciiStartY + 350;
+    
+    // (J'assume que tu l'as ajouté dans ta structure PlayerStats et Save/LoadGame)
+    char manaTxt[128];
+    sprintf(manaTxt, "Puits Cosmique\nNiv %d : +%d%% Mana", game->combat.player.passive_mana_level, game->combat.player.passive_mana_level * 10);
+    DrawTextCentered(game->uiFont, manaTxt, p3_x, p3_y, 20, 1, SKYBLUE);
+    if (DoShopButton(game->uiFont, "[ Ameliorer (1 Ame) ]", p3_x - 100, p3_y + 45, 20, game->combat.player.boss_souls > 0)) {
+        game->combat.player.boss_souls--;
+        game->combat.player.passive_mana_level++;
+        Combat_RecalculateStats(&game->combat);
+    }
+
+    // Position 4 : Bas Droite (Chance)
+    int p4_x = centerX + 350;
+    int p4_y = asciiStartY + 350;
+    
+    char lootTxt[128];
+    sprintf(lootTxt, "Aura de Fortune\nNiv %d : +%d%% Loot", game->combat.player.passive_loot_level, game->combat.player.passive_loot_level * 2);
+    DrawTextCentered(game->uiFont, lootTxt, p4_x, p4_y, 20, 1, YELLOW);
+    if (DoShopButton(game->uiFont, "[ Ameliorer (1 Ame) ]", p4_x - 100, p4_y + 45, 20, game->combat.player.boss_souls > 0)) {
+        game->combat.player.boss_souls--;
+        game->combat.player.passive_loot_level++;
+    }
+}
