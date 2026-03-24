@@ -28,12 +28,6 @@ void Lang_Init(const char* filepath)
     }
 }
 
-void Lang_Close(void)
-{
-    if (g_langDB)
-        cJSON_Delete(g_langDB);
-}
-
 const char* T(const char* key)
 {
     if (!g_langDB)

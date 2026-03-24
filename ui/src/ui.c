@@ -1,5 +1,5 @@
 #include "ui.h"
-#include "../../utils/inc/lang.h"
+#include "lang.h"
 #include <stdio.h>
 #include <string.h>
 

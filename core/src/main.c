@@ -1,9 +1,9 @@
 #include "game.h"
 #include <stdio.h>
-#include "../../utils/inc/lang.h"
-#include "../../combat/inc/combat.h"
-#include "../../dungeon/inc/dungeon.h"
-
+#include "lang.h"
+#include "combat.h"
+#include "dungeon.h"
+#include "database.h"
 int main(void)
 {
     // On active la synchronisation verticale et on autorise le redimensionnement
@@ -19,11 +19,7 @@ int main(void)
 
     SetTargetFPS(60);
 
-    Lang_Init("assets/data/lang.json");
-    LoadMonstersDB("assets/data/monsters.json");
-    LoadDungeonDB("assets/data/ambiance.json", "assets/data/rooms.json");
-    LoadItemsDB("assets/data/items.json");
-    LoadMagicDB("assets/data/spells.json", "assets/data/potions.json");
+    DB_Init("assets/data/monsters.json", "assets/data/items.json", "assets/data/spells.json", "assets/data/potions.json", "assets/data/ambiance.json", "assets/data/rooms.json", "assets/data/lang.json");
 
     GameContext game;
     Game_Init(&game);

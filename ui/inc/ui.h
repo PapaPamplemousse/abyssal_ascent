@@ -2,8 +2,8 @@
 #define UI_H
 
 #include "raylib.h"
-#include "../../core/inc/game.h"
-#include "../../dungeon/inc/dungeon.h"
+#include "game.h"
+#include "dungeon.h"
 
 /**
  * @brief Dessine l'interface utilisateur complète du jeu.

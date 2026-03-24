@@ -1,7 +1,7 @@
 #ifndef DUNGEON_H
 #define DUNGEON_H
 
-#include "../../core/inc/game.h"
+#include "game.h"
 
 #define MAP_WIDTH 21
 #define MAP_HEIGHT 21
@@ -51,7 +51,20 @@ typedef struct
     EventRoomTemplate current_event;
 } DungeonContext;
 
-void LoadDungeonDB(const char* ambiance_path, const char* rooms_path);
+
+// Bases de données globales
+#define MAX_AMBIANCE 20
+#define MAX_EVENTS 20
+
+
+extern char g_ambiance_en[MAX_AMBIANCE][128];
+extern char g_ambiance_fr[MAX_AMBIANCE][128];
+extern int  g_ambianceCount;
+
+extern EventRoomTemplate g_eventDB[MAX_EVENTS];
+extern int               g_eventCount;
+
+
 void Dungeon_Init(DungeonContext* dungeon);
 void Dungeon_Enter(DungeonContext* dungeon);
 void Dungeon_Generate(DungeonContext* dungeon);

@@ -1,9 +1,9 @@
 #include "dungeon.h"
 #include <stdio.h>
 #include <string.h>
-#include "../../utils/inc/lang.h"
-#include "../../utils/inc/cJSON.h"
-#include "../../combat/inc/combat.h"
+#include "lang.h"
+#include "cJSON.h"
+#include "combat.h"
 
 // Bases de données globales
 #define MAX_AMBIANCE 20
@@ -23,70 +23,7 @@ int               g_eventCount = 0;
 static void Dungeon_UpdateFog(DungeonContext* dungeon, int fog_bonus);
 
 
-void LoadDungeonDB(const char* ambiance_path, const char* rooms_path)
-{
-    // 1. Charger l'ambiance
-    char* buf1 = LoadFileText(ambiance_path);
-    if (buf1)
-    {
-        cJSON* json = cJSON_Parse(buf1);
-        cJSON* arr  = cJSON_GetObjectItemCaseSensitive(json, "ambiance");
-        cJSON* item;
-        g_ambianceCount = 0;
-        cJSON_ArrayForEach(item, arr)
-        {
-            if (g_ambianceCount >= MAX_AMBIANCE)
-                break;
-            strcpy(g_ambiance_en[g_ambianceCount], cJSON_GetObjectItem(item, "en")->valuestring);
-            strcpy(g_ambiance_fr[g_ambianceCount], cJSON_GetObjectItem(item, "fr")->valuestring);
-            g_ambianceCount++;
-        }
-        cJSON_Delete(json);
-        UnloadFileText(buf1);
-    }
 
-    // 2. Charger les salles d'événements
-    char* buf2 = LoadFileText(rooms_path);
-    if (buf2)
-    {
-        cJSON* json = cJSON_Parse(buf2);
-        cJSON* arr  = cJSON_GetObjectItemCaseSensitive(json, "rooms");
-        cJSON* item;
-        g_eventCount = 0;
-        cJSON_ArrayForEach(item, arr)
-        {
-            if (g_eventCount >= MAX_EVENTS)
-                break;
-            EventRoomTemplate* t = &g_eventDB[g_eventCount];
-            strcpy(t->id, cJSON_GetObjectItem(item, "id")->valuestring);
-            strcpy(t->name_en, cJSON_GetObjectItem(item, "name_en")->valuestring);
-            strcpy(t->name_fr, cJSON_GetObjectItem(item, "name_fr")->valuestring);
-            strcpy(t->type, cJSON_GetObjectItem(item, "type")->valuestring);
-            t->amount = cJSON_GetObjectItem(item, "amount")->valueint;
-            strcpy(t->flavor_en, cJSON_GetObjectItem(item, "flavor_en")->valuestring);
-            strcpy(t->flavor_fr, cJSON_GetObjectItem(item, "flavor_fr")->valuestring);
-            // Ascii art
-            cJSON* asciiArray   = cJSON_GetObjectItem(item, "ascii");
-            cJSON* line         = NULL;
-            t->ascii_line_count = 0;
-            if (asciiArray)
-            {
-                cJSON_ArrayForEach(line, asciiArray)
-                {
-                    if (t->ascii_line_count < MAX_ASCII_LINES)
-                    {
-                        strcpy(t->ascii[t->ascii_line_count], line->valuestring);
-                        t->ascii_line_count++;
-                    }
-                }
-            }
-
-            g_eventCount++;
-        }
-        cJSON_Delete(json);
-        UnloadFileText(buf2);
-    }
-}
 
 // --- LA FORMULE DE CHECKPOINT ---
 void Dungeon_Enter(DungeonContext* dungeon)

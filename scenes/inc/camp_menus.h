@@ -1,7 +1,7 @@
 #ifndef CAMP_MENUS_H
 #define CAMP_MENUS_H
 
-#include "../../core/inc/game.h"
+#include "game.h"
 
 /**
  * @brief Affiche l'écran d'inventaire du joueur.

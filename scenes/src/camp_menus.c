@@ -1,6 +1,6 @@
-#include "../inc/camp_menus.h"
-#include "../../ui/inc/ui.h"
-#include "../../utils/inc/lang.h"
+#include "camp_menus.h"
+#include "ui.h"
+#include "lang.h"
 #include <stdio.h>
 
 // Déclarations externes pour les bases de données

@@ -208,9 +208,8 @@ extern int g_spellCount;
 extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
 extern int g_potionCount;
 
-void LoadMonstersDB(const char* filepath);
-void LoadMagicDB(const char* spell_path, const char* potion_path);
-void LoadItemsDB(const char* filepath);
+extern MonsterTemplate g_monsterDB[MAX_MONSTERS_DB];
+extern int             g_monsterCount;
 
 void Combat_Init(CombatContext* combat);
 void Combat_StartEncounter(CombatContext* combat, int current_floor, bool is_boss_room);
