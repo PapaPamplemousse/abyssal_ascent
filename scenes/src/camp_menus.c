@@ -26,8 +26,6 @@ void Game_RenderInventory(GameContext* game, int w, int h)
     int visualWidth = centerWidth * 0.45f;
     int listWidth   = centerWidth * 0.55f;
 
-    (void)listWidth;
-
     DrawLine(startX + visualWidth, 80, startX + visualWidth, h, DARKGRAY);
 
     // --- ZONE GAUCHE : VISUEL EQUIPEMENT ---
@@ -56,31 +54,40 @@ void Game_RenderInventory(GameContext* game, int w, int h)
     for (int i = 0; i < game->combat.player.inventory_count; i++)
     {
         int           inv_idx = sorted_indices[i];
-        OwnedItem*    item    = &game->combat.player.inventory[inv_idx];
+        OwnedItem* item    = &game->combat.player.inventory[inv_idx];
         ItemTemplate* t       = &g_itemDB[item->template_idx];
 
         bool is_eq = false;
-        for (int j = 0; j < MAX_SLOTS; j++)
-            if (game->combat.player.equipped[j] == inv_idx)
-                is_eq = true;
+        for (int j = 0; j < MAX_SLOTS; j++) {
+            if (game->combat.player.equipped[j] == inv_idx) is_eq = true;
+        }
 
-        char btn_text[128];
-        sprintf(btn_text, "%s %s%s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
+        // CORRECTION 2 : Buffer plus grand + Suppression du DoShopButton !
+        char btn_text[256];
+        sprintf(btn_text, "%s %s%s%s (Niv %d)", is_eq ? "[ EQUIPE ]" : "[ ]", GetRarityName(item->rarity), g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
 
-        if (DoShopButton(game->uiFont, btn_text, listX, 150 + (i * 30), 20, true))
+        int startY = 150;
+        Vector2 tSize = MeasureTextEx(game->uiFont, btn_text, 20, 1);
+        Rectangle hitbox = {listX, startY + (i * 30), tSize.x, tSize.y}; // Aligné sur listX proprement
+        bool isHovered = CheckCollisionPointRec(GetMousePosition(), hitbox);
+        
+        Color drawColor = GetRarityColor(item->rarity); 
+        if (is_eq) drawColor = YELLOW; 
+        if (isHovered) drawColor = WHITE; 
+
+        // On dessine UNE SEULE FOIS, proprement.
+        DrawTextEx(game->uiFont, btn_text, (Vector2){hitbox.x, hitbox.y}, 20, 1, drawColor);
+
+        // La logique de clic remplace le "DoShopButton"
+        if (isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
-            if (is_eq)
-            {
-                for (int j = 0; j < MAX_SLOTS; j++)
-                {
-                    if (game->combat.player.equipped[j] == inv_idx)
-                    {
+            if (is_eq) {
+                for (int j = 0; j < MAX_SLOTS; j++) {
+                    if (game->combat.player.equipped[j] == inv_idx) {
                         game->combat.player.equipped[j] = -1;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 Inventory_Equip(&game->combat, inv_idx);
             }
             Combat_RecalculateStats(&game->combat);
@@ -110,18 +117,30 @@ void Game_RenderForge(GameContext* game, int w, int h)
     for (int i = 0; i < game->combat.player.inventory_count; i++)
     {
         int           inv_idx = sorted_indices[i];
-        OwnedItem*    item    = &game->combat.player.inventory[inv_idx];
+        OwnedItem* item    = &game->combat.player.inventory[inv_idx];
         ItemTemplate* t       = &g_itemDB[item->template_idx];
 
         bool is_eq = false;
-        for (int j = 0; j < MAX_SLOTS; j++)
-            if (game->combat.player.equipped[j] == inv_idx)
-                is_eq = true;
+        for (int j = 0; j < MAX_SLOTS; j++) {
+            if (game->combat.player.equipped[j] == inv_idx) is_eq = true;
+        }
 
-        char itemText[128];
-        sprintf(itemText, "%s %s%s (Niv %d)", is_eq ? "[E]" : "[ ]", g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
+        char itemText[256];
+        sprintf(itemText, "%s %s%s%s (Niv %d)", is_eq ? "[E]" : "[ ]", GetRarityName(item->rarity), g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
 
-        if (DoShopButton(game->uiFont, itemText, listX, 150 + (i * 25), 18, true))
+        // CORRECTION 3 : Suppression de DoShopButton pour laisser les couleurs s'afficher !
+        int startY = 150;
+        Vector2 tSize = MeasureTextEx(game->uiFont, itemText, 20, 1);
+        Rectangle hitbox = {listX, startY + (i * 30), tSize.x, tSize.y};
+        bool isHovered = CheckCollisionPointRec(GetMousePosition(), hitbox);
+
+        Color drawColor = GetRarityColor(item->rarity);
+        if (selectedForgeIdx == inv_idx) drawColor = YELLOW; // L'objet sélectionné clignote en jaune
+        else if (isHovered) drawColor = WHITE;
+
+        DrawTextEx(game->uiFont, itemText, (Vector2){hitbox.x, hitbox.y}, 20, 1, drawColor);
+
+        if (isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
             selectedForgeIdx = inv_idx;
         }
@@ -137,7 +156,7 @@ void Game_RenderForge(GameContext* game, int w, int h)
     }
     else
     {
-        OwnedItem*    item = &game->combat.player.inventory[selectedForgeIdx];
+        OwnedItem* item = &game->combat.player.inventory[selectedForgeIdx];
         ItemTemplate* t    = &g_itemDB[item->template_idx];
 
         int line_height = 20;
@@ -145,11 +164,11 @@ void Game_RenderForge(GameContext* game, int w, int h)
         for (int i = 0; i < t->ascii_line_count; i++)
         {
             Vector2 tSize = MeasureTextEx(game->dungeonFont, t->ascii[i], 20, 1);
-            DrawTextEx(game->dungeonFont, t->ascii[i], (Vector2){shopX + (shopWidth / 2) - (tSize.x / 2) - 20, asciiStartY + (i * line_height)}, 20, 1, ORANGE);
+            DrawTextEx(game->dungeonFont, t->ascii[i], (Vector2){shopX + (shopWidth / 2) - (tSize.x / 2) - 20, asciiStartY + (i * line_height)}, 20, 1, GetRarityColor(item->rarity));
         }
 
         int  infoY = asciiStartY + (t->ascii_line_count * line_height) + 30;
-        char statsText[128];
+        char statsText[256];
         sprintf(statsText, "%s (Niv %d -> %d)", g_isEnglish ? t->name_en : t->name_fr, item->level, item->level + 1);
         DrawTextEx(game->uiFont, statsText, (Vector2){shopX, infoY}, 20, 1, WHITE);
 
@@ -170,24 +189,27 @@ void Game_RenderForge(GameContext* game, int w, int h)
         int costY = infoY + 70;
         DrawTextEx(game->uiFont, "[ COUTS AMELIORATION ]", (Vector2){shopX, costY}, 20, 1, LIGHTGRAY);
 
-        int  cur_cost_fer  = t->cost_fer_base + (item->level * t->cost_fer_inc);
-        int  cur_cost_bois = t->cost_bois_base + (item->level * t->cost_bois_inc);
+        float r_mult = 1.0f;
+        if (item->rarity == 1) r_mult = 1.2f;
+        else if (item->rarity == 2) r_mult = 1.5f;
+        else if (item->rarity == 3) r_mult = 2.0f;
+
+        int cur_cost_fer = (int)((t->cost_fer_base + (item->level * t->cost_fer_inc)) * r_mult);
+        int cur_cost_bois = (int)((t->cost_bois_base + (item->level * t->cost_bois_inc)) * r_mult);
         bool canAfford     = true;
 
         int costLineY = costY + 30;
         if (cur_cost_fer > 0)
         {
             bool hasFer = game->clicker.inventory.fer >= cur_cost_fer;
-            if (!hasFer)
-                canAfford = false;
+            if (!hasFer) canAfford = false;
             DrawTextEx(game->uiFont, TextFormat("Fer: %d", cur_cost_fer), (Vector2){shopX, costLineY}, 20, 1, hasFer ? GRAY : RED);
             costLineY += 25;
         }
         if (cur_cost_bois > 0)
         {
             bool hasBois = game->clicker.inventory.bois >= cur_cost_bois;
-            if (!hasBois)
-                canAfford = false;
+            if (!hasBois) canAfford = false;
             DrawTextEx(game->uiFont, TextFormat("Bois: %d", cur_cost_bois), (Vector2){shopX, costLineY}, 20, 1, hasBois ? BROWN : RED);
             costLineY += 25;
         }

@@ -52,4 +52,20 @@ bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool 
  */
 const char* GetEffectString(int effect);
 
+/**
+ * @brief Retourne la couleur représentant la rareté d'un objet.
+ * @param[in] rarity rareté de l'objet
+ * @return Couleur de la rareté de l'objet
+ * @note Fonction publique
+ */
+Color GetRarityColor(int rarity);
+
+/**
+ * @brief Retourne une chaîne représentant la rareté d'un objet.
+ * @param[in] rarity rareté de l'objet
+ * @return Chaîne de caractères correspondant à la rareté
+ * @note Fonction publique
+ */
+const char* GetRarityName(int rarity);
+
 #endif // UI_H

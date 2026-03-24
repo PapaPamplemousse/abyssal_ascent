@@ -228,9 +228,18 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
 
                 if (strcmp(dungeon->current_event.type, "HEAL") == 0)
                 {
+                    // Soin des PV
                     game->combat.player.hp += dungeon->current_event.amount;
-                    if (game->combat.player.hp > game->combat.player.max_hp)
+                    if (game->combat.player.hp > game->combat.player.max_hp) {
                         game->combat.player.hp = game->combat.player.max_hp;
+                    }
+
+                    // Régénération de la moitié du Mana (50% du max)
+                    game->combat.player.mana += (game->combat.player.max_mana / 2);
+                    if (game->combat.player.mana > game->combat.player.max_mana) {
+                        game->combat.player.mana = game->combat.player.max_mana;
+                    }
+
                     eventSuccess = true;
                 }
                 else if (strcmp(dungeon->current_event.type, "MERCHANT") == 0)
@@ -280,23 +289,26 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                 }
                 else if (strcmp(dungeon->current_event.type, "CHEST") == 0)
                 {
-                    if (g_itemCount > 0)
-                    {
-                        // 1. Objet aléatoire
+                    if (g_itemCount > 0) {
                         int rand_item = GetRandomValue(0, g_itemCount - 1);
-
-                        // 2. Niveau calculé selon l'étage (Étage 25 = niv 5 à 7)
                         int base_lvl = dungeon->floor_level / 5;
                         int rand_lvl = base_lvl + GetRandomValue(0, 2);
-
-                        // 3. Effet "Spicy" (30% de chance d'avoir un effet magique)
+                        
                         ItemEffect fx = ITEM_EFFECT_NONE;
-                        if (GetRandomValue(1, 100) <= 30)
-                        {
-                            fx = (ItemEffect)GetRandomValue(1, 4); // Tire un effet entre 1 et 4
+                        if (GetRandomValue(1, 100) <= 30) {
+                            fx = (ItemEffect)GetRandomValue(1, 4);
                         }
 
-                        Inventory_AddLoot(&game->combat, rand_item, rand_lvl, fx);
+                        // --- NOUVEAU : LE TIRAGE DE LA RARETÉ ---
+                        ItemRarity rarity = RARITY_COMMON;
+                        int roll = GetRandomValue(1, 100);
+                        if (roll <= 5) rarity = RARITY_LEGENDARY;       // 5% Légendaire
+                        else if (roll <= 20) rarity = RARITY_EPIC;      // 15% Épique
+                        else if (roll <= 50) rarity = RARITY_RARE;      // 30% Rare
+                        // Reste (50%) = Commun
+                        
+                        // Ajout avec la rareté !
+                        Inventory_AddLoot(&game->combat, rand_item, rand_lvl, fx, rarity);
                         Combat_AddLog(&game->combat, "*** COFFRE OUVERT ! ***");
                     }
                     eventSuccess = true;

@@ -82,12 +82,20 @@ typedef struct
 
 } ItemTemplate;
 
+typedef enum {
+    RARITY_COMMON = 0,   // Blanc (x1.0 stats & coût)
+    RARITY_RARE = 1,     // Bleu (x1.2 stats & coût)
+    RARITY_EPIC = 2,     // Violet (x1.5 stats & coût)
+    RARITY_LEGENDARY = 3 // Orange (x2.0 stats & coût)
+} ItemRarity;
+
 // L'objet physique dans l'inventaire du joueur
 typedef struct
 {
     int template_idx; // L'index dans la base de données
     int level;        // Niveau actuel de l'objet (0 = base)
     ItemEffect effect; // Effet magique
+    ItemRarity rarity; // La Rareté !
 } OwnedItem;
 
 // Statistiques de combat du joueur
@@ -222,5 +230,5 @@ void Inventory_Add(CombatContext* combat, const char* item_id);
 void Inventory_Equip(CombatContext* combat, int inv_idx);
 void Inventory_Unequip(CombatContext* combat, EquipSlot slot);
 void Inventory_GetSortedIndices(CombatContext* combat, int* indices);
-void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemEffect effect);
+void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemEffect effect, ItemRarity rarity);
 #endif // COMBAT_H

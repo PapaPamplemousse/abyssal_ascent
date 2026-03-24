@@ -1,6 +1,6 @@
 #include "save.h"
-#include "../../utils/inc/cJSON.h"
-#include "../../utils/inc/lang.h"
+#include "cJSON.h"
+#include "lang.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -120,6 +120,7 @@ void SaveGame(GameContext* game, DungeonContext* dungeon)
                 cJSON_AddNumberToObject(itemObj, "template_idx", game->combat.player.inventory[i].template_idx);
                 cJSON_AddNumberToObject(itemObj, "level", game->combat.player.inventory[i].level);
                 cJSON_AddNumberToObject(itemObj, "effect", game->combat.player.inventory[i].effect); 
+                cJSON_AddNumberToObject(itemObj, "rarity", game->combat.player.inventory[i].rarity);
                 cJSON_AddItemToArray(inv_arr, itemObj);
             }
         }
@@ -222,10 +223,12 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
                 if (i < count) {
                     cJSON* tNode = cJSON_GetObjectItem(itemNode, "template_idx");
                     cJSON* lNode = cJSON_GetObjectItem(itemNode, "level");
+                    cJSON* rNode = cJSON_GetObjectItem(itemNode, "rarity");
                     cJSON* eNode = cJSON_GetObjectItem(itemNode, "effect");
                     
                     game->combat.player.inventory[i].template_idx = tNode ? tNode->valueint : 0;
                     game->combat.player.inventory[i].level = lNode ? lNode->valueint : 0;
+                    game->combat.player.inventory[i].rarity = rNode ? rNode->valueint : 0 ;
                     game->combat.player.inventory[i].effect = eNode ? eNode->valueint : 0;
                     i++;
                 }

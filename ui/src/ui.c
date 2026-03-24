@@ -22,6 +22,20 @@ const char* GetEffectString(int effect)
     return "";
 }
 
+Color GetRarityColor(int rarity) {
+    if (rarity == 1) return SKYBLUE;    // Rare
+    if (rarity == 2) return PURPLE;     // Épique
+    if (rarity == 3) return ORANGE;     // Légendaire
+    return WHITE;                       // Commun
+}
+
+const char* GetRarityName(int rarity) {
+    if (rarity == 1) return " [Rare]";
+    if (rarity == 2) return " [Epique]";
+    if (rarity == 3) return " [Lgd]";
+    return "";
+}
+
 bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool canAfford)
 {
     Vector2   textSize  = MeasureTextEx(font, text, fontSize, 1);
@@ -84,6 +98,7 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
 
     DrawRectangle(0, 0, leftWidth, h, uiBg);
     DrawRectangle(w - rightWidth, 0, rightWidth, h, uiBg);
+
     DrawRectangleLinesEx((Rectangle){0, 0, leftWidth, h}, 2, uiBorder);
     DrawRectangleLinesEx((Rectangle){w - rightWidth, 0, rightWidth, h}, 2, uiBorder);
     DrawLine(0, inventoryHeight, leftWidth, inventoryHeight, uiBorder);
@@ -111,7 +126,6 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
     DrawTextEx(game->uiFont, TextFormat(T("RES_MEAT"), game->clicker.inventory.viande), (Vector2){20, 210}, 20, 1, RED);
 
     DrawTextEx(game->uiFont, T("MAP_TITLE"), (Vector2){20, mapStartY + 15}, 24, 1, LIGHTGRAY);
-
     if (game->currentState == STATE_DUNGEON && dungeon != NULL)
     {
         int cell_size = 12;
@@ -140,22 +154,15 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
                     if (x == dungeon->playerX && y == dungeon->playerY)
                     {
                         char* dirStr = "^";
-                        if (dungeon->playerDir == DIR_EAST)
-                            dirStr = ">";
-                        else if (dungeon->playerDir == DIR_SOUTH)
-                            dirStr = "v";
-                        else if (dungeon->playerDir == DIR_WEST)
-                            dirStr = "<";
+                        if (dungeon->playerDir == DIR_EAST) dirStr = ">";
+                        else if (dungeon->playerDir == DIR_SOUTH) dirStr = "v";
+                        else if (dungeon->playerDir == DIR_WEST) dirStr = "<";
                         DrawTextEx(game->dungeonFont, dirStr, pos, cell_size, spacing, mapPlayerColor);
                     }
-                    else if (tile == '#')
-                        DrawTextEx(game->dungeonFont, "#", pos, cell_size, spacing, mapWallColor);
-                    else if (tile == '.')
-                        DrawTextEx(game->dungeonFont, ".", pos, cell_size, spacing, mapFloorColor);
-                    else if (tile == '>')
-                        DrawTextEx(game->dungeonFont, ">", pos, cell_size, spacing, mapStairsColor);
-                    else if (tile == 'E' || tile == 'B')
-                        DrawTextEx(game->dungeonFont, "?", pos, cell_size, spacing, mapSpecialColor);
+                    else if (tile == '#') DrawTextEx(game->dungeonFont, "#", pos, cell_size, spacing, mapWallColor);
+                    else if (tile == '.') DrawTextEx(game->dungeonFont, ".", pos, cell_size, spacing, mapFloorColor);
+                    else if (tile == '>') DrawTextEx(game->dungeonFont, ">", pos, cell_size, spacing, mapStairsColor);
+                    else if (tile == 'E' || tile == 'B') DrawTextEx(game->dungeonFont, "?", pos, cell_size, spacing, mapSpecialColor);
                 }
             }
         }
@@ -179,7 +186,10 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
     for (int i = 0; i < MAX_SLOTS; i++)
     {
         int  inv_idx = game->combat.player.equipped[i];
-        char eq_text[64];
+        
+        // CORRECTION 1 : Tableau beaucoup plus grand pour éviter le crash (Buffer Overflow) !
+        char eq_text[256]; 
+        
         if (inv_idx == -1)
         {
             sprintf(eq_text, "%s: [ Vide ]", slot_names[i]);
@@ -187,10 +197,10 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
         }
         else
         {
-            OwnedItem*    item = &game->combat.player.inventory[inv_idx];
-            ItemTemplate* t    = &g_itemDB[item->template_idx];
-            sprintf(eq_text, "%s: %s%s (+%d)", slot_names[i], g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
-            DrawTextEx(game->uiFont, eq_text, (Vector2){rightX, equipStartY + 45 + (i * 20)}, 20, 1, WHITE);
+            OwnedItem* item = &game->combat.player.inventory[inv_idx];
+            ItemTemplate* t = &g_itemDB[item->template_idx];
+            sprintf(eq_text, "%s: %s%s%s (+%d)", slot_names[i], GetRarityName(item->rarity), g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
+            DrawTextEx(game->uiFont, eq_text, (Vector2){rightX, equipStartY + 45 + (i * 20)}, 20, 1, GetRarityColor(item->rarity));
         }
     }
 
@@ -204,7 +214,7 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
         if (p_idx != -1)
         {
             PotionTemplate* t = &g_potionDB[p_idx];
-            char            pText[64];
+            char pText[64];
             sprintf(pText, "(%d) %s x%d", i + 1, g_isEnglish ? t->name_en : t->name_fr, game->combat.player.potion_qty[p_idx]);
             DrawTextEx(game->uiFont, pText, (Vector2){rightX, magicStartY + 45 + (i * 20)}, 20, 1, RED);
         }
@@ -226,7 +236,7 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
         if (s_idx != -1)
         {
             SpellTemplate* t = &g_spellDB[s_idx];
-            char           sText[64];
+            char sText[64];
             sprintf(sText, "(%d) %s (%dM)", i + 4, g_isEnglish ? t->name_en : t->name_fr, t->mana_cost);
             DrawTextEx(game->uiFont, sText, (Vector2){rightX, spellStartY + 45 + (i * 20)}, 20, 1, ORANGE);
         }

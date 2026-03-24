@@ -43,8 +43,9 @@ void Inventory_Add(CombatContext* combat, const char* item_id)
     }
 }
 
+
 // fonction gatcha pour les coffres : ajoute un objet aléatoire de la base de données, avec un niveau et un effet aléatoires
-void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemEffect effect) {
+void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemEffect effect, ItemRarity rarity) {
     if (combat->player.inventory_count >= MAX_INVENTORY) {
         Combat_AddLog(combat, "Inventaire plein !");
         return;
@@ -53,11 +54,12 @@ void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemE
     item->template_idx = template_idx;
     item->level = level;
     item->effect = effect;
+    item->rarity = rarity; // On sauvegarde la rareté
     combat->player.inventory_count++;
     
     ItemTemplate* t = &g_itemDB[template_idx];
     char log[64];
-    sprintf(log, "Loot: %s Niv %d", g_isEnglish ? t->name_en : t->name_fr, level);
+    sprintf(log, "Loot : %s Niv %d", g_isEnglish ? t->name_en : t->name_fr, level);
     Combat_AddLog(combat, log);
 }
 
@@ -553,13 +555,19 @@ void Combat_RecalculateStats(CombatContext* combat) {
             OwnedItem* item = &combat->player.inventory[inv_idx];
             ItemTemplate* t = &g_itemDB[item->template_idx];
             
-            combat->player.base_max_hp += t->hp + (item->level * t->inc_hp);
-            combat->player.base_atk += t->atk + (item->level * t->inc_atk);
-            combat->player.base_max_mana += t->mana + (item->level * t->inc_mana);
-            combat->player.base_spd += t->spd + (item->level * t->inc_spd);
-            combat->player.fog_bonus += t->fog + (item->level * t->inc_fog);
+            // --- NOUVEAU : Calcul du multiplicateur de Rareté ---
+            float r_mult = 1.0f;
+            if (item->rarity == RARITY_RARE) r_mult = 1.2f;
+            else if (item->rarity == RARITY_EPIC) r_mult = 1.5f;
+            else if (item->rarity == RARITY_LEGENDARY) r_mult = 2.0f;
+            
+            // On applique le multiplicateur aux stats de l'objet !
+            combat->player.base_max_hp += (int)((t->hp + (item->level * t->inc_hp)) * r_mult);
+            combat->player.base_atk += (int)((t->atk + (item->level * t->inc_atk)) * r_mult);
+            combat->player.base_max_mana += (int)((t->mana + (item->level * t->inc_mana)) * r_mult);
+            combat->player.base_spd += (t->spd + (item->level * t->inc_spd)); // La vitesse n'est pas multipliée pour éviter les abus
+            combat->player.fog_bonus += t->fog + (item->level * t->inc_fog); // Le fog non plus
 
-            // --- APPLICATION DES EFFETS MAGIQUES ---
             if (item->effect == ITEM_EFFECT_FIRE) combat->player.base_atk += 5;
             if (item->effect == ITEM_EFFECT_SPEED) combat->player.base_spd += 0.3f;
             if (item->effect == ITEM_EFFECT_VAMP) combat->player.has_vamp_weapon = true;

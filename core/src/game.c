@@ -1,16 +1,25 @@
 #include "game.h"
-#include "../../dungeon/inc/dungeon.h"
+#include "dungeon.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "save.h"
-#include "../../utils/inc/cJSON.h"
-#include "../../utils/inc/lang.h"
-#include "../../combat/inc/combat.h"
-#include "../../ui/inc/ui.h"
-#include "../../scenes/inc/camp_menus.h"
+#include "cJSON.h"
+#include "lang.h"
+#include "combat.h"
+#include "ui.h"
+#include "camp_menus.h"
 
+/**
+ * @brief Contexte du donjon (interne au module).
+ */
 static DungeonContext myDungeon;
+/**
+ * @brief Base de données des potions (externe).
+ */
 extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
+/**
+ * @brief Base de données des sorts (externe).
+ */
 extern SpellTemplate  g_spellDB[MAX_SPELLS_DB];
 
 void Game_Init(GameContext* game)
@@ -124,6 +133,26 @@ void Game_Update(GameContext* game)
                 game->currentState = STATE_DUNGEON;
                 Dungeon_Enter(&myDungeon);
                 game->combat.player.inventory_safe_count = game->combat.player.inventory_count;
+            }
+            else if (key == KEY_G)
+            {
+                // =========================================================
+                // --- MODE DEBUG / CHEAT (TOUCHE G) ---
+                // =========================================================
+                if (g_itemCount > 0) {
+                    // On génère 5 objets d'un coup !
+                    for (int i = 0; i < 5; i++) {
+                        int rand_item = GetRandomValue(0, g_itemCount - 1);
+                        int rand_lvl = GetRandomValue(1, 20); // Niveau entre 1 et 20
+                        ItemEffect fx = (ItemEffect)GetRandomValue(0, 4); // Effet aléatoire (0 = aucun, 4 = Vitesse)
+                        ItemRarity rarity = (ItemRarity)GetRandomValue(0, 3); // Rareté (0 = Commun, 3 = Légendaire)
+                        
+                        Inventory_AddLoot(&game->combat, rand_item, rand_lvl, fx, rarity);
+                    }
+                    // On valide ces objets pour qu'ils ne disparaissent pas
+                    game->combat.player.inventory_safe_count = game->combat.player.inventory_count;
+                    printf("[CHEAT] 5 objets ajoutes a l'inventaire !\n");
+                }
             }
             else if (pressedQuit)
                 game->currentState = STATE_MENU;

@@ -21,8 +21,8 @@
       "name_fr": "Marchand Ambulant",
       "type": "MERCHANT",
       "amount": 50,
-      "flavor_en": "You bought a Healing Potion for 50 Gold.",
-      "flavor_fr": "Vous achetez une Potion pour 50 Or.",
+      "flavor_en": "You bought a mysterious Potion for 50 Gold.",
+      "flavor_fr": "Vous achetez une mysterieuses Potion pour 50 Or.",
       "ascii": [
         "    .---.    ",
         "   / ___ \\   ",
@@ -37,8 +37,8 @@
       "name_fr": "Coffre au Tresor",
       "type": "CHEST",
       "amount": 0,
-      "flavor_en": "You open the chest... (Gacha to come!)",
-      "flavor_fr": "Vous ouvrez le coffre... (Gacha a venir!)",
+      "flavor_en": "You open the chest...",
+      "flavor_fr": "Vous ouvrez le coffre... ",
       "ascii": [
         "   __________   ",
         "  /\\____;;___\\  ",
