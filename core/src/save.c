@@ -3,6 +3,7 @@
 #include "lang.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 extern bool g_isEnglish;
 
@@ -55,6 +56,8 @@ void SaveGame(GameContext* game, DungeonContext* dungeon)
     cJSON_AddNumberToObject(root, "passive_hp", game->combat.player.passive_hp_level);
     cJSON_AddNumberToObject(root, "passive_atk", game->combat.player.passive_atk_level);
     cJSON_AddNumberToObject(root, "passive_loot", game->combat.player.passive_loot_level);
+    cJSON_AddNumberToObject(root, "passive_mana", game->combat.player.passive_mana_level);
+    
 
     #define SAVE_INT_ARRAY(name, arr, size) \
         do { \
@@ -152,28 +155,41 @@ void SaveGame(GameContext* game, DungeonContext* dungeon)
 
 void LoadGame(GameContext* game, DungeonContext* dungeon)
 {
-    // Sécurité : Initialisation de base
-    for(int i = 0; i < MAX_POTIONS_DB; i++) {
-        game->combat.player.potion_unlocked[i] = false;
-        game->combat.player.potion_level[i] = 0;
-        game->combat.player.potion_qty[i] = 0;
-    }
-    for(int i = 0; i < MAX_SPELLS_DB; i++) {
-        game->combat.player.spell_unlocked[i] = false;
-        game->combat.player.spell_level[i] = 0;
+    // =========================================================
+    // 1. SÉCURITÉ ABSOLUE : FORMATAGE DE LA MÉMOIRE
+    // =========================================================
+    // On met TOUTE la structure du joueur à ZÉRO (inventaire, passifs, sorts, TOUT).
+    memset(&game->combat.player, 0, sizeof(game->combat.player));
+
+    // On définit les statistiques de base d'une "Nouvelle Partie"
+    game->combat.player.level = 1;
+    game->combat.player.xp = 0;
+    game->combat.player.max_xp = 100;
+    
+    game->combat.player.base_max_hp = 50;
+    game->combat.player.hp = 50;
+    game->combat.player.base_atk = 5;
+    game->combat.player.base_max_mana = 20;
+    game->combat.player.mana = 20;
+    game->combat.player.base_spd = 0.8f;
+
+    // Initialisation des emplacements "Vides" à -1 (car 0 = le premier objet/sort)
+    for(int i = 0; i < MAX_SLOTS; i++) {
+        game->combat.player.equipped[i] = -1;
     }
     for(int i = 0; i < 3; i++) {
         game->combat.player.equipped_spells[i] = -1;
         game->combat.player.equipped_potions[i] = -1;
     }
-    for(int i = 0; i < MAX_SLOTS; i++) {
-        game->combat.player.equipped[i] = -1;
-    }
-    game->combat.player.inventory_count = 0;
-    game->combat.player.inventory_safe_count = 0;
-
+    
+    // On sécurise aussi le clicker au cas où !
+    memset(&game->clicker.inventory, 0, sizeof(game->clicker.inventory));
+    // =========================================================
+    // =========================================================
+    // 2. LECTURE DU FICHIER DE SAUVEGARDE
+    // =========================================================
     char* file = LoadFileText("save.json");
-    if (!file) return;
+    if (!file) return; // Si pas de sauvegarde, on garde nos zéros bien propres !
 
     cJSON* root = cJSON_Parse(file);
     if (!root) { UnloadFileText(file); return; }
@@ -181,22 +197,23 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
     cJSON* langNode = cJSON_GetObjectItem(root, "is_english");
     if (langNode) g_isEnglish = cJSON_IsTrue(langNode);
 
-    // On utilise le pointeur dungeon
     cJSON* hf = cJSON_GetObjectItem(root, "highest_floor");
     if (hf) dungeon->highest_floor = hf->valueint;
 
-
-    cJSON* bsNode = cJSON_GetObjectItem(root, "boss_souls"); if(bsNode) game->combat.player.boss_souls = bsNode->valueint;
-    cJSON* phpNode = cJSON_GetObjectItem(root, "passive_hp"); if(phpNode) game->combat.player.passive_hp_level = phpNode->valueint;
+    // --- Chargement des Passifs (propre, sans les else devenus inutiles) ---
+    cJSON* bsNode = cJSON_GetObjectItem(root, "boss_souls");   if(bsNode) game->combat.player.boss_souls = bsNode->valueint;
+    cJSON* phpNode = cJSON_GetObjectItem(root, "passive_hp");  if(phpNode) game->combat.player.passive_hp_level = phpNode->valueint;
     cJSON* patkNode = cJSON_GetObjectItem(root, "passive_atk"); if(patkNode) game->combat.player.passive_atk_level = patkNode->valueint;
-    cJSON* plootNode = cJSON_GetObjectItem(root, "passive_loot"); if(plootNode) game->combat.player.passive_loot_level = plootNode->valueint;
-
-    cJSON* fNode = cJSON_GetObjectItem(root, "fer"); if(fNode) game->clicker.inventory.fer = fNode->valueint;
-    cJSON* oNode = cJSON_GetObjectItem(root, "or"); if(oNode) game->clicker.inventory.or = oNode->valueint;
+    cJSON* plootNode = cJSON_GetObjectItem(root, "passive_loot");if(plootNode) game->combat.player.passive_loot_level = plootNode->valueint;
+    cJSON* pmanaNode = cJSON_GetObjectItem(root, "passive_mana");if(pmanaNode) game->combat.player.passive_mana_level = pmanaNode->valueint;
+    
+    // --- Chargement des Ressources ---
+    cJSON* fNode = cJSON_GetObjectItem(root, "fer");      if(fNode) game->clicker.inventory.fer = fNode->valueint;
+    cJSON* oNode = cJSON_GetObjectItem(root, "or");       if(oNode) game->clicker.inventory.or = oNode->valueint;
     cJSON* cNode = cJSON_GetObjectItem(root, "cristaux"); if(cNode) game->clicker.inventory.cristaux = cNode->valueint;
-    cJSON* bNode = cJSON_GetObjectItem(root, "bois"); if(bNode) game->clicker.inventory.bois = bNode->valueint;
-    cJSON* vNode = cJSON_GetObjectItem(root, "viande"); if(vNode) game->clicker.inventory.viande = vNode->valueint;
-    cJSON* hNode = cJSON_GetObjectItem(root, "herbes"); if(hNode) game->clicker.inventory.herbes = hNode->valueint;
+    cJSON* bNode = cJSON_GetObjectItem(root, "bois");     if(bNode) game->clicker.inventory.bois = bNode->valueint;
+    cJSON* vNode = cJSON_GetObjectItem(root, "viande");   if(vNode) game->clicker.inventory.viande = vNode->valueint;
+    cJSON* hNode = cJSON_GetObjectItem(root, "herbes");   if(hNode) game->clicker.inventory.herbes = hNode->valueint;
 
     game->clicker.inventory.unlock_or       = cJSON_IsTrue(cJSON_GetObjectItem(root, "unlock_or"));
     game->clicker.inventory.unlock_bois     = cJSON_IsTrue(cJSON_GetObjectItem(root, "unlock_bois"));
@@ -218,6 +235,7 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
     LOAD_INT_ARRAY("equipped_spells", game->combat.player.equipped_spells, 3);
     LOAD_INT_ARRAY("equipped_potions", game->combat.player.equipped_potions, 3);
 
+    // --- Chargement de l'Inventaire Physique ---
     cJSON* inv_count_node = cJSON_GetObjectItem(root, "inventory_count");
     if (inv_count_node) {
         int count = inv_count_node->valueint;
@@ -252,5 +270,6 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
     cJSON_Delete(root);
     UnloadFileText(file);
 
+    // Et on applique tout ça proprement !
     Combat_RecalculateStats(&game->combat);
 }

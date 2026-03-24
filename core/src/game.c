@@ -86,6 +86,11 @@ void Game_Update(GameContext* game)
             {
                 game->combat.player.hp++;
             }
+            if(game->combat.player.mana < game->combat.player.max_mana)
+            {
+                game->combat.player.mana ++;
+            }
+            
             camp_heal_timer = 0.0f;
         }
     }

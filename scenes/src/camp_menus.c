@@ -24,7 +24,6 @@ void Game_RenderInventory(GameContext* game, int w, int h)
     DrawLine(startX, 80, startX + centerWidth, 80, DARKGRAY);
 
     int visualWidth = centerWidth * 0.45f;
-    int listWidth   = centerWidth * 0.55f;
 
     DrawLine(startX + visualWidth, 80, startX + visualWidth, h, DARKGRAY);
 
