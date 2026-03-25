@@ -676,7 +676,7 @@ void Combat_TryUsePotion(CombatContext* combat, int slot_index)
     int p_idx = combat->player.equipped_potions[slot_index];
     if (p_idx != -1 && combat->player.potion_qty[p_idx] > 0)
     {
-        udio_PlaySFX(SFX_POTION);
+        audio_PlaySFX(SFX_POTION);
         combat->player.potion_qty[p_idx]--;
         PotionTemplate* t   = &g_potionDB[p_idx];
         int             val = t->base_val + (combat->player.potion_level[p_idx] * t->inc_val);
