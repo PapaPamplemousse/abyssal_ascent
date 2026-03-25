@@ -19,6 +19,10 @@ static int selectedPotionIdx = -1;
 bool  g_camp_fire_lit = false;
 float g_camp_fire_timer = 0.0f;
 
+static int compute_price(int base, int inc, int level);
+
+
+
 void Game_RenderInventory(GameContext* game, int w, int h)
 {
     int startX      = (w * 0.25f) + 30;
@@ -196,8 +200,12 @@ void Game_RenderForge(GameContext* game, int w, int h)
         else if (item->rarity == 2) r_mult = 1.5f;
         else if (item->rarity == 3) r_mult = 2.0f;
 
-        int cur_cost_fer = (int)((t->cost_fer_base + (item->level * t->cost_fer_inc)) * r_mult);
-        int cur_cost_bois = (int)((t->cost_bois_base + (item->level * t->cost_bois_inc)) * r_mult);
+        int cur_cost_fer = compute_price(t->cost_fer_base, t->cost_fer_inc, item->level);
+        int cur_cost_bois = compute_price(t->cost_bois_base, t->cost_bois_inc, item->level);
+         
+        cur_cost_fer = cur_cost_fer*r_mult;
+        cur_cost_bois = cur_cost_bois * r_mult;
+        
         bool canAfford     = true;
 
         int costLineY = costY + 30;
@@ -287,7 +295,8 @@ void Game_RenderArchiforge(GameContext* game, int w, int h)
         else
         {
             int  lvl      = game->combat.player.spell_level[selectedSpellIdx];
-            int  upg_cost = t->upg_gold_base + (lvl * t->upg_gold_inc);
+            int upg_cost = compute_price(t->upg_gold_base, t->upg_gold_inc, lvl);
+
             bool canUpg   = (game->clicker.inventory.or >= upg_cost && lvl < 10);
 
             if (DoShopButton(game->uiFont, TextFormat("[ AMELIORER (-%d Or) ]", upg_cost), shopX, 250, 24, canUpg))
@@ -367,8 +376,8 @@ void Game_RenderAlchemist(GameContext* game, int w, int h)
         else
         {
             int lvl        = game->combat.player.potion_level[selectedPotionIdx];
-            int upg_cost   = t->upg_gold_base + (lvl * t->upg_gold_inc);
-            int craft_cost = t->craft_herbs_base + (lvl * t->craft_herbs_inc);
+            int upg_cost   = compute_price(t->upg_gold_base, t->upg_gold_inc, lvl*lvl);
+            int craft_cost = t->craft_herbs_base + ((lvl*10+1)* t->craft_herbs_inc);
 
             bool canUpg = (game->clicker.inventory.or >= upg_cost && lvl < 10);
             if (DoShopButton(game->uiFont, TextFormat("[ AMELIORER (-%d Or) ]", upg_cost), shopX, 200, 20, canUpg))
@@ -639,4 +648,17 @@ void Game_RenderCamp(GameContext* game, int w, int h)
 
     // Bouton retour au centre en bas
     DrawTextEx(game->uiFont, T("CAMP_BTN_MAIN_MENU"),  (Vector2){cx - 100, h - 40},  20, 1, DARKGRAY);
+}
+
+
+static int compute_price(int base, int inc, int level)
+{
+    int price = base;
+
+    for (int i = 0; i < level; i++)
+    {
+        price = price + (price * inc) / 5; 
+    }
+
+    return price;
 }

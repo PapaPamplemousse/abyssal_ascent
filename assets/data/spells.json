@@ -3,20 +3,20 @@
     {
       "id": "fireball", "name_en": "Fireball", "name_fr": "Boule de Feu",
       "type": "DAMAGE", "base_val": 25, "inc_val": 10, "base_dur": 0, "inc_dur": 0,
-      "mana_cost": 10, "learn_gold": 50, "learn_crystal": 50,
+      "mana_cost": 10, "learn_gold": 400, "learn_crystal": 50,
       "upg_gold_base": 20, "upg_gold_inc": 10, "prep_crystal": 10
     },
     {
       "id": "poison_cloud", "name_en": "Poison Cloud", "name_fr": "Nuage Toxique",
       "type": "POISON", "base_val": 5, "inc_val": 2, "base_dur": 4, "inc_dur": 1,
-      "mana_cost": 15, "learn_gold": 100, "learn_crystal": 20,
-      "upg_gold_base": 30, "upg_gold_inc": 15, "prep_crystal": 15
+      "mana_cost": 15, "learn_gold": 1000, "learn_crystal": 2000,
+      "upg_gold_base": 30, "upg_gold_inc": 15, "prep_crystal": 150
     },
     {
       "id": "frost_nova", "name_en": "Frost Nova", "name_fr": "Nova de Givre",
       "type": "FREEZE", "base_val": 30, "inc_val": 5, "base_dur": 3, "inc_dur": 1,
-      "mana_cost": 20, "learn_gold": 150, "learn_crystal": 80,
-      "upg_gold_base": 40, "upg_gold_inc": 20, "prep_crystal": 20
+      "mana_cost": 20, "learn_gold": 15000, "learn_crystal": 28000,
+      "upg_gold_base": 40, "upg_gold_inc": 20, "prep_crystal": 2000
     }
   ]
 }
