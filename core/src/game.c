@@ -8,6 +8,7 @@
 #include "combat.h"
 #include "ui.h"
 #include "camp_menus.h"
+#include "audio_manager.h"
 
 /**
  * @brief Contexte du donjon (interne au module).
@@ -64,6 +65,39 @@ void Game_Close(GameContext* game)
 
 void Game_Update(GameContext* game)
 {
+    // =========================================================
+    // --- GESTION DE L'AUDIO (Musiques) ---
+    // =========================================================
+    Audio_Update();
+
+    if (game->currentState == STATE_DUNGEON) 
+    {
+        Audio_StopBGM(MUS_CAMP);
+
+        // NOUVEAU : On vérifie si c'est un combat de boss !
+        if (game->combat.is_active && game->combat.current_enemy.is_boss) {
+            Audio_StopBGM(MUS_DUNGEON);
+            Audio_PlayBGM(MUS_BOSS);
+        } else {
+            Audio_StopBGM(MUS_BOSS); // On coupe la musique du boss si le combat est fini
+            Audio_PlayBGM(MUS_DUNGEON);
+        }
+    } 
+    else if (game->currentState != STATE_MENU && game->currentState != STATE_GAMEOVER) 
+    {
+        // Au campement
+        Audio_StopBGM(MUS_DUNGEON);
+        Audio_StopBGM(MUS_BOSS); // Sécurité
+        Audio_PlayBGM(MUS_CAMP);
+    } 
+    else 
+    {
+        // Menu principal ou Ecran de mort
+        Audio_StopBGM(MUS_CAMP);
+        Audio_StopBGM(MUS_DUNGEON);
+        Audio_StopBGM(MUS_BOSS);
+    }
+
     int key = GetKeyPressed();
 
     // =========================================================
@@ -71,6 +105,7 @@ void Game_Update(GameContext* game)
     // =========================================================
     if (g_camp_fire_lit) 
     {
+        Audio_PlayBGM(MUS_FIRE);
         g_camp_fire_timer += GetFrameTime();
         if (g_camp_fire_lit >= 1.0f) 
         {
@@ -84,6 +119,10 @@ void Game_Update(GameContext* game)
             }
             g_camp_fire_timer -= 1.0f;
         }
+    }
+    else
+    {
+        Audio_StopBGM(MUS_FIRE);
     }
 
     Clicker_ProcessAuto(&game->clicker, GetFrameTime(), g_camp_fire_lit);

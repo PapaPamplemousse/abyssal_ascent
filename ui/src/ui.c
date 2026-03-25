@@ -2,6 +2,7 @@
 #include "lang.h"
 #include <stdio.h>
 #include <string.h>
+#include "audio_manager.h"
 
 // Déclarations externes nécessaires pour accéder aux bases de données du jeu
 extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
@@ -50,7 +51,14 @@ bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool 
 
     DrawTextEx(font, text, (Vector2){x, y}, fontSize, 1, drawColor);
 
-    return isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && canAfford;
+    bool isClicked = isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && canAfford;
+
+    if (isClicked)
+    {
+        Audio_PlaySFX(SFX_CLICK_BUY);
+    }
+
+    return isClicked;
 }
 
 void DrawEquipSlotGrid(GameContext* game, int inv_idx, const char* slot_label, int x, int y, int width, int height)

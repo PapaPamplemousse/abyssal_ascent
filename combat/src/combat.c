@@ -3,6 +3,7 @@
 #include <string.h>
 #include "cJSON.h"
 #include "lang.h"
+#include "audio_manager.h"
 // 1. Monstres
 MonsterTemplate g_monsterDB[MAX_MONSTERS_DB];
 int             g_monsterCount = 0;
@@ -308,6 +309,7 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
     // --- 4. AUTO-ATTAQUE DU JOUEUR ---
     combat->player_attack_timer += deltaTime * combat->player.spd;
     if (combat->player_attack_timer >= 1.0f) {
+        Audio_PlaySFX(SFX_ATTACK);
         combat->current_enemy.hp -= combat->player.atk;
         char log[64];
         sprintf(log, T("LOG_HIT_ENEMY"), combat->player.atk);
@@ -395,6 +397,7 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
 
         if (right_key_pressed)
         {
+            Audio_PlaySFX(SFX_QTE_OK);
             int crit_dmg = combat->player.atk * 2;
             combat->current_enemy.hp -= crit_dmg;
             combat->current_enemy.qte_active = false;
@@ -409,6 +412,7 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
             combat->current_enemy.qte_active = false;
             combat->current_enemy.qte_timer  = GetRandomValue(3, 6);
             Combat_AddLog(combat,  T("WEAK_POINT_MISS"));
+            Audio_PlaySFX(SFX_QTE_FAIL);
         }
     }
 
@@ -672,6 +676,7 @@ void Combat_TryUsePotion(CombatContext* combat, int slot_index)
     int p_idx = combat->player.equipped_potions[slot_index];
     if (p_idx != -1 && combat->player.potion_qty[p_idx] > 0)
     {
+        udio_PlaySFX(SFX_POTION);
         combat->player.potion_qty[p_idx]--;
         PotionTemplate* t   = &g_potionDB[p_idx];
         int             val = t->base_val + (combat->player.potion_level[p_idx] * t->inc_val);

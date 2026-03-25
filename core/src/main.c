@@ -4,6 +4,8 @@
 #include "combat.h"
 #include "dungeon.h"
 #include "database.h"
+#include "audio_manager.h"
+
 int main(void)
 {
     // On active la synchronisation verticale et on autorise le redimensionnement
@@ -11,6 +13,10 @@ int main(void)
 
     // On initialise une fenêtre de base
     InitWindow(1280, 720, "Abyssal Ascent - Alpha");
+
+    /* Initialisation du l'audio */
+    InitAudioDevice();
+    Audio_Init();
 
     // On récupère la taille de l'écran principal et on ajuste la fenêtre
     int monitor = GetCurrentMonitor();

@@ -1,6 +1,7 @@
 #include "clicker.h"
 #include <stdio.h>
-#include "../../utils/inc/lang.h"
+#include "lang.h"
+#include "audio_manager.h"
 
 /** === Private prototypes ===  */
 static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX, int y, int fontSize, Color baseColor);
@@ -262,10 +263,17 @@ static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX,
     Rectangle hitbox    = {centerX - (textSize.x / 2), y, textSize.x, textSize.y};
     bool      isHovered = CheckCollisionPointRec(GetMousePosition(), hitbox);
     Color     drawColor = isHovered ? WHITE : baseColor;
+    
     DrawTextEx(font, text, (Vector2){hitbox.x, hitbox.y}, fontSize, 1, drawColor);
-    return isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+    
+    bool isClicked = isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+    
+    if (isClicked) {
+        Audio_PlaySFX(SFX_CLICK);
+    }
+    
+    return isClicked;
 }
-
 /**
  * @brief Gère l'achat d'un bâtiment.
  * @details Calcule le coût, affiche le bouton et effectue l'achat si possible.
