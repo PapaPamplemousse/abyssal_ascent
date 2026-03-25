@@ -194,6 +194,7 @@ typedef struct
 
     bool    qte_active;
     float   qte_timer;
+    int     qte_key_required;
     Vector2 qte_pos;
 } Enemy;
 

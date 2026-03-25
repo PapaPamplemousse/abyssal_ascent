@@ -111,6 +111,7 @@
 
   "LEVEL_UP": { "fr": "NIVEAU SUPERIEUR !", "en": "Level Up!" },
   "WEAK_POINT": { "fr": "*** Point Faible ***", "en": "*** Weak Point ***" },
+  "WEAK_POINT_MISS": { "fr": "*** Point Faible Loupé***", "en": "*** Weak Point Miss ***" },
   "ENEMY_DEFEATED": { "fr": "Ennemi Vaincu !", "en": "Enemy Defeated!" },
   "MAP_TITLE": { "fr": "[ CARTE DE L'ETAGE ]", "en": "[ FLOOR MINIMAP ]" },
 

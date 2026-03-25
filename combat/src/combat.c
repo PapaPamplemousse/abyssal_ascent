@@ -351,6 +351,7 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
     }
 
     // --- 6. GESTION DU POINT FAIBLE (QTE) ---
+    // --- 6. GESTION DU POINT FAIBLE (QTE AU CLAVIER) ---
     combat->current_enemy.qte_timer -= deltaTime;
     if (combat->current_enemy.qte_timer <= 0.0f)
     {
@@ -359,25 +360,55 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
             combat->current_enemy.qte_active = true;
             combat->current_enemy.qte_pos.x  = centerX - 50 + (GetRandomValue(0, 100));
             combat->current_enemy.qte_pos.y  = centerY - 50 + (GetRandomValue(0, 100));
-            combat->current_enemy.qte_timer  = 1.5f;
+            combat->current_enemy.qte_timer  = 1.5f; // Temps pour réagir
+
+            // On choisit une touche au hasard parmi X, N, Y, P
+            int keys[] = {KEY_X, KEY_N, KEY_Y, KEY_P};
+            combat->current_enemy.qte_key_required = keys[GetRandomValue(0, 3)];
         }
         else
         {
+            // Temps écoulé, le QTE disparait
             combat->current_enemy.qte_active = false;
             combat->current_enemy.qte_timer  = GetRandomValue(3, 6);
         }
     }
 
+    // --- VERIFICATION DE LA TOUCHE ---
     if (combat->current_enemy.qte_active)
     {
-        Rectangle qte_rect = {combat->current_enemy.qte_pos.x, combat->current_enemy.qte_pos.y, 40, 40};
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(GetMousePosition(), qte_rect))
+        bool wrong_key_pressed = false;
+        bool right_key_pressed = false;
+
+        int possible_keys[] = {KEY_X, KEY_N, KEY_Y, KEY_P};
+        
+        // On vérifie si l'une des 4 touches a été pressée cette frame
+        for(int i = 0; i < 4; i++) {
+            if(IsKeyPressed(possible_keys[i])) {
+                if(possible_keys[i] == combat->current_enemy.qte_key_required) {
+                    right_key_pressed = true;
+                } else {
+                    wrong_key_pressed = true;
+                }
+            }
+        }
+
+        if (right_key_pressed)
         {
             int crit_dmg = combat->player.atk * 2;
             combat->current_enemy.hp -= crit_dmg;
             combat->current_enemy.qte_active = false;
             combat->current_enemy.qte_timer  = GetRandomValue(3, 6);
-            Combat_AddLog(combat, T("WEAK_POINT"));
+            Combat_AddLog(combat, T("WEAK_POINT")); // "Point faible frappé !"
+            combat->screen_flash_color = (Color){255, 255, 255, 80}; // Flash blanc de réussite
+            combat->screen_flash_timer = 0.1f;
+        }
+        else if (wrong_key_pressed)
+        {
+            // PUNITIF : Mauvaise touche = QTE annulé !
+            combat->current_enemy.qte_active = false;
+            combat->current_enemy.qte_timer  = GetRandomValue(3, 6);
+            Combat_AddLog(combat,  T("WEAK_POINT_MISS"));
         }
     }
 
@@ -505,9 +536,18 @@ void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int cent
     if (combat->current_enemy.qte_active)
     {
         DrawRectangleLines(combat->current_enemy.qte_pos.x, combat->current_enemy.qte_pos.y, 40, 40, YELLOW);
-        DrawTextEx(font, "[X]", (Vector2){combat->current_enemy.qte_pos.x + 5, combat->current_enemy.qte_pos.y + 10}, 24, 1, YELLOW);
+        
+        // On détermine la lettre à afficher
+        char qte_char = 'X';
+        if (combat->current_enemy.qte_key_required == KEY_N) qte_char = 'N';
+        else if (combat->current_enemy.qte_key_required == KEY_Y) qte_char = 'Y';
+        else if (combat->current_enemy.qte_key_required == KEY_P) qte_char = 'P';
+        
+        char qte_str[8];
+        sprintf(qte_str, "[%c]", qte_char);
+        
+        DrawTextEx(font, qte_str, (Vector2){combat->current_enemy.qte_pos.x + 5, combat->current_enemy.qte_pos.y + 10}, 24, 1, YELLOW);
     }
-
     char hpText[64];
     sprintf(hpText, "[ %s : %d / %d HP ]", combat->current_enemy.name, combat->current_enemy.hp, combat->current_enemy.max_hp);
     Vector2 tSize = MeasureTextEx(font, hpText, 24, 1);
