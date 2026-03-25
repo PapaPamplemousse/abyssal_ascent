@@ -20,7 +20,7 @@ extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
 /**
  * @brief Base de données des sorts (externe).
  */
-extern SpellTemplate  g_spellDB[MAX_SPELLS_DB];
+extern SpellTemplate g_spellDB[MAX_SPELLS_DB];
 
 void Game_Init(GameContext* game)
 {
@@ -66,8 +66,28 @@ void Game_Update(GameContext* game)
 {
     int key = GetKeyPressed();
 
-    // L'automatisation tourne en permanence, peu importe l'écran !
+    // =========================================================
+    // --- GESTION GLOBALE DU FEU DE CAMP ---
+    // =========================================================
+    if (g_camp_fire_lit) 
+    {
+        g_camp_fire_timer += GetFrameTime();
+        if (g_camp_fire_lit >= 1.0f) 
+        {
+            if (game->clicker.inventory.bois >= 5) {
+                game->clicker.inventory.bois -= 5;
+            } else {
+                // LE FEU S'ÉTEINT PENDANT QU'ON EST AILLEURS !
+                g_camp_fire_lit = false;  // Plus de bois, le feu meurt !
+                game->combat.player.is_freezing = true;
+                Combat_RecalculateStats(&game->combat);
+            }
+            g_camp_fire_timer -= 1.0f;
+        }
+    }
+
     Clicker_ProcessAuto(&game->clicker, GetFrameTime(), g_camp_fire_lit);
+
 
     int w          = GetScreenWidth();
     int h          = GetScreenHeight();
@@ -75,26 +95,6 @@ void Game_Update(GameContext* game)
     int viewWidth  = w * 0.55f;
 
     bool pressedQuit = (key == KEY_Q || key == KEY_A);
-
-    // ---  GESTION DU FEU DE CAMP ---
-    if (game->currentState == STATE_CAMP)
-    {
-        if (g_camp_fire_lit) 
-        {
-            g_camp_fire_timer += GetFrameTime();
-            if (g_camp_fire_timer >= 1.0f) 
-            {
-                if (game->clicker.inventory.bois >= 25) {
-                    game->clicker.inventory.bois -= 25; // Le feu consomme 25 bois / sec
-                } else {
-                    g_camp_fire_lit = false; // Plus de bois, le feu meurt !
-                    game->combat.player.is_freezing = true;
-                    Combat_RecalculateStats(&game->combat);
-                }
-                g_camp_fire_timer -= 1.0f;
-            }
-        }
-    }
 
     if (game->currentState == STATE_DUNGEON && game->combat.player.hp <= 0)
     {
@@ -123,29 +123,52 @@ void Game_Update(GameContext* game)
         case STATE_CAMP:
             // Navigation depuis le camp
             if (key == KEY_ONE || key == KEY_KP_1)
+            {
                 game->currentState = STATE_MINE;
+                SaveGame(game, &myDungeon);
+            }
             else if (key == KEY_TWO || key == KEY_KP_2)
+            {
                 game->currentState = STATE_FOREST;
+                SaveGame(game, &myDungeon);
+            }
             else if (key == KEY_THREE || key == KEY_KP_3)
+            {
                 game->currentState = STATE_FORGE;
+                SaveGame(game, &myDungeon);
+            }
             else if (key == KEY_FOUR || key == KEY_KP_4)
+            {
                 game->currentState = STATE_ALCHEMIST;
+                SaveGame(game, &myDungeon);
+            }
             else if (key == KEY_FIVE || key == KEY_KP_5)
+            {
                 game->currentState = STATE_ARCHIFORGE;
+                SaveGame(game, &myDungeon);
+            }
             else if (key == KEY_SIX || key == KEY_KP_6)
+            {
                 game->currentState = STATE_INVENTORY;
+                SaveGame(game, &myDungeon);
+            }
             else if (key == KEY_SEVEN || key == KEY_KP_7)
             {
                 game->currentState = STATE_DUNGEON;
+                SaveGame(game, &myDungeon);
                 Dungeon_Enter(&myDungeon);
                 game->combat.player.inventory_safe_count = game->combat.player.inventory_count;
             }
-            else if((key == KEY_EIGHT)|| (key == KEY_KP_8))
+            else if ((key == KEY_EIGHT) || (key == KEY_KP_8))
             {
+                SaveGame(game, &myDungeon);
                 game->currentState = STATE_ALTAR;
             }
             else if (pressedQuit)
+            {
+                SaveGame(game, &myDungeon);
                 game->currentState = STATE_MENU;
+            }
             break;
 
         case STATE_MINE:
@@ -153,7 +176,10 @@ void Game_Update(GameContext* game)
             Clicker_UpdateMine(&game->clicker, viewStartX, viewWidth, h, game->uiFont);
             // Retour au camp avec Q (ou A)
             if (pressedQuit)
+            {
+                SaveGame(game, &myDungeon);
                 game->currentState = STATE_CAMP;
+            }
             break;
 
         case STATE_FOREST:
@@ -161,7 +187,10 @@ void Game_Update(GameContext* game)
             Clicker_UpdateForest(&game->clicker, viewStartX, viewWidth, h, game->uiFont);
             // Retour au camp avec Q (ou A)
             if (pressedQuit)
+            {
+                SaveGame(game, &myDungeon);
                 game->currentState = STATE_CAMP;
+            }
             break;
 
         case STATE_DUNGEON:
@@ -173,8 +202,10 @@ void Game_Update(GameContext* game)
             {
                 // On délègue TOUT le déplacement ET les combats au donjon.
                 Dungeon_Update(game, &myDungeon, key);
-                for (int i = 0; i < 3; i++) {
-                    if (IsKeyPressed(KEY_ONE + i) || IsKeyPressed(KEY_KP_1 + i)) {
+                for (int i = 0; i < 3; i++)
+                {
+                    if (IsKeyPressed(KEY_ONE + i) || IsKeyPressed(KEY_KP_1 + i))
+                    {
                         Combat_TryUsePotion(&game->combat, i);
                     }
                 }
@@ -184,13 +215,13 @@ void Game_Update(GameContext* game)
         case STATE_ALCHEMIST:
         case STATE_ARCHIFORGE:
         case STATE_INVENTORY:
-        case STATE_ALTAR :
+        case STATE_ALTAR:
             // Pour ces 3 menus, on quitte avec Q (ou A)
             if (pressedQuit)
-               {
-                    game->currentState = STATE_CAMP;
-                    SaveGame(game, &myDungeon);
-                }
+            {
+                game->currentState = STATE_CAMP;
+                SaveGame(game, &myDungeon);
+            }
             break;
         case STATE_GAMEOVER:
             if (key == KEY_SPACE || key == KEY_ENTER)
@@ -198,6 +229,7 @@ void Game_Update(GameContext* game)
                 Combat_ResetRun(&game->combat);      // Perd l'XP et les niveaux du donjon
                 game->combat.player.hp = 1;          // Renaissance avec 1 PV
                 game->currentState     = STATE_CAMP; // Retour à l'abri
+                SaveGame(game, &myDungeon);
             }
             break;
     }
@@ -258,7 +290,7 @@ void Game_Render(GameContext* game)
             int cx = (w * 0.25f) + ((w * 0.55f) / 2);
             DrawTextEx(game->uiFont, T("BTN_BACK_CAMP"), (Vector2){cx - 150, h - 50}, 20, 1, GRAY);
         }
-        else if(game->currentState == STATE_ALTAR)
+        else if (game->currentState == STATE_ALTAR)
         {
             Game_RenderAltar(game, w, h);
             DrawTextEx(game->uiFont, T("BTN_BACK_CAMP"), (Vector2){startX, h - 80}, 20, 1, GRAY);
@@ -310,4 +342,3 @@ void Game_Run(GameContext* game)
         Game_Render(game);
     }
 }
-
