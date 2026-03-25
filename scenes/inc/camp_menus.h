@@ -3,6 +3,10 @@
 
 #include "game.h"
 
+
+extern  bool  g_camp_fire_lit;
+extern float g_camp_fire_timer;
+
 /**
  * @brief Affiche l'écran d'inventaire du joueur.
  * @details Permet de visualiser l'équipement et d'équiper/déséquiper des objets.
@@ -46,12 +50,22 @@ void Game_RenderAlchemist(GameContext* game, int w, int h);
 
 /**
  * @brief Affiche l'écran de l'autel.
- * @details Permet d'apprendre, améliorer, fabriquer et équiper des potions.
+ * @details Permet de renaitre
  * @param[in,out] game Contexte du jeu
  * @param[in] w Largeur de l'écran
  * @param[in] h Hauteur de l'écran
  * @note Fonction publique
  */
 void Game_RenderAltar(GameContext* game, int w, int h);
+
+/**
+ * @brief Affiche l'écran du camp .
+ * @details Hub du jeu
+ * @param[in,out] game Contexte du jeu
+ * @param[in] w Largeur de l'écran
+ * @param[in] h Hauteur de l'écran
+ * @note Fonction publique
+ */
+void Game_RenderCamp(GameContext* game, int w, int h);
 
 #endif // CAMP_MENUS_H

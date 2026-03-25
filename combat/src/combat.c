@@ -593,6 +593,16 @@ void Combat_RecalculateStats(CombatContext* combat) {
     combat->player.max_mana = combat->player.base_max_mana;
     combat->player.atk = combat->player.base_atk;
     combat->player.spd = combat->player.base_spd;
+
+    // --- MALUS DE FROID SUR L'ATTAQUE ---
+    if (combat->player.is_freezing) {
+        combat->player.base_atk /= 2;
+        // On s'assure qu'il fait au moins 1 de dégât pour ne pas soft-lock le combat
+        if (combat->player.base_atk <= 0) combat->player.base_atk = 1; 
+    }
+
+    combat->player.max_hp = combat->player.base_max_hp;
+    combat->player.max_mana = combat->player.base_max_mana;
 }
 
 void Inventory_Equip(CombatContext* combat, int inv_idx)

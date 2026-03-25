@@ -67,7 +67,7 @@ void Game_Update(GameContext* game)
     int key = GetKeyPressed();
 
     // L'automatisation tourne en permanence, peu importe l'écran !
-    Clicker_ProcessAuto(&game->clicker, GetFrameTime());
+    Clicker_ProcessAuto(&game->clicker, GetFrameTime(), g_camp_fire_lit);
 
     int w          = GetScreenWidth();
     int h          = GetScreenHeight();
@@ -76,22 +76,23 @@ void Game_Update(GameContext* game)
 
     bool pressedQuit = (key == KEY_Q || key == KEY_A);
 
-    static float camp_heal_timer = 0.0f;
+    // ---  GESTION DU FEU DE CAMP ---
     if (game->currentState == STATE_CAMP)
     {
-        camp_heal_timer += GetFrameTime();
-        if (camp_heal_timer >= 0.2f)
-        { // Toutes les 0.2s
-            if (game->combat.player.hp < game->combat.player.max_hp)
+        if (g_camp_fire_lit) 
+        {
+            g_camp_fire_timer += GetFrameTime();
+            if (g_camp_fire_timer >= 1.0f) 
             {
-                game->combat.player.hp++;
+                if (game->clicker.inventory.bois >= 25) {
+                    game->clicker.inventory.bois -= 25; // Le feu consomme 25 bois / sec
+                } else {
+                    g_camp_fire_lit = false; // Plus de bois, le feu meurt !
+                    game->combat.player.is_freezing = true;
+                    Combat_RecalculateStats(&game->combat);
+                }
+                g_camp_fire_timer -= 1.0f;
             }
-            if(game->combat.player.mana < game->combat.player.max_mana)
-            {
-                game->combat.player.mana ++;
-            }
-            
-            camp_heal_timer = 0.0f;
         }
     }
 
@@ -181,7 +182,10 @@ void Game_Update(GameContext* game)
         case STATE_ALTAR :
             // Pour ces 3 menus, on quitte avec Q (ou A)
             if (pressedQuit)
-                game->currentState = STATE_CAMP;
+               {
+                    game->currentState = STATE_CAMP;
+                    SaveGame(game, &myDungeon);
+                }
             break;
         case STATE_GAMEOVER:
             if (key == KEY_SPACE || key == KEY_ENTER)
@@ -212,81 +216,7 @@ void Game_Render(GameContext* game)
         int startX = (w * 0.25f) + 50;
         if (game->currentState == STATE_CAMP)
         {
-            // --- TIMER POUR LE CRÉPITEMENT ---
-            // On change l'état du feu toutes les 0.15 secondes
-            float frameTime = 0.30f;
-            int   seed      = (int)(GetTime() / frameTime);
-
-            // On "fixe" le hasard pour cette frame précise
-            SetRandomSeed(seed);
-            int   cx            = (w * 0.2f) + ((w * 0.55f) / 2);
-            int   cy            = h / 2;
-            float asciiFontSize = 20;
-            float spacing       = 2;
-
-            DrawTextEx(game->uiFont, T("CAMP_TITLE"), (Vector2){cx - 100, 120}, 40, 1, GREEN);
-            // --- RENDU DE LA FUMÉE ---
-            for (int s = 0; s < 3; s++)
-            {
-                // Ces positions ne changeront que toutes les 0.15s grâce au seed
-                int   smokeX   = cx + GetRandomValue(-40, 40);
-                int   smokeY   = cy - 130 + GetRandomValue(-20, 20);
-                Color smokeCol = (Color){120, 120, 120, (unsigned char)GetRandomValue(100, 180)};
-
-                DrawTextEx(game->dungeonFont, "▒", (Vector2){(float)smokeX, (float)smokeY}, asciiFontSize, spacing, smokeCol);
-            }
-
-            // --- 2. L'ASCII DU FEU (SANS LA FUMÉE STATIQUE) ---
-            const char* fireAscii[] = {"                       ", // Ligne vide pour laisser place à la fumée
-                                       "    ▓██▄      ▓██▄     ",          "    ▀███  ███████████   ",         "         █████████████  ",        "   ▄████  ████████████▀  ",
-                                       "  ████████████▓▀███▀████     ▄▄ ", "  █████████████▀   █████▄   ▄███", "  ▀██████████▀     ▀███████████", "   ████████      ▄▄   ▀███████▀",
-                                       "    ▀▀█████████████     ██████ ",  "  ▄▄██████████████▀█▄█████████▄▄", "  █████████████████████████▀▀▀",  "   ▀███████████▀  ▀█████████▀ "};
-
-            int lineCount = 13;
-            for (int i = 0; i < lineCount; i++)
-            {
-                float flickerX = (i < 11) ? (float)GetRandomValue(-1, 1) : 0;
-
-                Vector2 textSize = MeasureTextEx(game->dungeonFont, fireAscii[i], asciiFontSize, spacing);
-                Vector2 pos      = {cx - (textSize.x / 2) + flickerX, cy - 100 + (i * asciiFontSize)};
-
-                Color col;
-                int   intensity = GetRandomValue(0, 40);
-
-                if (i <= 4)
-                {
-                    col = (Color){255, 255 - intensity, intensity, 255}; // Jaune/Blanc
-                }
-                else if (i <= 8)
-                {
-                    col = (Color){255, 160 - intensity, 0, 255}; // Orange
-                }
-                else if (i <= 10)
-                {
-                    col = (Color){220 - intensity, 20, 0, 255}; // Rouge
-                }
-                else
-                {
-                    col = (Color){100, 60, 30, 255}; // Bûches
-                }
-
-                DrawTextEx(game->dungeonFont, fireAscii[i], (Vector2){pos.x + flickerX, pos.y}, asciiFontSize, spacing, col);
-            }
-
-            // Colonne de gauche
-            DrawTextEx(game->uiFont, T("CAMP_BTN_MINE"),       (Vector2){cx - 250, h - 200}, 24, 1, LIGHTGRAY);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_FOREST"),     (Vector2){cx - 250, h - 160}, 24, 1, GREEN);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_FORGE"),      (Vector2){cx - 250, h - 120}, 24, 1, ORANGE);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_ALCHEMIST"),  (Vector2){cx - 250, h - 80},  24, 1, PINK);
-
-            // Colonne de droite
-            DrawTextEx(game->uiFont, T("CAMP_BTN_ARCHIFORGE"), (Vector2){cx - 20,  h - 200}, 24, 1, BLUE);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_INVENTORY"),  (Vector2){cx - 20,  h - 160}, 24, 1, YELLOW);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_DUNGEON"),    (Vector2){cx - 20,  h - 120}, 24, 1, PURPLE);
-            DrawTextEx(game->uiFont, T("CAMP_BTN_ALTAR"),      (Vector2){cx - 20,  h - 80},  20, 1, RED);
-
-            // Bouton retour au centre en bas
-            DrawTextEx(game->uiFont, T("CAMP_BTN_MAIN_MENU"),  (Vector2){cx - 100, h - 40},  20, 1, DARKGRAY);
+            Game_RenderCamp(game, w, h);
         }
         else if (game->currentState == STATE_FORGE)
         {
@@ -369,7 +299,7 @@ void Game_Render(GameContext* game)
 
 void Game_Run(GameContext* game)
 {
-    while (game->isRunning && !WindowShouldClose())
+    while (game->isRunning)
     {
         Game_Update(game);
         Game_Render(game);

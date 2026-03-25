@@ -89,7 +89,7 @@ void Clicker_Init(ClickerContext* clicker);
  * @param[in] deltaTime Temps écoulé depuis la dernière frame
  * @note Fonction publique
  */
-void Clicker_ProcessAuto(ClickerContext* clicker, float deltaTime);
+void Clicker_ProcessAuto(ClickerContext* clicker, float deltaTime, bool fire_lit);
 
 /**
  * @brief Met à jour la logique de la mine (inputs, achats, clics).

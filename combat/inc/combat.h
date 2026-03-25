@@ -144,6 +144,8 @@ typedef struct
     int potion_level[MAX_POTIONS_DB];
     int potion_qty[MAX_POTIONS_DB];
     int equipped_potions[3];
+
+    bool is_freezing;
 } PlayerStats;
 
 typedef struct

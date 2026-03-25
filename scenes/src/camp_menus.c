@@ -16,6 +16,9 @@ static int selectedForgeIdx  = -1;
 static int selectedSpellIdx  = -1;
 static int selectedPotionIdx = -1;
 
+bool  g_camp_fire_lit = false;
+float g_camp_fire_timer = 0.0f;
+
 void Game_RenderInventory(GameContext* game, int w, int h)
 {
     int startX      = (w * 0.25f) + 30;
@@ -505,4 +508,135 @@ void Game_RenderAltar(GameContext* game, int w, int h)
         game->combat.player.boss_souls--;
         game->combat.player.passive_loot_level++;
     }
+}
+
+void Game_RenderCamp(GameContext* game, int w, int h)
+{
+    float frameTime = 0.30f;
+    int   seed      = (int)(GetTime() / frameTime);
+    SetRandomSeed(seed);
+    
+    int   cx            = (w * 0.2f) + ((w * 0.55f) / 2);
+    int   cy            = h / 2;
+    float asciiFontSize = 20;
+    float spacing       = 2;
+
+    DrawTextEx(game->uiFont, T("CAMP_TITLE"), (Vector2){cx - 100, 80}, 40, 1, GREEN);
+
+    // --- 1. DESSIN DE LA FUMÉE (Seulement si allumé) ---
+    if (g_camp_fire_lit) {
+        for (int s = 0; s < 3; s++) {
+            int   smokeX   = cx + GetRandomValue(-40, 40);
+            int   smokeY   = cy - 130 + GetRandomValue(-20, 20);
+            Color smokeCol = (Color){120, 120, 120, (unsigned char)GetRandomValue(100, 180)};
+            DrawTextEx(game->dungeonFont, "▒", (Vector2){(float)smokeX, (float)smokeY}, asciiFontSize, spacing, smokeCol);
+        }
+    }
+
+    // --- 2. L'ASCII DU FEU ---
+    const char* fireAscii[] = {
+        "                       ", 
+        "    ▓██▄      ▓██▄     ", "    ▀███  ███████████   ", "         █████████████  ", "   ▄████  ████████████▀  ",
+        "  ████████████▓▀███▀████     ▄▄ ", "  █████████████▀   █████▄   ▄███", "  ▀██████████▀     ▀███████████", "   ████████      ▄▄   ▀███████▀",
+        "    ▀▀█████████████     ██████ ",  "  ▄▄██████████████▀█▄█████████▄▄", "  █████████████████████████▀▀▀",  "   ▀███████████▀  ▀█████████▀ "
+    };
+
+    int lineCount = 13;
+    for (int i = 0; i < lineCount; i++)
+    {
+        float flickerX = (g_camp_fire_lit && i < 11) ? (float)GetRandomValue(-1, 1) : 0;
+        Vector2 textSize = MeasureTextEx(game->dungeonFont, fireAscii[i], asciiFontSize, spacing);
+        Vector2 pos      = {cx - (textSize.x / 2) + flickerX, cy - 140 + (i * asciiFontSize)};
+
+        Color col;
+        int intensity = GetRandomValue(0, 40);
+
+        if (g_camp_fire_lit) {
+            if (i <= 4) col = (Color){255, 255 - intensity, intensity, 255}; // Jaune/Blanc
+            else if (i <= 8) col = (Color){255, 160 - intensity, 0, 255}; // Orange
+            else if (i <= 10) col = (Color){220 - intensity, 20, 0, 255}; // Rouge
+            else col = (Color){100, 60, 30, 255}; // Bûches
+        } else {
+            // Feu éteint : braises et bois froid
+            if (i <= 8) col = BLANK; // Pas de flammes hautes
+            else if (i <= 10) col = (Color){80 + intensity, 20, 10, 255}; // Braises mourantes
+            else col = (Color){60, 40, 20, 255}; // Bois sombre
+        }
+
+        DrawTextEx(game->dungeonFont, fireAscii[i], (Vector2){pos.x + flickerX, pos.y}, asciiFontSize, spacing, col);
+    }
+
+    // --- 3. GESTION DE LA SURVIE (Boutons au centre) ---
+    int btnY = cy + 130;
+
+    // Bouton Allumer/Eteindre
+    char fireBtn[64];
+    if (g_camp_fire_lit) sprintf(fireBtn, "[ ETEINDRE LE FEU ]");
+    else sprintf(fireBtn, "[ ALLUMER LE FEU (-25 Bois/sec) ]");
+
+    bool can_light_fire = g_camp_fire_lit || (game->clicker.inventory.bois >= 25);
+    if (DoShopButton(game->uiFont, fireBtn, cx - 180, btnY, 20, can_light_fire)) {
+        g_camp_fire_lit = !g_camp_fire_lit;
+        g_camp_fire_timer = 0.0f;
+
+        game->combat.player.is_freezing = !g_camp_fire_lit;
+        Combat_RecalculateStats(&game->combat);
+    }
+
+    // Bouton Cuire Viande (Calcul du besoin de soin)
+    int missing_hp = game->combat.player.max_hp - game->combat.player.hp;
+    int missing_mana = game->combat.player.max_mana - game->combat.player.mana;
+    int total_missing = missing_hp + missing_mana;
+    int meat_cost = total_missing * 5;
+
+    if (total_missing > 0) {
+        if (g_camp_fire_lit) {
+            char healBtn[128];
+            int affordable_heal = game->clicker.inventory.viande / 5;
+            bool can_heal = affordable_heal > 0;
+
+            if (meat_cost > game->clicker.inventory.viande && can_heal) {
+                sprintf(healBtn, "[ CUIRE VIANDE : SOIN PARTIEL (-%d Viande) ]", affordable_heal * 5);
+            } else if (!can_heal) {
+                 sprintf(healBtn, "[ CUIRE VIANDE (Pas assez de viande) ]");
+            } else {
+                sprintf(healBtn, "[ CUIRE VIANDE : SOIN MAX (-%d Viande) ]", meat_cost);
+            }
+
+            if (DoShopButton(game->uiFont, healBtn, cx - 210, btnY + 40, 20, can_heal)) {
+                int points_to_heal = (meat_cost > game->clicker.inventory.viande) ? affordable_heal : total_missing;
+                game->clicker.inventory.viande -= points_to_heal * 5;
+
+                // On soigne d'abord les HP, puis le Mana
+                int hp_to_heal = (missing_hp < points_to_heal) ? missing_hp : points_to_heal;
+                game->combat.player.hp += hp_to_heal;
+                points_to_heal -= hp_to_heal;
+                if (points_to_heal > 0) game->combat.player.mana += points_to_heal;
+            }
+        } else {
+            DrawTextEx(game->uiFont, "(Le feu doit etre allume pour cuisiner)", (Vector2){cx - 190, btnY + 45}, 18, 1, DARKGRAY);
+        }
+    } else {
+        DrawTextEx(game->uiFont, "(Sante et Mana au maximum)", (Vector2){cx - 130, btnY + 45}, 18, 1, GRAY);
+    }
+
+    if (!g_camp_fire_lit) {
+        DrawTextCentered(game->uiFont, "FROID ABYSSAL : ATK et Production reduites !", cx, btnY + 90, 20, 1, RED);
+    }
+
+    // --- 4. MENUS DU CAMP (Latéraux) ---
+    // Colonne de gauche
+    DrawTextEx(game->uiFont, T("CAMP_BTN_MINE"),       (Vector2){cx - 300, h - 200}, 24, 1, LIGHTGRAY);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_FOREST"),     (Vector2){cx - 300, h - 160}, 24, 1, GREEN);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_FORGE"),      (Vector2){cx - 300, h - 120}, 24, 1, ORANGE);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_ALCHEMIST"),  (Vector2){cx - 300, h - 80},  24, 1, PINK);
+
+    // Colonne de droite
+    DrawTextEx(game->uiFont, T("CAMP_BTN_ARCHIFORGE"), (Vector2){cx + 70,  h - 200}, 24, 1, BLUE);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_INVENTORY"),  (Vector2){cx + 70,  h - 160}, 24, 1, YELLOW);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_DUNGEON"),    (Vector2){cx + 70,  h - 120}, 24, 1, PURPLE);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_ALTAR"),      (Vector2){cx + 70,  h - 80},  20, 1, RED);
+
+    // Bouton retour au centre en bas
+    DrawTextEx(game->uiFont, T("CAMP_BTN_MAIN_MENU"),  (Vector2){cx - 100, h - 40},  20, 1, DARKGRAY);
 }

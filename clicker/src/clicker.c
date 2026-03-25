@@ -2,11 +2,9 @@
 #include <stdio.h>
 #include "../../utils/inc/lang.h"
 
-
 /** === Private prototypes ===  */
 static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX, int y, int fontSize, Color baseColor);
 static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, int* res, int x, int y);
-
 
 /* === Pub implementation ===*/
 void Clicker_Init(ClickerContext* clicker)
@@ -16,7 +14,7 @@ void Clicker_Init(ClickerContext* clicker)
 }
 
 // Calcule et ajoute la production par seconde
-void Clicker_ProcessAuto(ClickerContext* clicker, float deltaTime)
+void Clicker_ProcessAuto(ClickerContext* clicker, float deltaTime, bool fire_lit)
 {
     clicker->autoTimer += deltaTime;
     if (clicker->autoTimer >= 1.0f)
@@ -31,17 +29,20 @@ void Clicker_ProcessAuto(ClickerContext* clicker, float deltaTime)
         int p_bois = inv->b_bois[0] * 1 + inv->b_bois[1] * 10 + inv->b_bois[2] * 100 + inv->b_bois[3] * 1000;
         int p_vian = inv->b_viande[0] * 1 + inv->b_viande[1] * 10 + inv->b_viande[2] * 100 + inv->b_viande[3] * 1000;
 
-        inv->fer += p_fer;
-        if (inv->unlock_or)
-            inv->or += p_or;
-        if (inv->unlock_cristaux)
-            inv->cristaux += p_cris;
+        // --- MALUS DE FROID : PRODUCTION DIVISÉE PAR 2 ---
+        float mult = fire_lit ? 1.0f : 0.5f;
 
-        inv->herbes += p_herb;
+        inv->fer += (int)(p_fer * mult);
+        if (inv->unlock_or)
+            inv->or += (int)(p_or * mult);
+        if (inv->unlock_cristaux)
+            inv->cristaux += (int)(p_cris * mult);
+
+        inv->herbes += (int)(p_herb * mult);
         if (inv->unlock_bois)
-            inv->bois += p_bois;
+            inv->bois += (int)(p_bois * mult);
         if (inv->unlock_viande)
-            inv->viande += p_vian;
+            inv->viande += (int)(p_vian * mult);
 
         clicker->autoTimer -= 1.0f;
     }
@@ -241,7 +242,6 @@ void Clicker_RenderForest(ClickerContext* clicker, int viewStartX, int viewWidth
         DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, DARKGRAY);
     }
 }
-
 
 /** === Private implementation ===  */
 
