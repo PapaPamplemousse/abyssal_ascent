@@ -238,7 +238,7 @@ void Combat_ResetRun(CombatContext* combat);
 void Combat_RecalculateStats(CombatContext* combat);
 void Inventory_Add(CombatContext* combat, const char* item_id);
 void Inventory_Equip(CombatContext* combat, int inv_idx);
-void Inventory_Unequip(CombatContext* combat, EquipSlot slot);
+void Combat_TryUsePotion(CombatContext* combat, int slot_index);
 void Inventory_GetSortedIndices(CombatContext* combat, int* indices);
 void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemEffect effect, ItemRarity rarity);
 #endif // COMBAT_H

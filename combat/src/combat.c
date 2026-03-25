@@ -240,34 +240,7 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
     {
         if (IsKeyPressed(KEY_ONE + i) || IsKeyPressed(KEY_KP_1 + i))
         {
-            int p_idx = combat->player.equipped_potions[i];
-            if (p_idx != -1 && combat->player.potion_qty[p_idx] > 0)
-            {
-                combat->player.potion_qty[p_idx]--;
-                PotionTemplate* t   = &g_potionDB[p_idx];
-                int             val = t->base_val + (combat->player.potion_level[p_idx] * t->inc_val);
-
-                if (t->type == SPELL_HEAL)
-                {
-                    combat->player.hp += val;
-                    combat->screen_flash_color = (Color){255, 0, 0, 60}; // Flash Rouge
-                }
-                else
-                {
-                    combat->player.mana += val;
-                    combat->screen_flash_color = (Color){0, 150, 255, 60}; // Flash Bleu
-                }
-                combat->screen_flash_timer = 0.15f; // Durée du flash
-
-                if (combat->player.hp > combat->player.max_hp)
-                    combat->player.hp = combat->player.max_hp;
-                if (combat->player.mana > combat->player.max_mana)
-                    combat->player.mana = combat->player.max_mana;
-
-                char log[64];
-                sprintf(log, "> %s : %s", T("WORD_UTILISE"), g_isEnglish ? t->name_en : t->name_fr);
-                Combat_AddLog(combat, log);
-            }
+            Combat_TryUsePotion(combat, i);
         }
     }
 
@@ -652,26 +625,38 @@ void Inventory_Equip(CombatContext* combat, int inv_idx)
         Combat_RecalculateStats(combat);
     }
 }
-void Inventory_Unequip(CombatContext* combat, EquipSlot slot)
+
+
+void Combat_TryUsePotion(CombatContext* combat, int slot_index)
 {
-    // 1. Validation de l'emplacement (Safety check)
-    if (slot < 0 || slot >= SLOT_HAND_2)
+    int p_idx = combat->player.equipped_potions[slot_index];
+    if (p_idx != -1 && combat->player.potion_qty[p_idx] > 0)
     {
-        return;
+        combat->player.potion_qty[p_idx]--;
+        PotionTemplate* t   = &g_potionDB[p_idx];
+        int             val = t->base_val + (combat->player.potion_level[p_idx] * t->inc_val);
+
+        if (t->type == SPELL_HEAL)
+        {
+            combat->player.hp += val;
+            combat->screen_flash_color = (Color){255, 0, 0, 60}; // Flash Rouge
+        }
+        else
+        {
+            combat->player.mana += val;
+            combat->screen_flash_color = (Color){0, 150, 255, 60}; // Flash Bleu
+        }
+        combat->screen_flash_timer = 0.15f; // Durée du flash
+
+        // Sécurité pour ne pas dépasser le max
+        if (combat->player.hp > combat->player.max_hp)
+            combat->player.hp = combat->player.max_hp;
+        if (combat->player.mana > combat->player.max_mana)
+            combat->player.mana = combat->player.max_mana;
+
+        // Mise à jour du journal
+        char log[64];
+        sprintf(log, "> %s : %s", T("WORD_UTILISE"), g_isEnglish ? t->name_en : t->name_fr);
+        Combat_AddLog(combat, log);
     }
-
-    // 2. Vérifier s'il y a effectivement quelque chose à déséquiper
-    if (combat->player.equipped[slot] == -1)
-    {
-        // Déjà vide, rien à faire
-        return;
-    }
-
-    // 3. Déséquipement
-    // On remet l'index d'inventaire à -1 pour cet emplacement
-    combat->player.equipped[slot] = -1;
-
-    // 4. Mise à jour des stats
-    // Crucial pour retirer les bonus de défense/attaque de l'objet
-    Combat_RecalculateStats(combat);
 }

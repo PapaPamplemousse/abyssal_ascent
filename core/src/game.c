@@ -173,6 +173,11 @@ void Game_Update(GameContext* game)
             {
                 // On délègue TOUT le déplacement ET les combats au donjon.
                 Dungeon_Update(game, &myDungeon, key);
+                for (int i = 0; i < 3; i++) {
+                    if (IsKeyPressed(KEY_ONE + i) || IsKeyPressed(KEY_KP_1 + i)) {
+                        Combat_TryUsePotion(&game->combat, i);
+                    }
+                }
             }
             break;
         case STATE_FORGE:
