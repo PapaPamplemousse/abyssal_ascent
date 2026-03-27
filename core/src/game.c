@@ -64,6 +64,7 @@ void Game_Close(GameContext* game)
     // On libère bien les deux polices !
     UnloadFont(game->uiFont);
     UnloadFont(game->dungeonFont);
+    Clicker_Unload(&game->clicker);
 }
 
 void Game_Update(GameContext* game)

@@ -73,6 +73,14 @@ typedef struct
     /** @brief Timer accumulant le temps pour la production automatique */
     float autoTimer;
 
+    // Textures des ressources
+    Texture2D tex_iron;
+    Texture2D tex_gold;
+    Texture2D tex_crystal;
+    Texture2D tex_herbs;
+    Texture2D tex_wood;
+    Texture2D tex_meat;
+
 } ClickerContext;
 
 /**
@@ -135,4 +143,6 @@ void Clicker_UpdateForest(ClickerContext* clicker, int viewStartX, int viewWidth
  */
 void Clicker_RenderForest(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font);
 
+
+void Clicker_Unload(ClickerContext* clicker);
 #endif // CLICKER_H

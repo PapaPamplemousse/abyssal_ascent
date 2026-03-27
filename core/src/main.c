@@ -35,6 +35,6 @@ int main(void)
 
     Game_Close(&game);
     CloseWindow();
-
+    
     return 0;
 }

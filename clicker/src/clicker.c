@@ -6,12 +6,20 @@
 /** === Private prototypes ===  */
 static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX, int y, int fontSize, Color baseColor);
 static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, int* res, int x, int y);
+static bool DrawAndCheckImageButtonCentered(Texture2D texture, int centerX, int y, Color baseColor, Font font, const char* label);
 
 /* === Pub implementation ===*/
 void Clicker_Init(ClickerContext* clicker)
 {
     clicker->inventory = (PlayerResources){0};
     clicker->autoTimer = 0.0f;
+
+    clicker->tex_iron    = LoadTexture("assets/sprites/resources/iron.png");
+    clicker->tex_gold    = LoadTexture("assets/sprites/resources/gold.png");
+    clicker->tex_crystal = LoadTexture("assets/sprites/resources/crystal.png");
+    clicker->tex_herbs   = LoadTexture("assets/sprites/resources/herbs.png");
+    clicker->tex_wood    = LoadTexture("assets/sprites/resources/wood.png");
+    clicker->tex_meat    = LoadTexture("assets/sprites/resources/meat.png");
 }
 
 // Calcule et ajoute la production par seconde
@@ -63,7 +71,8 @@ void Clicker_UpdateMine(ClickerContext* clicker, int viewStartX, int viewWidth, 
     PlayerResources* inv = &clicker->inventory;
 
     // COLONNE 1 : FER (Toujours débloqué)
-    if (DrawAndCheckButtonCentered(font, T("ART_IRON"), c1, artY, 30, LIGHTGRAY))
+    const char* lbl_iron = g_isEnglish ? "IRON" : "FER";
+    if (DrawAndCheckImageButtonCentered(clicker->tex_iron, c1, artY, LIGHTGRAY, font, lbl_iron))
         inv->fer++;
     BuyBld(font, "Mineur", &inv->b_fer[0], 10, 5, &inv->fer, c1, buyY);
     BuyBld(font, "Foreuse", &inv->b_fer[1], 150, 50, &inv->fer, c1, buyY + 40);
@@ -84,7 +93,8 @@ void Clicker_UpdateMine(ClickerContext* clicker, int viewStartX, int viewWidth, 
     }
     else
     {
-        if (DrawAndCheckButtonCentered(font, T("ART_GOLD"), c2, artY, 30, GOLD))
+        const char* lbl_gold = g_isEnglish ? "GOLD" : "OR";
+        if (DrawAndCheckImageButtonCentered(clicker->tex_gold, c2, artY, GOLD, font, lbl_gold))
             inv->or ++;
         BuyBld(font, "Chercheur", &inv->b_or[0], 10, 5, &inv->or, c2, buyY);
         BuyBld(font, "Orpailleur", &inv->b_or[1], 150, 50, &inv->or, c2, buyY + 40);
@@ -107,7 +117,8 @@ void Clicker_UpdateMine(ClickerContext* clicker, int viewStartX, int viewWidth, 
     }
     else
     {
-        if (DrawAndCheckButtonCentered(font, T("ART_CRYSTAL"), c3, artY, 30, PURPLE))
+        const char* lbl_crystal = g_isEnglish ? "CRYSTAL" : "CRISTAL";
+        if (DrawAndCheckImageButtonCentered(clicker->tex_crystal, c3, artY, PURPLE, font, lbl_crystal))
             inv->cristaux++;
         BuyBld(font, "Extracteur", &inv->b_cristaux[0], 10, 5, &inv->cristaux, c3, buyY);
         BuyBld(font, "Resonateur", &inv->b_cristaux[1], 150, 50, &inv->cristaux, c3, buyY + 40);
@@ -161,7 +172,8 @@ void Clicker_UpdateForest(ClickerContext* clicker, int viewStartX, int viewWidth
     PlayerResources* inv = &clicker->inventory;
 
     // COLONNE 1 : HERBES
-    if (DrawAndCheckButtonCentered(font, T("ART_HERBS"), c1, artY, 30, GREEN))
+    const char* lbl_herbs = g_isEnglish ? "HERBS" : "HERBES";
+    if (DrawAndCheckImageButtonCentered(clicker->tex_herbs, c1, artY, GREEN, font, lbl_herbs))
         inv->herbes++;
     BuyBld(font, "Herboriste", &inv->b_herbes[0], 10, 5, &inv->herbes, c1, buyY);
     BuyBld(font, "Serre", &inv->b_herbes[1], 150, 50, &inv->herbes, c1, buyY + 40);
@@ -182,7 +194,8 @@ void Clicker_UpdateForest(ClickerContext* clicker, int viewStartX, int viewWidth
     }
     else
     {
-        if (DrawAndCheckButtonCentered(font, T("ART_WOOD"), c2, artY, 30, BROWN))
+        const char* lbl_wood = g_isEnglish ? "WOOD" : "BOIS";
+        if (DrawAndCheckImageButtonCentered(clicker->tex_wood, c2, artY, BROWN, font, lbl_wood))
             inv->bois++;
         BuyBld(font, "Bucheron", &inv->b_bois[0], 10, 5, &inv->bois, c2, buyY);
         BuyBld(font, "Scierie", &inv->b_bois[1], 150, 50, &inv->bois, c2, buyY + 40);
@@ -205,7 +218,8 @@ void Clicker_UpdateForest(ClickerContext* clicker, int viewStartX, int viewWidth
     }
     else
     {
-        if (DrawAndCheckButtonCentered(font, T("ART_MEAT"), c3, artY, 30, RED))
+        const char* lbl_meat = g_isEnglish ? "MEAT" : "VIANDE";
+        if (DrawAndCheckImageButtonCentered(clicker->tex_meat, c3, artY, RED, font, lbl_meat))
             inv->viande++;
         BuyBld(font, "Chasseur", &inv->b_viande[0], 10, 5, &inv->viande, c3, buyY);
         BuyBld(font, "Trappeur", &inv->b_viande[1], 150, 50, &inv->viande, c3, buyY + 40);
@@ -300,4 +314,53 @@ static void BuyBld(Font font, const char* name, int* count, int baseCost, int sc
             (*count)++;
         }
     }
+}
+
+
+void Clicker_Unload(ClickerContext* clicker)
+{
+    UnloadTexture(clicker->tex_iron);
+    UnloadTexture(clicker->tex_gold);
+    UnloadTexture(clicker->tex_crystal);
+    UnloadTexture(clicker->tex_herbs);
+    UnloadTexture(clicker->tex_wood);
+    UnloadTexture(clicker->tex_meat);
+}
+
+
+/**
+ * @brief Dessine un bouton image centré, gère le survol et le clic, et ajoute un label.
+ */
+static bool DrawAndCheckImageButtonCentered(Texture2D texture, int centerX, int y, Color baseColor, Font font, const char* label)
+{
+    if (texture.id == 0) return false;
+
+    // --- LA MAGIE EST ICI ---
+    // On force toutes les images à avoir une hauteur de 100 pixels
+    float targetHeight = 100.0f;
+    float scale = targetHeight / (float)texture.height; // Calcule la réduction ou l'agrandissement automatique
+
+    float scaledWidth = texture.width * scale;
+    float scaledHeight = texture.height * scale;
+    // ------------------------
+
+    Rectangle hitbox = {centerX - (scaledWidth / 2), y, scaledWidth, scaledHeight};
+    bool isHovered = CheckCollisionPointRec(GetMousePosition(), hitbox);
+    
+    Color drawColor = isHovered ? WHITE : baseColor;
+    
+    DrawTextureEx(texture, (Vector2){hitbox.x, hitbox.y}, 0.0f, scale, drawColor);
+    
+    if (label) {
+        int labelY = y + scaledHeight + 10;
+        Vector2 textSize = MeasureTextEx(font, label, 20, 1);
+        DrawTextEx(font, label, (Vector2){centerX - (textSize.x / 2), labelY}, 20, 1, drawColor);
+    }
+    
+    bool isClicked = isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+    if (isClicked) {
+        Audio_PlaySFX(SFX_CLICK);
+    }
+    
+    return isClicked;
 }
