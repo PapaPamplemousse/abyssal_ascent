@@ -35,6 +35,7 @@ typedef struct
     bool           isRunning;    /**< Indique si le jeu est en cours d'exécution */
     Font           uiFont;       /**< Police pour l'interface utilisateur */
     Font           dungeonFont;  /**< Police pour les ASCII du donjon */
+    Texture2D tex_pentagram;     /**< pentacle pour l'autel  */
     ClickerContext clicker;      /**< Contexte du système clicker */
     CombatContext  combat;       /**< Contexte du système de combat */
 } GameContext;

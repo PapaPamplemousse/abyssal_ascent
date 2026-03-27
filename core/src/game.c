@@ -53,6 +53,8 @@ void Game_Init(GameContext* game)
 
     free(codepoints);
 
+    game->tex_pentagram = LoadTexture("assets/sprites/ui/pentagram.png");
+
     Clicker_Init(&game->clicker);
     Combat_Init(&game->combat);
     Dungeon_Init(&myDungeon);
@@ -72,6 +74,7 @@ void Game_Close(GameContext* game)
             UnloadTexture(g_itemDB[i].sprite);
         }
     }
+    UnloadTexture(game->tex_pentagram);
 }
 
 void Game_Update(GameContext* game)

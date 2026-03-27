@@ -181,7 +181,7 @@ void Game_RenderForge(GameContext* game, int w, int h)
         // On positionne le texte des stats juste en dessous de la nouvelle image
         int  infoY = imgY + scaledHeight + 30;
         char statsText[256];
-        
+
         sprintf(statsText, "%s (Niv %d -> %d)", g_isEnglish ? t->name_en : t->name_fr, item->level, item->level + 1);
         DrawTextEx(game->uiFont, statsText, (Vector2){shopX, infoY}, 20, 1, WHITE);
 
@@ -428,54 +428,77 @@ void Game_RenderAltar(GameContext* game, int w, int h)
     int centerX = w / 2;
     int centerY = h / 2;
 
-    // Titre et Âmes
-    DrawTextCentered(game->uiFont, "[ AUTEL DES ANCIENS ]", centerX, 40, 40, 1, PURPLE);
+    // =========================================================
+    // PARAMÈTRES DE MISE EN PAGE (Pour ajuster facilement)
+    // =========================================================
     
+    // 1. Taille de l'image (Près de 80% de la hauteur de l'écran !)
+    float pentagramSize = (float)h * 0.78f; 
+    
+    // 2. Position verticale du centre de l'image (Légèrement décalé vers le bas pour le titre)
+    int altarY = centerY + 30; 
+    
+    // 3. Écartement des descriptions (Haut/Bas) par rapport au centre
+    // On augmente cet écart pour faire "respirer" l'image géante
+    int offset_y = 190; 
+
+    // 4. Écartement horizontal (inchangé, pour les bords de l'écran)
+    int offset_x = 350; 
+
+
+    // =========================================================
+    // 1. DESSIN DU TITRE ET ÂMES (Remontés et plus imposants)
+    // =========================================================
+    
+    // Titre tout en haut
+    DrawTextCentered(game->uiFont, "[ AUTEL DES ANCIENS ]", centerX, 30, 40, 1, PURPLE);
+    
+    // Âmes juste en dessous (Y=70 au lieu de 90)
     char soulText[64];
     sprintf(soulText, "Ames de Boss disponibles : %d", game->combat.player.boss_souls);
-    DrawTextCentered(game->uiFont, soulText, centerX, 90, 24, 1, WHITE);
+    DrawTextCentered(game->uiFont, soulText, centerX, 70, 24, 1, WHITE);
+
 
     // =========================================================
-    // 1. DESSIN DU PENTAGRAMME EN ASCII ART
+    // 2. DESSIN DU PENTAGRAMME EN PNG (GIGANTESQUE)
     // =========================================================
 
-    const char* pentagram[16] = {
-        "                   .                   ",
-        "                  / \\                  ",
-        "                 /   \\                 ",
-        "                /     \\                ",
-        "    ___________/       \\___________    ",
-        "    \\          \\       /          /    ",
-        "     \\          \\     /          /     ",
-        "      \\          \\   /          /      ",
-        "       \\          \\ /          /       ",
-        "        \\          * /        ",
-        "         \\        / \\        /         ",
-        "         /       /   \\       \\         ",
-        "        /       /     \\       \\        ",
-        "       /       /       \\       \\       ",
-        "      /       /         \\       \\      ",
-        "     /_______/           \\_______\\     "
-    };
+    if (game->tex_pentagram.id != 0) 
+    {
+        // Calcul du multiplicateur pour atteindre la taille cible
+        float scale = pentagramSize / (float)game->tex_pentagram.height;
+        
+        float scaledWidth = game->tex_pentagram.width * scale;
+        float scaledHeight = game->tex_pentagram.height * scale;
 
-    int asciiLines = 16;
-    int fontSize = 32;   // PLUS GRAND ! (Avant: 20)
-    int lineHeight = 30; // Espacement vertical ajusté
-    int asciiTotalHeight = asciiLines * lineHeight;
-    int asciiStartY = centerY - (asciiTotalHeight / 2) + 30;
+        // Rectangle source (toute l'image)
+        Rectangle sourceRec = { 0.0f, 0.0f, (float)game->tex_pentagram.width, (float)game->tex_pentagram.height };
+        
+        // Rectangle de destination (centré sur altarY)
+        Rectangle destRec = { (float)centerX, (float)altarY, scaledWidth, scaledHeight };
+        
+        // Origine au centre de l'image pour un positionnement facile
+        Vector2 origin = { scaledWidth / 2.0f, scaledHeight / 2.0f };
 
-    for (int i = 0; i < asciiLines; i++) {
-        Vector2 tSize = MeasureTextEx(game->uiFont, pentagram[i], fontSize, 1);
-        DrawTextEx(game->uiFont, pentagram[i], (Vector2){centerX - (tSize.x / 2), asciiStartY + (i * lineHeight)}, fontSize, 1, DARKPURPLE);
+        float rotation = 0.0f; // Toujours fixe ^^
+
+        // Teinte violette pour l'ambiance temple
+        DrawTexturePro(game->tex_pentagram, sourceRec, destRec, origin, rotation, DARKPURPLE);
     }
 
     // =========================================================
-    // 2. BOUTONS DES PASSIFS (Placés aux extrémités)
+    // 3. BOUTONS DES PASSIFS (Placés sur les bords de l'image géante)
     // =========================================================
     
-    // Position 1 : Haut Gauche (Vitalité)
-    int p1_x = centerX - 350;
-    int p1_y = asciiStartY + 50;
+    // Calcul des hauteurs basées sur l'écartement offset_y
+    int top_y = altarY - offset_y;
+    int bottom_y = altarY + offset_y;
+
+    // --- LIGNE DU HAUT ---
+
+    // Position 1 : Haut Gauche (Vitalité Ancestrale)
+    int p1_x = centerX - offset_x;
+    int p1_y = top_y;
     
     char hpTxt[128];
     sprintf(hpTxt, "Vitalite Ancestrale\nNiv %d : +%d%% HP Max", game->combat.player.passive_hp_level, game->combat.player.passive_hp_level * 10);
@@ -486,9 +509,9 @@ void Game_RenderAltar(GameContext* game, int w, int h)
         Combat_RecalculateStats(&game->combat);
     }
 
-    // Position 2 : Haut Droite (Force)
-    int p2_x = centerX + 350;
-    int p2_y = asciiStartY + 50;
+    // Position 2 : Haut Droite (Force Titanesque)
+    int p2_x = centerX + offset_x;
+    int p2_y = top_y;
     
     char atkTxt[128];
     sprintf(atkTxt, "Force Titanesque\nNiv %d : +%d%% ATK", game->combat.player.passive_atk_level, game->combat.player.passive_atk_level * 10);
@@ -499,11 +522,12 @@ void Game_RenderAltar(GameContext* game, int w, int h)
         Combat_RecalculateStats(&game->combat);
     }
 
-    // Position 3 : Bas Gauche (Mana)
-    int p3_x = centerX - 350;
-    int p3_y = asciiStartY + 350;
+    // --- LIGNE DU BAS ---
+
+    // Position 3 : Bas Gauche (Puits Cosmique)
+    int p3_x = centerX - offset_x;
+    int p3_y = bottom_y;
     
-    // (J'assume que tu l'as ajouté dans ta structure PlayerStats et Save/LoadGame)
     char manaTxt[128];
     sprintf(manaTxt, "Puits Cosmique\nNiv %d : +%d%% Mana", game->combat.player.passive_mana_level, game->combat.player.passive_mana_level * 10);
     DrawTextCentered(game->uiFont, manaTxt, p3_x, p3_y, 20, 1, SKYBLUE);
@@ -513,9 +537,9 @@ void Game_RenderAltar(GameContext* game, int w, int h)
         Combat_RecalculateStats(&game->combat);
     }
 
-    // Position 4 : Bas Droite (Chance)
-    int p4_x = centerX + 350;
-    int p4_y = asciiStartY + 350;
+    // Position 4 : Bas Droite (Aura de Fortune)
+    int p4_x = centerX + offset_x;
+    int p4_y = bottom_y;
     
     char lootTxt[128];
     sprintf(lootTxt, "Aura de Fortune\nNiv %d : +%d%% Loot", game->combat.player.passive_loot_level, game->combat.player.passive_loot_level * 2);
