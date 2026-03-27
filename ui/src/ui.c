@@ -64,7 +64,6 @@ bool DoShopButton(Font font, const char* text, int x, int y, int fontSize, bool 
 void DrawEquipSlotGrid(GameContext* game, int inv_idx, const char* slot_label, int x, int y, int width, int height)
 {
     Color borderColor = DARKGRAY;
-    Color asciiColor  = LIGHTGRAY;
 
     DrawRectangleLinesEx((Rectangle){x, y, width, height}, 2, borderColor);
     DrawTextEx(game->uiFont, slot_label, (Vector2){x + 5, y + 5}, 20, 1, GRAY);
@@ -76,17 +75,25 @@ void DrawEquipSlotGrid(GameContext* game, int inv_idx, const char* slot_label, i
     }
     else
     {
-        OwnedItem*    item = &game->combat.player.inventory[inv_idx];
+        OwnedItem* item = &game->combat.player.inventory[inv_idx];
         ItemTemplate* t    = &g_itemDB[item->template_idx];
 
-        int line_height        = 18;
-        int ascii_total_height = t->ascii_line_count * line_height;
-        int currentY           = y + (height / 2) - (ascii_total_height / 2);
-
-        for (int i = 0; i < t->ascii_line_count; i++)
+        //  DESSIN DU SPRITE DANS LA CASE 
+        if (t->sprite.id != 0) 
         {
-            Vector2 tSize = MeasureTextEx(game->dungeonFont, t->ascii[i], 18, 1);
-            DrawTextEx(game->dungeonFont, t->ascii[i], (Vector2){x + (width / 2) - (tSize.x / 2), currentY + (i * line_height)}, 18, 1, asciiColor);
+            // On calcule l'échelle pour que l'image rentre bien dans la case (qui fait 'height' pixels de haut)
+            // On vise une hauteur de 50 pixels pour l'image
+            float scale = 50.0f / (float)t->sprite.height; 
+            
+            float scaledWidth = t->sprite.width * scale;
+            float scaledHeight = t->sprite.height * scale;
+
+            // On centre l'image dans la case, avec un petit décalage vers le bas (+10) pour le texte
+            int imgX = x + (width / 2) - (scaledWidth / 2);
+            int imgY = y + (height / 2) - (scaledHeight / 2) + 10;
+
+            // On dessine l'image en appliquant la couleur de sa rareté !!
+            DrawTextureEx(t->sprite, (Vector2){(float)imgX, (float)imgY}, 0.0f, scale, GetRarityColor(item->rarity));
         }
     }
 }

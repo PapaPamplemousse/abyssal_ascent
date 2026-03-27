@@ -205,21 +205,22 @@ static void LoadItemsDB(const char* filepath)
         t->cost_bois_base = boisNode ? cJSON_GetObjectItem(boisNode, "base")->valueint : 0;
         t->cost_bois_inc  = boisNode ? cJSON_GetObjectItem(boisNode, "inc")->valueint : 0;
 
-        // --- LA CORRECTION DE L'ASCII EST ICI ---
-        cJSON* asciiArray   = cJSON_GetObjectItem(itemNode, "ascii");
-        cJSON* line         = NULL;
-        t->ascii_line_count = 0; // TRÈS IMPORTANT : Initialiser à 0 !
-        if (asciiArray)
+        // --- GESTION DE L'IMAGE DES OBJETS ---
+        cJSON* imageNode = cJSON_GetObjectItem(itemNode, "image");
+        
+        if (imageNode && imageNode->valuestring)
         {
-            cJSON_ArrayForEach(line, asciiArray)
-            {
-                if (t->ascii_line_count < MAX_ITEM_ASCII_LINES)
-                {
-                    strcpy(t->ascii[t->ascii_line_count], line->valuestring);
-                    t->ascii_line_count++;
-                }
-            }
+            strcpy(t->image_path, imageNode->valuestring);
         }
+        else
+        {
+            // Image par défaut si oubliée dans le JSON
+            strcpy(t->image_path, "assets/sprites/armors/default.png");
+        }
+        
+        // On charge l'image en mémoire !
+        t->sprite = LoadTexture(t->image_path);
+        
         g_itemCount++;
     }
     cJSON_Delete(json);

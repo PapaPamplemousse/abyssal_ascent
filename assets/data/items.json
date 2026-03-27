@@ -5,6 +5,7 @@
       "name_en": "Rusty Sword",
       "name_fr": "Epee Rouillee",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 3,
@@ -28,18 +29,14 @@
           "base": 5,
           "inc": 2
         }
-      },
-      "ascii": [
-        "   /|",
-        "O==|>",
-        "   \\|"
-      ]
+      }
     },
     {
       "id": "wooden_club",
       "name_en": "Wooden Club",
       "name_fr": "Gourdin",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/mace.png",
       "stats": {
         "hp": 0,
         "atk": 4,
@@ -63,18 +60,14 @@
           "base": 5,
           "inc": 2
         }
-      },
-      "ascii": [
-        "  /\\",
-        " / /",
-        "/_/ "
-      ]
+      }
     },
     {
       "id": "iron_dagger",
       "name_en": "Iron Dagger",
       "name_fr": "Dague de Fer",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/dagger.png",
       "stats": {
         "hp": 0,
         "atk": 5,
@@ -98,18 +91,14 @@
           "base": 5,
           "inc": 2
         }
-      },
-      "ascii": [
-        "   /\\",
-        "===>",
-        "   \\/"
-      ]
+      }
     },
     {
       "id": "hunter_knife",
       "name_en": "Hunter Knife",
       "name_fr": "Couteau de Chasseur",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/dagger.png",
       "stats": {
         "hp": 0,
         "atk": 3,
@@ -133,18 +122,14 @@
           "base": 5,
           "inc": 2
         }
-      },
-      "ascii": [
-        "  /|",
-        "{==|>",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "copper_sabre",
       "name_en": "Copper Sabre",
       "name_fr": "Sabre de Cuivre",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 6,
@@ -168,18 +153,14 @@
           "base": 6,
           "inc": 3
         }
-      },
-      "ascii": [
-        "  /\\",
-        " |>|",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "bronze_mace",
       "name_en": "Bronze Mace",
       "name_fr": "Masse de Bronze",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/mace.png",
       "stats": {
         "hp": 0,
         "atk": 7,
@@ -203,18 +184,14 @@
           "base": 6,
           "inc": 3
         }
-      },
-      "ascii": [
-        "   /|",
-        "O==|>",
-        "   \\|"
-      ]
+      }
     },
     {
       "id": "war_pick",
       "name_en": "War Pick",
       "name_fr": "Pic de Guerre",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/axe.png",
       "stats": {
         "hp": 0,
         "atk": 5,
@@ -238,18 +215,14 @@
           "base": 6,
           "inc": 3
         }
-      },
-      "ascii": [
-        "  /\\",
-        " / /",
-        "/_/ "
-      ]
+      }
     },
     {
       "id": "steel_blade",
       "name_en": "Steel Blade",
       "name_fr": "Lame d'Acier",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 6,
@@ -273,18 +246,14 @@
           "base": 6,
           "inc": 3
         }
-      },
-      "ascii": [
-        "   /\\",
-        "===>",
-        "   \\/"
-      ]
+      }
     },
     {
       "id": "viper_knife",
       "name_en": "Viper Knife",
       "name_fr": "Couteau Viperin",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/dagger.png",
       "stats": {
         "hp": 0,
         "atk": 9,
@@ -312,18 +281,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        "  /|",
-        "{==|>",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "runed_sword",
       "name_en": "Runed Sword",
       "name_fr": "Epee Runique",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 7,
@@ -351,18 +316,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        "  /\\",
-        " |>|",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "sun_edge",
       "name_en": "Sun Edge",
       "name_fr": "Lame Solaire",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 8,
@@ -390,18 +351,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        "   /|",
-        "O==|>",
-        "   \\|"
-      ]
+      }
     },
     {
       "id": "frost_rapier",
       "name_en": "Frost Rapier",
       "name_fr": "Rapiere de Givre",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 9,
@@ -429,18 +386,14 @@
           "base": 17,
           "inc": 8
         }
-      },
-      "ascii": [
-        "  /\\",
-        " / /",
-        "/_/ "
-      ]
+      }
     },
     {
       "id": "ashen_sword",
       "name_en": "Ashen Sword",
       "name_fr": "Epee de Cendre",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 9,
@@ -472,18 +425,14 @@
           "base": 8,
           "inc": 4
         }
-      },
-      "ascii": [
-        "   /\\",
-        "===>",
-        "   \\/"
-      ]
+      }
     },
     {
       "id": "bloodletter",
       "name_en": "Bloodletter",
       "name_fr": "Ouvre-Sang",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/dagger.png",
       "stats": {
         "hp": 0,
         "atk": 10,
@@ -515,18 +464,14 @@
           "base": 8,
           "inc": 4
         }
-      },
-      "ascii": [
-        "  /|",
-        "{==|>",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "moon_cutlass",
       "name_en": "Moon Cutlass",
       "name_fr": "Machette Lunaire",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 11,
@@ -558,18 +503,14 @@
           "base": 8,
           "inc": 4
         }
-      },
-      "ascii": [
-        "  /\\",
-        " |>|",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "jade_knife",
       "name_en": "Jade Knife",
       "name_fr": "Lame de Jade",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/dagger.png",
       "stats": {
         "hp": 0,
         "atk": 9,
@@ -601,18 +542,14 @@
           "base": 9,
           "inc": 4
         }
-      },
-      "ascii": [
-        "   /|",
-        "O==|>",
-        "   \\|"
-      ]
+      }
     },
     {
       "id": "storm_slicer",
       "name_en": "Storm Slicer",
       "name_fr": "Fendoir de Tempete",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 12,
@@ -648,18 +585,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        "  /\\",
-        " / /",
-        "/_/ "
-      ]
+      }
     },
     {
       "id": "ember_blade",
       "name_en": "Ember Blade",
       "name_fr": "Lame de Braise",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 13,
@@ -695,18 +628,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        "   /\\",
-        "===>",
-        "   \\/"
-      ]
+      }
     },
     {
       "id": "grim_shortblade",
       "name_en": "Grim Shortblade",
       "name_fr": "Courte Lame Funeste",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/dagger.png",
       "stats": {
         "hp": 0,
         "atk": 11,
@@ -746,18 +675,14 @@
           "base": 13,
           "inc": 6
         }
-      },
-      "ascii": [
-        "  /|",
-        "{==|>",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "royal_sabre",
       "name_en": "Royal Sabre",
       "name_fr": "Sabre Royal",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 12,
@@ -797,18 +722,14 @@
           "base": 13,
           "inc": 6
         }
-      },
-      "ascii": [
-        "  /\\",
-        " |>|",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "necrotic_blade",
       "name_en": "Necrotic Blade",
       "name_fr": "Lame Necritique",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 15,
@@ -848,18 +769,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        "   /|",
-        "O==|>",
-        "   \\|"
-      ]
+      }
     },
     {
       "id": "glacier_cutlass",
       "name_en": "Glacier Cutlass",
       "name_fr": "Coutelas Glaciaire",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 13,
@@ -899,18 +816,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        "  /\\",
-        " / /",
-        "/_/ "
-      ]
+      }
     },
     {
       "id": "warden_sword",
       "name_en": "Warden Sword",
       "name_fr": "Epee du Garde",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/sword.png",
       "stats": {
         "hp": 0,
         "atk": 14,
@@ -950,18 +863,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        "   /\\",
-        "===>",
-        "   \\/"
-      ]
+      }
     },
     {
       "id": "arcane_fang",
       "name_en": "Arcane Fang",
       "name_fr": "Croc Arcane",
       "type": "HAND_1",
+      "image": "assets/sprites/weapons/dagger.png",
       "stats": {
         "hp": 0,
         "atk": 15,
@@ -1001,18 +910,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        "  /|",
-        "{==|>",
-        "  \\|"
-      ]
+      }
     },
     {
       "id": "heavy_axe",
       "name_en": "Heavy Axe",
       "name_fr": "Hache Lourde",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/axe.png",
       "stats": {
         "hp": 0,
         "atk": 8,
@@ -1036,18 +941,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  ,  ",
-        " /|\\ ",
-        "  |  "
-      ]
+      }
     },
     {
       "id": "battle_greatsword",
       "name_en": "Battle Greatsword",
       "name_fr": "Grande Epee de Guerre",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/greatsword.png",
       "stats": {
         "hp": 0,
         "atk": 9,
@@ -1071,18 +972,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  /|\\ ",
-        " /_|_\\",
-        "   |  "
-      ]
+      }
     },
     {
       "id": "orc_crusher",
       "name_en": "Orc Crusher",
       "name_fr": "Brise-Orques",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/hammer.png",
       "stats": {
         "hp": 0,
         "atk": 10,
@@ -1106,18 +1003,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  __",
-        " /||",
-        "/ ||"
-      ]
+      }
     },
     {
       "id": "paladin_halberd",
       "name_en": "Paladin Halberd",
       "name_fr": "Hallebarde du Paladin",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/spear.png",
       "stats": {
         "hp": 0,
         "atk": 11,
@@ -1141,18 +1034,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /==\\",
-        "   ||"
-      ]
+      }
     },
     {
       "id": "moon_glaive",
       "name_en": "Moon Glaive",
       "name_fr": "Glaive Lunaire",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/spear.png",
       "stats": {
         "hp": 0,
         "atk": 12,
@@ -1176,18 +1065,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "   /",
-        "  /_",
-        " /_/"
-      ]
+      }
     },
     {
       "id": "ravager_maul",
       "name_en": "Ravager Maul",
       "name_fr": "Massue Ravageuse",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/hammer.png",
       "stats": {
         "hp": 0,
         "atk": 13,
@@ -1211,18 +1096,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  ,  ",
-        " /|\\ ",
-        "  |  "
-      ]
+      }
     },
     {
       "id": "storm_halberd",
       "name_en": "Storm Halberd",
       "name_fr": "Hallebarde de Tempete",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/spear.png",
       "stats": {
         "hp": 0,
         "atk": 14,
@@ -1246,18 +1127,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  /|\\ ",
-        " /_|_\\",
-        "   |  "
-      ]
+      }
     },
     {
       "id": "ember_greataxe",
       "name_en": "Ember Greataxe",
       "name_fr": "Hache Geante de Braise",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/axe.png",
       "stats": {
         "hp": 0,
         "atk": 15,
@@ -1281,18 +1158,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  __",
-        " /||",
-        "/ ||"
-      ]
+      }
     },
     {
       "id": "glacial_polearm",
       "name_en": "Glacial Polearm",
       "name_fr": "Arme d'Haste Glaciaire",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/spear.png",
       "stats": {
         "hp": 0,
         "atk": 16,
@@ -1316,18 +1189,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /==\\",
-        "   ||"
-      ]
+      }
     },
     {
       "id": "druidic_staff",
       "name_en": "Druidic Staff",
       "name_fr": "Baton Druide",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/staff.png",
       "stats": {
         "hp": 0,
         "atk": 17,
@@ -1359,18 +1228,14 @@
           "base": 17,
           "inc": 8
         }
-      },
-      "ascii": [
-        "   /",
-        "  /_",
-        " /_/"
-      ]
+      }
     },
     {
       "id": "arcanist_staff",
       "name_en": "Arcanist Staff",
       "name_fr": "Baton Arcanique",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/staff.png",
       "stats": {
         "hp": 0,
         "atk": 18,
@@ -1402,18 +1267,14 @@
           "base": 18,
           "inc": 9
         }
-      },
-      "ascii": [
-        "  ,  ",
-        " /|\\ ",
-        "  |  "
-      ]
+      }
     },
     {
       "id": "void_scythe",
       "name_en": "Void Scythe",
       "name_fr": "Faux du Vide",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/scythe.png",
       "stats": {
         "hp": 0,
         "atk": 19,
@@ -1445,18 +1306,14 @@
           "base": 19,
           "inc": 9
         }
-      },
-      "ascii": [
-        "  /|\\ ",
-        " /_|_\\",
-        "   |  "
-      ]
+      }
     },
     {
       "id": "royal_warhammer",
       "name_en": "Royal Warhammer",
       "name_fr": "Marteau Royal de Guerre",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/hammer.png",
       "stats": {
         "hp": 0,
         "atk": 20,
@@ -1496,18 +1353,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  __",
-        " /||",
-        "/ ||"
-      ]
+      }
     },
     {
       "id": "blood_greataxe",
       "name_en": "Blood Greataxe",
       "name_fr": "Grande Hache Sanglante",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/axe.png",
       "stats": {
         "hp": 0,
         "atk": 21,
@@ -1547,18 +1400,14 @@
           "base": 21,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /==\\",
-        "   ||"
-      ]
+      }
     },
     {
       "id": "sun_pike",
       "name_en": "Sun Pike",
       "name_fr": "Pique Solaire",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/spear.png",
       "stats": {
         "hp": 0,
         "atk": 22,
@@ -1598,18 +1447,14 @@
           "base": 22,
           "inc": 11
         }
-      },
-      "ascii": [
-        "   /",
-        "  /_",
-        " /_/"
-      ]
+      }
     },
     {
       "id": "frost_halberd",
       "name_en": "Frost Halberd",
       "name_fr": "Hallebarde de Givre",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/spear.png",
       "stats": {
         "hp": 0,
         "atk": 23,
@@ -1649,18 +1494,14 @@
           "base": 23,
           "inc": 11
         }
-      },
-      "ascii": [
-        "  ,  ",
-        " /|\\ ",
-        "  |  "
-      ]
+      }
     },
     {
       "id": "inferno_claymore",
       "name_en": "Inferno Claymore",
       "name_fr": "Claymore Infernale",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/greatsword.png",
       "stats": {
         "hp": 0,
         "atk": 24,
@@ -1700,18 +1541,14 @@
           "base": 24,
           "inc": 12
         }
-      },
-      "ascii": [
-        "  /|\\ ",
-        " /_|_\\",
-        "   |  "
-      ]
+      }
     },
     {
       "id": "ancient_relicblade",
       "name_en": "Ancient Relicblade",
       "name_fr": "Lame Relique Ancienne",
       "type": "HAND_2H",
+      "image": "assets/sprites/weapons/greatsword.png",
       "stats": {
         "hp": 0,
         "atk": 25,
@@ -1751,18 +1588,14 @@
           "base": 25,
           "inc": 12
         }
-      },
-      "ascii": [
-        "  __",
-        " /||",
-        "/ ||"
-      ]
+      }
     },
     {
       "id": "short_bow",
       "name_en": "Short Bow",
       "name_fr": "Arc Court",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/bow.png",
       "stats": {
         "hp": 0,
         "atk": 3,
@@ -1782,18 +1615,14 @@
           "base": 18,
           "inc": 9
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /  \\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "hunting_bow",
       "name_en": "Hunting Bow",
       "name_fr": "Arc de Chasse",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/bow.png",
       "stats": {
         "hp": 0,
         "atk": 4,
@@ -1813,18 +1642,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  __",
-        " /==\\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "slingshot",
       "name_en": "Slingshot",
       "name_fr": "Lance-Pierre",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/slingshot.png",
       "stats": {
         "hp": 0,
         "atk": 6,
@@ -1844,18 +1669,14 @@
           "base": 22,
           "inc": 11
         }
-      },
-      "ascii": [
-        " ( )",
-        " /\\",
-        "/  "
-      ]
+      }
     },
     {
       "id": "crossbow",
       "name_en": "Crossbow",
       "name_fr": "Arbalete",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/crossbow.png",
       "stats": {
         "hp": 0,
         "atk": 4,
@@ -1879,18 +1700,14 @@
           "base": 24,
           "inc": 12
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /\\/\\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "light_crossbow",
       "name_en": "Light Crossbow",
       "name_fr": "Arbalete Legere",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/crossbow.png",
       "stats": {
         "hp": 0,
         "atk": 6,
@@ -1914,18 +1731,14 @@
           "base": 26,
           "inc": 13
         }
-      },
-      "ascii": [
-        "   /\\",
-        "  /  \\",
-        "  \\__/"
-      ]
+      }
     },
     {
       "id": "poison_bow",
       "name_en": "Poison Bow",
       "name_fr": "Arc Empoisonne",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/bow.png",
       "stats": {
         "hp": 0,
         "atk": 7,
@@ -1953,18 +1766,14 @@
           "base": 9,
           "inc": 4
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /  \\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "goblin_thrower",
       "name_en": "Goblin Thrower",
       "name_fr": "Lanceur Gobelin",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/crossbow.png",
       "stats": {
         "hp": 0,
         "atk": 6,
@@ -1996,18 +1805,14 @@
           "base": 5,
           "inc": 2
         }
-      },
-      "ascii": [
-        "  __",
-        " /==\\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "elf_longbow",
       "name_en": "Elf Longbow",
       "name_fr": "Arc Long Elfique",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/bow.png",
       "stats": {
         "hp": 0,
         "atk": 7,
@@ -2039,18 +1844,14 @@
           "base": 5,
           "inc": 2
         }
-      },
-      "ascii": [
-        " ( )",
-        " /\\",
-        "/  "
-      ]
+      }
     },
     {
       "id": "sun_crossbow",
       "name_en": "Sun Crossbow",
       "name_fr": "Arbalete Solaire",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/crossbow.png",
       "stats": {
         "hp": 0,
         "atk": 9,
@@ -2086,18 +1887,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /\\/\\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "storm_bow",
       "name_en": "Storm Bow",
       "name_fr": "Arc de Tempete",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/bow.png",
       "stats": {
         "hp": 0,
         "atk": 7,
@@ -2137,18 +1934,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        "   /\\",
-        "  /  \\",
-        "  \\__/"
-      ]
+      }
     },
     {
       "id": "frost_crossbow",
       "name_en": "Frost Crossbow",
       "name_fr": "Arbalete de Givre",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/crossbow.png",
       "stats": {
         "hp": 0,
         "atk": 9,
@@ -2188,18 +1981,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /  \\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "ashen_bow",
       "name_en": "Ashen Bow",
       "name_fr": "Arc de Cendre",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/bow.png",
       "stats": {
         "hp": 0,
         "atk": 10,
@@ -2239,18 +2028,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        "  __",
-        " /==\\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "runic_crossbow",
       "name_en": "Runic Crossbow",
       "name_fr": "Arbalete Runique",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/crossbow.png",
       "stats": {
         "hp": 0,
         "atk": 9,
@@ -2290,18 +2075,14 @@
           "base": 17,
           "inc": 8
         }
-      },
-      "ascii": [
-        " ( )",
-        " /\\",
-        "/  "
-      ]
+      }
     },
     {
       "id": "venom_bow",
       "name_en": "Venom Bow",
       "name_fr": "Arc Venimeux",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/bow.png",
       "stats": {
         "hp": 0,
         "atk": 10,
@@ -2341,18 +2122,14 @@
           "base": 18,
           "inc": 9
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /\\/\\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "royal_crossbow",
       "name_en": "Royal Crossbow",
       "name_fr": "Arbalete Royale",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/crossbow.png",
       "stats": {
         "hp": 0,
         "atk": 12,
@@ -2392,18 +2169,14 @@
           "base": 19,
           "inc": 9
         }
-      },
-      "ascii": [
-        "   /\\",
-        "  /  \\",
-        "  \\__/"
-      ]
+      }
     },
     {
       "id": "sky_lance",
       "name_en": "Sky Lance",
       "name_fr": "Lance du Ciel",
       "type": "HAND_2",
+      "image": "assets/sprites/weapons/bow.png",
       "stats": {
         "hp": 0,
         "atk": 10,
@@ -2443,18 +2216,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        "  /\\",
-        " /  \\",
-        "  ||"
-      ]
+      }
     },
     {
       "id": "leather_cap",
       "name_en": "Leather Cap",
       "name_fr": "Casque de Cuir",
       "type": "HELMET",
+      "image": "assets/sprites/armors/helmet.png",
       "stats": {
         "hp": 4,
         "atk": 0,
@@ -2478,18 +2247,14 @@
           "base": 4,
           "inc": 2
         }
-      },
-      "ascii": [
-        "    ",
-        "|  |",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "iron_helm",
       "name_en": "Iron Helm",
       "name_fr": "Heaume de Fer",
       "type": "HELMET",
+      "image": "assets/sprites/armors/helmet.png",
       "stats": {
         "hp": 5,
         "atk": 0,
@@ -2513,18 +2278,14 @@
           "base": 4,
           "inc": 2
         }
-      },
-      "ascii": [
-        " (#) ",
-        "|# |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "hunter_hood",
       "name_en": "Hunter Hood",
       "name_fr": "Capuche de Chasseur",
       "type": "HELMET",
+      "image": "assets/sprites/armors/hood.png",
       "stats": {
         "hp": 6,
         "atk": 0,
@@ -2552,18 +2313,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " /@@\\",
-        "|@@|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "mage_hat",
       "name_en": "Mage Hat",
       "name_fr": "Chapeau de Mage",
       "type": "HELMET",
+      "image": "assets/sprites/armors/wizard_hat.png",
       "stats": {
         "hp": 7,
         "atk": 0,
@@ -2587,18 +2344,14 @@
           "base": 11,
           "inc": 5
         }
-      },
-      "ascii": [
-        " *** ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "crystal_circlet",
       "name_en": "Crystal Circlet",
       "name_fr": "Diademe de Cristal",
       "type": "HELMET",
+      "image": "assets/sprites/armors/circlet.png",
       "stats": {
         "hp": 8,
         "atk": 0,
@@ -2626,18 +2379,14 @@
           "base": 8,
           "inc": 4
         }
-      },
-      "ascii": [
-        " ++ ",
-        "|++|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "steel_helm",
       "name_en": "Steel Helm",
       "name_fr": "Casque d'Acier",
       "type": "HELMET",
+      "image": "assets/sprites/armors/helmet.png",
       "stats": {
         "hp": 9,
         "atk": 0,
@@ -2665,18 +2414,14 @@
           "base": 9,
           "inc": 4
         }
-      },
-      "ascii": [
-        " (%) ",
-        "|% |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "warden_helm",
       "name_en": "Warden Helm",
       "name_fr": "Heaume du Gardien",
       "type": "HELMET",
+      "image": "assets/sprites/armors/helmet.png",
       "stats": {
         "hp": 10,
         "atk": 0,
@@ -2704,18 +2449,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " /~~\\",
-        "|~~|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "storm_crown",
       "name_en": "Storm Crown",
       "name_fr": "Couronne de Tempete",
       "type": "HELMET",
+      "image": "assets/sprites/armors/circlet.png",
       "stats": {
         "hp": 11,
         "atk": 0,
@@ -2743,18 +2484,14 @@
           "base": 11,
           "inc": 5
         }
-      },
-      "ascii": [
-        " ^^^ ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "druid_wreath",
       "name_en": "Druid Wreath",
       "name_fr": "Couronne de Druide",
       "type": "HELMET",
+      "image": "assets/sprites/armors/hood.png",
       "stats": {
         "hp": 12,
         "atk": 0,
@@ -2782,18 +2519,14 @@
           "base": 12,
           "inc": 6
         }
-      },
-      "ascii": [
-        " .. ",
-        "|..|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "royal_helm",
       "name_en": "Royal Helm",
       "name_fr": "Casque Royal",
       "type": "HELMET",
+      "image": "assets/sprites/armors/helmet.png",
       "stats": {
         "hp": 13,
         "atk": 0,
@@ -2825,18 +2558,14 @@
           "base": 13,
           "inc": 6
         }
-      },
-      "ascii": [
-        " (=) ",
-        "|= |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "frost_hood",
       "name_en": "Frost Hood",
       "name_fr": "Capuche de Givre",
       "type": "HELMET",
+      "image": "assets/sprites/armors/hood.png",
       "stats": {
         "hp": 14,
         "atk": 0,
@@ -2868,18 +2597,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        " /~~\\",
-        "|~~|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "ashen_mask",
       "name_en": "Ashen Mask",
       "name_fr": "Masque de Cendre",
       "type": "HELMET",
+      "image": "assets/sprites/armors/helmet.png",
       "stats": {
         "hp": 15,
         "atk": 0,
@@ -2911,18 +2636,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        " ### ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "necro_helm",
       "name_en": "Necro Helm",
       "name_fr": "Casque Necronique",
       "type": "HELMET",
+      "image": "assets/sprites/armors/helmet.png",
       "stats": {
         "hp": 16,
         "atk": 0,
@@ -2954,18 +2675,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        " @@ ",
-        "|@@|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "arcane_visor",
       "name_en": "Arcane Visor",
       "name_fr": "Visiere Arcanique",
       "type": "HELMET",
+      "image": "assets/sprites/armors/helmet.png",
       "stats": {
         "hp": 17,
         "atk": 0,
@@ -2997,18 +2714,14 @@
           "base": 17,
           "inc": 8
         }
-      },
-      "ascii": [
-        " (+) ",
-        "|+ |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "cloth_robe",
       "name_en": "Cloth Robe",
       "name_fr": "Robe de Tissu",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/robe.png",
       "stats": {
         "hp": 8,
         "atk": 0,
@@ -3032,18 +2745,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " / \\ ",
-        "|   |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "leather_armor",
       "name_en": "Leather Armor",
       "name_fr": "Armure en Cuir",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 11,
         "atk": 0,
@@ -3067,18 +2776,14 @@
           "base": 12,
           "inc": 6
         }
-      },
-      "ascii": [
-        " /#\\ ",
-        "|###|",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "studded_armor",
       "name_en": "Studded Armor",
       "name_fr": "Armure Cloutee",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 14,
         "atk": 0,
@@ -3102,18 +2807,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        " /[]\\",
-        "|[][]|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "iron_mail",
       "name_en": "Iron Mail",
       "name_fr": "Cotte de Fer",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 17,
         "atk": 0,
@@ -3137,18 +2838,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        " /++\\",
-        "|++++|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "mage_robe",
       "name_en": "Mage Robe",
       "name_fr": "Robe de Mage",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/robe.png",
       "stats": {
         "hp": 20,
         "atk": 0,
@@ -3172,18 +2869,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        " /%%\\",
-        "|%%%%|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "shadow_cloak",
       "name_en": "Shadow Cloak",
       "name_fr": "Cape d'Ombre",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/vest.png",
       "stats": {
         "hp": 23,
         "atk": 0,
@@ -3207,18 +2900,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        " / \\ ",
-        "|   |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "guardian_plate",
       "name_en": "Guardian Plate",
       "name_fr": "Plastron du Gardien",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 26,
         "atk": 0,
@@ -3242,18 +2931,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        " /#\\ ",
-        "|###|",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "crystal_armor",
       "name_en": "Crystal Armor",
       "name_fr": "Armure de Cristal",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 29,
         "atk": 0,
@@ -3281,18 +2966,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        " /[]\\",
-        "|[][]|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "druid_wrap",
       "name_en": "Druid Wrap",
       "name_fr": "Habit Druide",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/robe.png",
       "stats": {
         "hp": 32,
         "atk": 0,
@@ -3320,18 +3001,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        " /++\\",
-        "|++++|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "royal_armor",
       "name_en": "Royal Armor",
       "name_fr": "Armure Royale",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 35,
         "atk": 0,
@@ -3363,18 +3040,14 @@
           "base": 17,
           "inc": 8
         }
-      },
-      "ascii": [
-        " /%%\\",
-        "|%%%%|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "frost_mail",
       "name_en": "Frost Mail",
       "name_fr": "Cotte de Givre",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 38,
         "atk": 0,
@@ -3406,18 +3079,14 @@
           "base": 18,
           "inc": 9
         }
-      },
-      "ascii": [
-        " / \\ ",
-        "|   |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "ember_plate",
       "name_en": "Ember Plate",
       "name_fr": "Plastron de Braise",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 41,
         "atk": 0,
@@ -3449,18 +3118,14 @@
           "base": 19,
           "inc": 9
         }
-      },
-      "ascii": [
-        " /#\\ ",
-        "|###|",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "necro_breastplate",
       "name_en": "Necro Breastplate",
       "name_fr": "Cuirasse Necrotique",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 44,
         "atk": 0,
@@ -3492,18 +3157,14 @@
           "base": 20,
           "inc": 10
         }
-      },
-      "ascii": [
-        " /[]\\",
-        "|[][]|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "arcane_shell",
       "name_en": "Arcane Shell",
       "name_fr": "Coque Arcanique",
       "type": "ARMOR",
+      "image": "assets/sprites/armors/armor.png",
       "stats": {
         "hp": 47,
         "atk": 0,
@@ -3535,18 +3196,14 @@
           "base": 21,
           "inc": 10
         }
-      },
-      "ascii": [
-        " /++\\",
-        "|++++|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "leather_gloves",
       "name_en": "Leather Gloves",
       "name_fr": "Gants en Cuir",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 5,
         "atk": 0,
@@ -3570,18 +3227,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " (( ",
-        "|((|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "iron_gauntlets",
       "name_en": "Iron Gauntlets",
       "name_fr": "Gantelets de Fer",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 5,
         "atk": 0,
@@ -3605,18 +3258,14 @@
           "base": 12,
           "inc": 6
         }
-      },
-      "ascii": [
-        " ([) ",
-        "|[ |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "thief_gloves",
       "name_en": "Thief Gloves",
       "name_fr": "Gants de Voleur",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 6,
         "atk": 2,
@@ -3640,18 +3289,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        " /..\\",
-        "|..|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "mage_gloves",
       "name_en": "Mage Gloves",
       "name_fr": "Gants de Mage",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 6,
         "atk": 0,
@@ -3679,18 +3324,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        " *** ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "mana_weave_gloves",
       "name_en": "Mana Weave Gloves",
       "name_fr": "Gants Tisses de Mana",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 7,
         "atk": 0,
@@ -3722,18 +3363,14 @@
           "base": 9,
           "inc": 4
         }
-      },
-      "ascii": [
-        " ~~ ",
-        "|~~|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "berserker_wraps",
       "name_en": "Berserker Wraps",
       "name_fr": "Bandes de Berserker",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 7,
         "atk": 2,
@@ -3765,18 +3402,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " (=) ",
-        "|= |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "ranger_grips",
       "name_en": "Ranger Grips",
       "name_fr": "Poignees de Ranger",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 8,
         "atk": 0,
@@ -3804,18 +3437,14 @@
           "base": 11,
           "inc": 5
         }
-      },
-      "ascii": [
-        " ///\\",
-        "|//|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "frost_mitts",
       "name_en": "Frost Mitts",
       "name_fr": "Moufles de Givre",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 8,
         "atk": 0,
@@ -3843,18 +3472,14 @@
           "base": 12,
           "inc": 6
         }
-      },
-      "ascii": [
-        " ... ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "ember_handguards",
       "name_en": "Ember Handguards",
       "name_fr": "Protège-Mains de Braise",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 9,
         "atk": 0,
@@ -3882,18 +3507,14 @@
           "base": 13,
           "inc": 6
         }
-      },
-      "ascii": [
-        " ** ",
-        "|**|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "crystal_gauntlets",
       "name_en": "Crystal Gauntlets",
       "name_fr": "Gantelets de Cristal",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 9,
         "atk": 0,
@@ -3921,18 +3542,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        " (+) ",
-        "|+ |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "royal_gloves",
       "name_en": "Royal Gloves",
       "name_fr": "Gants Royaux",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/gloves.png",
       "stats": {
         "hp": 10,
         "atk": 1,
@@ -3964,18 +3581,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        " /%%\\",
-        "|%%|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "vitality_bracers",
       "name_en": "Vitality Bracers",
       "name_fr": "Bracelets de Vitalite",
       "type": "GLOVES",
+      "image": "assets/sprites/armors/bracers.png",
       "stats": {
         "hp": 10,
         "atk": 0,
@@ -4007,18 +3620,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        " ooo ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "cloth_pants",
       "name_en": "Cloth Pants",
       "name_fr": "Pantalon en Tissu",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 5,
         "atk": 0,
@@ -4042,18 +3651,14 @@
           "base": 8,
           "inc": 4
         }
-      },
-      "ascii": [
-        " || ",
-        "||||",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "leather_leggings",
       "name_en": "Leather Leggings",
       "name_fr": "Jambières de Cuir",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 7,
         "atk": 0,
@@ -4077,18 +3682,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " ([) ",
-        "|[ |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "iron_leggings",
       "name_en": "Iron Leggings",
       "name_fr": "Jambières de Fer",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 9,
         "atk": 0,
@@ -4108,18 +3709,14 @@
           "base": 12,
           "inc": 6
         }
-      },
-      "ascii": [
-        " /{{\\",
-        "|{{|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "rogue_pants",
       "name_en": "Rogue Pants",
       "name_fr": "Pantalon de Voleur",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 11,
         "atk": 0,
@@ -4143,18 +3740,14 @@
           "base": 9,
           "inc": 4
         }
-      },
-      "ascii": [
-        " ... ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "mage_trousers",
       "name_en": "Mage Trousers",
       "name_fr": "Pantalon de Mage",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 13,
         "atk": 0,
@@ -4178,18 +3771,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " ** ",
-        "|**|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "guardian_greaves",
       "name_en": "Guardian Greaves",
       "name_fr": "Grèves du Gardien",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 15,
         "atk": 0,
@@ -4213,18 +3802,14 @@
           "base": 11,
           "inc": 5
         }
-      },
-      "ascii": [
-        " (%) ",
-        "|% |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "crystal_leggings",
       "name_en": "Crystal Leggings",
       "name_fr": "Jambières de Cristal",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 17,
         "atk": 0,
@@ -4252,18 +3837,14 @@
           "base": 11,
           "inc": 5
         }
-      },
-      "ascii": [
-        " /++\\",
-        "|++|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "druid_pants",
       "name_en": "Druid Pants",
       "name_fr": "Pantalon Druide",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 19,
         "atk": 0,
@@ -4291,18 +3872,14 @@
           "base": 12,
           "inc": 6
         }
-      },
-      "ascii": [
-        " ^^^ ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "royal_leggings",
       "name_en": "Royal Leggings",
       "name_fr": "Jambières Royales",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 21,
         "atk": 0,
@@ -4334,18 +3911,14 @@
           "base": 13,
           "inc": 6
         }
-      },
-      "ascii": [
-        " %% ",
-        "|%%|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "frost_leggings",
       "name_en": "Frost Leggings",
       "name_fr": "Jambières de Givre",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 23,
         "atk": 0,
@@ -4377,18 +3950,14 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        " (~) ",
-        "|~ |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "ember_leggings",
       "name_en": "Ember Leggings",
       "name_fr": "Jambières de Braise",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 25,
         "atk": 0,
@@ -4420,18 +3989,14 @@
           "base": 15,
           "inc": 7
         }
-      },
-      "ascii": [
-        " /**\\",
-        "|**|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "arcane_leggings",
       "name_en": "Arcane Leggings",
       "name_fr": "Jambières Arcanes",
       "type": "LEGGINGS",
+      "image": "assets/sprites/armors/leggings.png",
       "stats": {
         "hp": 27,
         "atk": 0,
@@ -4463,18 +4028,14 @@
           "base": 16,
           "inc": 8
         }
-      },
-      "ascii": [
-        " === ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "leather_boots",
       "name_en": "Leather Boots",
       "name_fr": "Bottes de Cuir",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 4,
         "atk": 0,
@@ -4498,18 +4059,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " // ",
-        "|//|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "iron_boots",
       "name_en": "Iron Boots",
       "name_fr": "Bottes de Fer",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 6,
         "atk": 0,
@@ -4533,18 +4090,14 @@
           "base": 12,
           "inc": 6
         }
-      },
-      "ascii": [
-        " (#) ",
-        "|# |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "ranger_boots",
       "name_en": "Ranger Boots",
       "name_fr": "Bottes de Ranger",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 8,
         "atk": 0,
@@ -4568,18 +4121,14 @@
           "base": 8,
           "inc": 4
         }
-      },
-      "ascii": [
-        " /~~\\",
-        "|~~|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "mage_slippers",
       "name_en": "Mage Slippers",
       "name_fr": "Mules de Mage",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 10,
         "atk": 0,
@@ -4603,18 +4152,14 @@
           "base": 9,
           "inc": 4
         }
-      },
-      "ascii": [
-        " *** ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "stalker_boots",
       "name_en": "Stalker Boots",
       "name_fr": "Bottes de Rôdeur",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 12,
         "atk": 0,
@@ -4638,18 +4183,14 @@
           "base": 10,
           "inc": 5
         }
-      },
-      "ascii": [
-        " .. ",
-        "|..|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "guardian_sabatons",
       "name_en": "Guardian Sabatons",
       "name_fr": "Sabatons du Gardien",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 14,
         "atk": 0,
@@ -4673,18 +4214,14 @@
           "base": 11,
           "inc": 5
         }
-      },
-      "ascii": [
-        " (%) ",
-        "|% |",
-        " \\_/ "
-      ]
+      }
     },
     {
       "id": "crystal_boots",
       "name_en": "Crystal Boots",
       "name_fr": "Bottes de Cristal",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 16,
         "atk": 0,
@@ -4712,18 +4249,14 @@
           "base": 11,
           "inc": 5
         }
-      },
-      "ascii": [
-        " /++\\",
-        "|++|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "druid_walkers",
       "name_en": "Druid Walkers",
       "name_fr": "Marcheurs Druidiques",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 18,
         "atk": 0,
@@ -4751,18 +4284,14 @@
           "base": 12,
           "inc": 6
         }
-      },
-      "ascii": [
-        " ^^^ ",
-        "/___\\",
-        " | | "
-      ]
+      }
     },
     {
       "id": "royal_boots",
       "name_en": "Royal Boots",
       "name_fr": "Bottes Royales",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 20,
         "atk": 0,
@@ -4794,18 +4323,14 @@
           "base": 13,
           "inc": 6
         }
-      },
-      "ascii": [
-        " %% ",
-        "|%%|",
-        " \\__/ "
-      ]
+      }
     },
     {
       "id": "frost_boots",
       "name_en": "Frost Boots",
       "name_fr": "Bottes de Givre",
       "type": "BOOTS",
+      "image": "assets/sprites/armors/boots.png",
       "stats": {
         "hp": 22,
         "atk": 0,
@@ -4837,12 +4362,7 @@
           "base": 14,
           "inc": 7
         }
-      },
-      "ascii": [
-        " (~) ",
-        "|~ |",
-        " \\_/ "
-      ]
+      }
     }
   ]
 }

@@ -165,16 +165,23 @@ void Game_RenderForge(GameContext* game, int w, int h)
         OwnedItem* item = &game->combat.player.inventory[selectedForgeIdx];
         ItemTemplate* t    = &g_itemDB[item->template_idx];
 
-        int line_height = 20;
-        int asciiStartY = 150;
-        for (int i = 0; i < t->ascii_line_count; i++)
-        {
-            Vector2 tSize = MeasureTextEx(game->dungeonFont, t->ascii[i], 20, 1);
-            DrawTextEx(game->dungeonFont, t->ascii[i], (Vector2){shopX + (shopWidth / 2) - (tSize.x / 2) - 20, asciiStartY + (i * line_height)}, 20, 1, GetRarityColor(item->rarity));
+        // --- AFFICHAGE DU SPRITE DANS LA FORGE ---
+        float scale = 4.0f; // Image bien grosse pour la forge !
+        int scaledWidth = t->sprite.width * scale;
+        int scaledHeight = t->sprite.height * scale;
+        
+        int imgX = shopX + (shopWidth / 2) - (scaledWidth / 2) - 20;
+        int imgY = 150;
+
+        if (t->sprite.id != 0) {
+            // Teinte colorée selon la rareté
+            DrawTextureEx(t->sprite, (Vector2){(float)imgX, (float)imgY}, 0.0f, scale, GetRarityColor(item->rarity));
         }
 
-        int  infoY = asciiStartY + (t->ascii_line_count * line_height) + 30;
+        // On positionne le texte des stats juste en dessous de la nouvelle image
+        int  infoY = imgY + scaledHeight + 30;
         char statsText[256];
+        
         sprintf(statsText, "%s (Niv %d -> %d)", g_isEnglish ? t->name_en : t->name_fr, item->level, item->level + 1);
         DrawTextEx(game->uiFont, statsText, (Vector2){shopX, infoY}, 20, 1, WHITE);
 

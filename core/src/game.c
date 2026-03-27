@@ -57,6 +57,7 @@ void Game_Init(GameContext* game)
     Combat_Init(&game->combat);
     Dungeon_Init(&myDungeon);
     LoadGame(game, &myDungeon);
+
 }
 
 void Game_Close(GameContext* game)
@@ -65,6 +66,12 @@ void Game_Close(GameContext* game)
     UnloadFont(game->uiFont);
     UnloadFont(game->dungeonFont);
     Clicker_Unload(&game->clicker);
+
+    for (int i = 0; i < g_itemCount; i++) {
+        if (g_itemDB[i].sprite.id != 0) {
+            UnloadTexture(g_itemDB[i].sprite);
+        }
+    }
 }
 
 void Game_Update(GameContext* game)

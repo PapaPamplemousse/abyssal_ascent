@@ -80,8 +80,8 @@ typedef struct
     int cost_or_base, cost_or_inc;
     int cost_viande_base, cost_viande_inc;
 
-    char ascii[MAX_ITEM_ASCII_LINES][128];
-    int  ascii_line_count;
+    char image_path[128];
+    Texture2D sprite;
 
 } ItemTemplate;
 
