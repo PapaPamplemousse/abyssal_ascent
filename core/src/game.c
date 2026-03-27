@@ -9,6 +9,8 @@
 #include "ui.h"
 #include "camp_menus.h"
 #include "audio_manager.h"
+#include "main_menu.h"
+#include "game_over.h"
 
 /**
  * @brief Contexte du donjon (interne au module).
@@ -22,6 +24,7 @@ extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
  * @brief Base de données des sorts (externe).
  */
 extern SpellTemplate g_spellDB[MAX_SPELLS_DB];
+
 
 void Game_Init(GameContext* game)
 {
@@ -68,7 +71,6 @@ void Game_Update(GameContext* game)
     // =========================================================
     // --- GESTION DE L'AUDIO (Musiques) ---
     // =========================================================
-    Audio_Update();
 
     if (game->currentState == STATE_DUNGEON) 
     {
@@ -145,18 +147,6 @@ void Game_Update(GameContext* game)
     switch (game->currentState)
     {
         case STATE_MENU:
-            if (key == KEY_ONE || key == KEY_KP_1)
-                game->currentState = STATE_CAMP;
-            else if (key == KEY_L)
-            {
-                g_isEnglish = !g_isEnglish;
-                SaveGame(game, &myDungeon);
-            }
-            else if (pressedQuit)
-            {
-                SaveGame(game, &myDungeon);
-                game->isRunning = false;
-            }
             break;
 
         case STATE_CAMP:
@@ -263,13 +253,6 @@ void Game_Update(GameContext* game)
             }
             break;
         case STATE_GAMEOVER:
-            if (key == KEY_SPACE || key == KEY_ENTER)
-            {
-                Combat_ResetRun(&game->combat);      // Perd l'XP et les niveaux du donjon
-                game->combat.player.hp = 1;          // Renaissance avec 1 PV
-                game->currentState     = STATE_CAMP; // Retour à l'abri
-                SaveGame(game, &myDungeon);
-            }
             break;
     }
 }
@@ -284,8 +267,7 @@ void Game_Render(GameContext* game)
 
     if (game->currentState == STATE_MENU)
     {
-        DrawTextEx(game->uiFont, T("MENU_TITLE"), (Vector2){w / 2 - 200, h / 2 - 100}, 40, 1, DARKGRAY);
-        DrawTextEx(game->uiFont, T("MENU_PROMPT"), (Vector2){w / 2 - 150, h / 2}, 24, 1, LIGHTGRAY);
+        MainMenu_Render(game, w, h);
     }
     else
     {
@@ -349,21 +331,7 @@ void Game_Render(GameContext* game)
         }
         else if (game->currentState == STATE_GAMEOVER)
         {
-            int cx = (w * 0.20f) + ((w * 0.55f) / 2);
-            int cy = h / 2;
-
-            DrawTextEx(game->uiFont, T("LOG_DEAD"), (Vector2){cx - 150, cy - 150}, 50, 1, RED);
-
-            // Un crâne stylisé
-            DrawTextEx(game->uiFont, "      _.--\"\"\"--._      ", (Vector2){cx - 150, cy - 80}, 24, 1, GRAY);
-            DrawTextEx(game->uiFont, "     /  _   _  \\     ", (Vector2){cx - 150, cy - 50}, 24, 1, GRAY);
-            DrawTextEx(game->uiFont, "    |  (o) (o)  |    ", (Vector2){cx - 150, cy - 20}, 24, 1, GRAY);
-            DrawTextEx(game->uiFont, "    |    / \\    |    ", (Vector2){cx - 150, cy + 10}, 24, 1, GRAY);
-            DrawTextEx(game->uiFont, "     \\  '---'  /     ", (Vector2){cx - 150, cy + 40}, 24, 1, GRAY);
-            DrawTextEx(game->uiFont, "      '-------'      ", (Vector2){cx - 150, cy + 70}, 24, 1, GRAY);
-
-            DrawTextEx(game->uiFont, T("GAMEOVER_STATS_LOST"), (Vector2){cx - 250, cy + 140}, 24, 1, GRAY);
-            DrawTextEx(game->uiFont, T("GAMEOVER_RESPAWN"), (Vector2){cx - 230, cy + 200}, 24, 1, LIGHTGRAY);
+            GameOver_Render(game, &myDungeon, w, h);
         }
 
         // Dessiner l'IHM latérale par-dessus
@@ -377,7 +345,20 @@ void Game_Run(GameContext* game)
 {
     while (game->isRunning)
     {
+        Audio_Update();
         Game_Update(game);
         Game_Render(game);
     }
+}
+
+
+// Nettoie l'état complet du jeu pour recommencer à zéro
+void Game_ResetState(GameContext* game) 
+{
+    if (FileExists("save.json")) {
+        remove("save.json");
+    }
+    // Sans fichier save.json, LoadGame exécute son memset et réinitialise tout !
+    LoadGame(game, &myDungeon);
+    myDungeon.highest_floor = 0; // On reset l'étage
 }

@@ -116,6 +116,8 @@ void Combat_ResetRun(CombatContext* combat)
     combat->player.atk      = combat->player.base_atk;
     combat->player.spd      = combat->player.base_spd;
 
+    combat->monsters_killed = 0;
+
     combat->is_active = false;
     Combat_AddLog(combat, T("NEW_RUN"));
     Combat_RecalculateStats(combat);
@@ -420,6 +422,7 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
     if (combat->current_enemy.hp <= 0)
     {
         combat->is_active = false;
+        combat->monsters_killed++;
         Combat_AddLog(combat, T("ENEMY_DEFEATED"));
 
         if (combat->current_enemy.is_boss) {
@@ -618,6 +621,7 @@ void Combat_RecalculateStats(CombatContext* combat) {
         if (combat->player.base_atk <= 0) combat->player.base_atk = 1; 
     }
 
+    combat->player.atk = combat->player.base_atk;
     combat->player.max_hp = combat->player.base_max_hp;
     combat->player.max_mana = combat->player.base_max_mana;
 }

@@ -216,6 +216,9 @@ typedef struct
     //Effets Visuels
     Color screen_flash_color;
     float screen_flash_timer;
+
+    /* number of monster killed */
+    int monsters_killed;
 } CombatContext;
 
 extern ItemTemplate g_itemDB[MAX_ITEMS_DB];

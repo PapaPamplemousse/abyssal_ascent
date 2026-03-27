@@ -75,4 +75,13 @@ void Game_Render(GameContext* game);
  */
 void Game_Close(GameContext* game);
 
+
+/**
+ * @brief Nettoie l'état complet du jeu pour recommencer à zéro
+ * 
+ * @param game Pointeur vers le contexte du jeu.
+ */
+void Game_ResetState(GameContext* game);
+
+
 #endif // GAME_H

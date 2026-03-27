@@ -18,6 +18,7 @@ int main(void)
     InitAudioDevice();
     Audio_Init();
 
+    SetTargetFPS(60);
     // On récupère la taille de l'écran principal et on ajuste la fenêtre
     int monitor = GetCurrentMonitor();
     SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
