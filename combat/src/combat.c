@@ -78,6 +78,9 @@ void Combat_Init(CombatContext* combat)
         combat->player.equipped[i] = -1;
     }
 
+    combat->magic_proj.active = false;
+    combat->magic_proj.exploding = false;
+
     for (int i = 0; i < MAX_SPELLS_DB; i++)
     {
         combat->player.spell_unlocked[i] = false;
@@ -110,6 +113,9 @@ void Combat_ResetRun(CombatContext* combat)
             combat->player.equipped[i] = -1;
         }
     }
+
+    combat->magic_proj.active = false;
+    combat->magic_proj.exploding = false;
 
     for(int i = 0; i < MAX_DMG_TEXTS; i++) combat->dmg_texts[i].active = false;
 
@@ -245,6 +251,29 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
         }
     }
 
+    // --- GESTION DU PROJECTILE MAGIQUE ---
+    if (combat->magic_proj.active) {
+        if (!combat->magic_proj.exploding) {
+            // La boule avance vers sa cible
+            combat->magic_proj.progress += deltaTime / combat->magic_proj.speed;
+            if (combat->magic_proj.progress >= 1.0f) {
+                combat->magic_proj.progress = 1.0f;
+                combat->magic_proj.exploding = true;
+                combat->magic_proj.explosion_timer = combat->magic_proj.explosion_max_time;
+                // On peut même jouer un son d'impact ici si tu en as un !
+            }
+            // Calcul de la position actuelle (Interpolation Linéaire)
+            combat->magic_proj.current.x = combat->magic_proj.start.x + (combat->magic_proj.target.x - combat->magic_proj.start.x) * combat->magic_proj.progress;
+            combat->magic_proj.current.y = combat->magic_proj.start.y + (combat->magic_proj.target.y - combat->magic_proj.start.y) * combat->magic_proj.progress;
+        } else {
+            // L'explosion se dissipe
+            combat->magic_proj.explosion_timer -= deltaTime;
+            if (combat->magic_proj.explosion_timer <= 0.0f) {
+                combat->magic_proj.active = false;
+            }
+        }
+    }
+
     if (combat->screen_flash_timer > 0.0f)
     {
         combat->screen_flash_timer -= deltaTime;
@@ -299,6 +328,18 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
                 if (combat->player.mana >= t->mana_cost)
                 {
                     combat->player.mana -= t->mana_cost;
+
+                    // : CRÉATION DE LA BOULE
+                    Color magicColors[] = { MAGENTA, BLUE, VIOLET, PURPLE, GOLD, PINK, LIME };
+                    combat->magic_proj.active = true;
+                    combat->magic_proj.exploding = false;
+                    // La boule part du coin inférieur gauche (le joueur fictif)
+                    combat->magic_proj.start = (Vector2){ centerX - 250, centerY + 150 }; 
+                    combat->magic_proj.target = (Vector2){ centerX, centerY }; // Vise le monstre
+                    combat->magic_proj.progress = 0.0f;
+                    combat->magic_proj.speed = 0.15f; // Très rapide (150ms)
+                    combat->magic_proj.explosion_max_time = 0.3f; // L'explosion dure 300ms
+                    combat->magic_proj.color = magicColors[GetRandomValue(0, 6)];
                     int   lvl = combat->player.spell_level[s_idx];
                     int   val = t->base_val + (lvl * t->inc_val);
                     float dur = t->base_dur + (lvl * t->inc_dur);
@@ -717,6 +758,42 @@ void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int cent
             DrawTextEx(font, combat->dmg_texts[i].text, 
                       (Vector2){combat->dmg_texts[i].x - (tSize.x / 2), combat->dmg_texts[i].y}, 
                       30, 1, fadeColor); // Taille 30 pour être bien lisible
+        }
+    }
+
+    // ==========================================
+    // --- 7. DESSIN DE LA MAGIE ---
+    // ==========================================
+    if (combat->magic_proj.active)
+    {
+        if (!combat->magic_proj.exploding)
+        {
+            // Boule d'énergie principale
+            DrawCircleV(combat->magic_proj.current, 15.0f, combat->magic_proj.color);
+            
+            // Traînée visuelle (un cercle plus petit et transparent derrière)
+            Vector2 trailPos = { 
+                combat->magic_proj.current.x - (combat->magic_proj.target.x - combat->magic_proj.start.x) * 0.05f, 
+                combat->magic_proj.current.y - (combat->magic_proj.target.y - combat->magic_proj.start.y) * 0.05f 
+            };
+            Color trailColor = combat->magic_proj.color;
+            trailColor.a = 120; // Semi-transparent
+            DrawCircleV(trailPos, 10.0f, trailColor);
+        }
+        else
+        {
+            // L'Explosion finale !
+            float life_ratio = combat->magic_proj.explosion_timer / combat->magic_proj.explosion_max_time; // Passe de 1.0 à 0.0
+            
+            // Le rayon s'agrandit brutalement de 20 à 100 pixels
+            float radius = 20.0f + ((1.0f - life_ratio) * 80.0f); 
+            
+            Color expColor = combat->magic_proj.color;
+            expColor.a = (unsigned char)(255 * life_ratio); // S'estompe progressivement
+            
+            // Dessin du noyau et de l'onde de choc
+            DrawCircleV(combat->magic_proj.target, radius * 0.8f, expColor);
+            DrawCircleLines(combat->magic_proj.target.x, combat->magic_proj.target.y, radius, expColor);
         }
     }
 }

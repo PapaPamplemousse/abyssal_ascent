@@ -85,6 +85,19 @@ typedef struct
 
 } ItemTemplate;
 
+typedef struct {
+    bool    active;
+    bool    exploding;
+    Vector2 start;
+    Vector2 target;
+    Vector2 current;
+    Color   color;
+    float   progress; // De 0.0 (départ) à 1.0 (impact)
+    float   speed;    // Durée du vol en secondes
+    float   explosion_timer;
+    float   explosion_max_time;
+} MagicProjectile;
+
 typedef enum {
     RARITY_COMMON = 0,   // Blanc (x1.0 stats & coût)
     RARITY_RARE = 1,     // Bleu (x1.2 stats & coût)
@@ -240,6 +253,9 @@ typedef struct
 
     //Textes de dégâts 
     DamageText dmg_texts[MAX_DMG_TEXTS];
+
+    // Projectile Magique ---
+    MagicProjectile magic_proj;
 
     /* number of monster killed */
     int monsters_killed;
