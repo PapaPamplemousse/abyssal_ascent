@@ -165,8 +165,7 @@ typedef struct
 
     Color base_color;
 
-    char ascii[MAX_ASCII_LINES][128];
-    int  ascii_line_count;
+    char image_path[128];
 } MonsterTemplate;
 
 // Structure d'un ennemi
@@ -183,8 +182,7 @@ typedef struct
 
     Color base_color;
 
-    char ascii[MAX_ASCII_LINES][128];
-    int  ascii_line_count;
+    Texture2D sprite;
 
     float poison_timer;
     int poison_dmg; float poison_tick; // timer interne pour faire des dégâts chaque seconde
@@ -216,6 +214,11 @@ typedef struct
     //Effets Visuels
     Color screen_flash_color;
     float screen_flash_timer;
+
+    // Effets d'épée 
+    float slash_timer;     // Durée de l'animation du coup
+    int   slash_direction; // 0 = Gauche à Droite, 1 = Droite à Gauche
+    Color slash_color;     // Blanc (Normal) ou Jaune (QTE)
 
     /* number of monster killed */
     int monsters_killed;

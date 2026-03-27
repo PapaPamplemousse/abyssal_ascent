@@ -435,7 +435,6 @@ void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int 
         DrawTextCentered(dungeonFont, "      █░                        ░█      ", centerX, startY + (fontSize * 4), fontSize, spacing, DARKGRAY);
     }
 
-    // --- DESSIN DES OBJETS EN SURIMPRESSION (uiFont) ---
     // ... DESSIN DES OBJETS EN SURIMPRESSION (uiFont et dungeonFont) ...
     if (dist1 == '>')
         DrawTextCentered(uiFont, T("DUNGEON_STAIRS_CLOSE"), centerX, startY + (fontSize * 2), 30, 1, YELLOW);

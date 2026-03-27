@@ -125,19 +125,16 @@ static void LoadMonstersDB(const char* filepath)
             t->base_color = LIGHTGRAY;
         }
 
-        cJSON* asciiArray   = cJSON_GetObjectItem(monsterNode, "ascii");
-        cJSON* line         = NULL;
-        t->ascii_line_count = 0;
-        if (asciiArray)
+        // ---  GESTION DE L'IMAGE (PNG) ---
+        cJSON* imageNode = cJSON_GetObjectItem(monsterNode, "image");
+        
+        if (imageNode && imageNode->valuestring)
         {
-            cJSON_ArrayForEach(line, asciiArray)
-            {
-                if (t->ascii_line_count < MAX_ASCII_LINES)
-                {
-                    strcpy(t->ascii[t->ascii_line_count], line->valuestring);
-                    t->ascii_line_count++;
-                }
-            }
+            strcpy(t->image_path, imageNode->valuestring);
+        }
+        else
+        {
+            printf("pas d'image par defaut pour le monstre %d ",g_monsterCount);
         }
 
         // LE PRINTF ESPION !
