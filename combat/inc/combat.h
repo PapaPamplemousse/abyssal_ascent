@@ -220,6 +220,10 @@ typedef struct
     int   slash_direction; // 0 = Gauche à Droite, 1 = Droite à Gauche
     Color slash_color;     // Blanc (Normal) ou Jaune (QTE)
 
+    //Screen Shake
+    float screen_shake_timer;
+    float screen_shake_magnitude;
+
     /* number of monster killed */
     int monsters_killed;
 } CombatContext;

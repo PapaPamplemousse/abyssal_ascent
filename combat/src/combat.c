@@ -229,6 +229,10 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
         combat->screen_flash_timer -= deltaTime;
     }
 
+    if (combat->screen_shake_timer > 0.0f) {
+        combat->screen_shake_timer -= deltaTime;
+    }
+
     if (combat->slash_timer > 0.0f)
     {
         combat->slash_timer -= deltaTime;
@@ -433,6 +437,11 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
             combat->slash_timer = 0.20f;
             combat->slash_direction = GetRandomValue(0, 1);
             combat->slash_color = YELLOW;
+            // --- DECLENCHEMENT DU SCREEN SHAKE ---
+            combat->screen_shake_timer = 0.25f;     // Dure un quart de seconde
+            combat->screen_shake_magnitude = 15.0f; // Tremblement violent (15 pixels)
+
+
             combat->current_enemy.qte_active = false;
             combat->current_enemy.qte_timer  = GetRandomValue(3, 6);
             Combat_AddLog(combat, T("WEAK_POINT"));                  // "Point faible frappé !"
@@ -548,6 +557,18 @@ void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int cent
         mColor = LIME;
     else if (combat->current_enemy.stun_timer > 0)
         mColor = YELLOW;
+
+    // ==========================================
+    // APPLICATION DU SCREEN SHAKE 
+    // ==========================================
+    if (combat->screen_shake_timer > 0.0f) {
+        // L'intensité diminue progressivement avec le temps pour un effet naturel
+        float intensity = combat->screen_shake_magnitude * (combat->screen_shake_timer / 0.25f);
+        
+        // On modifie virtuellement le centre de l'écran pour cette frame !
+        centerX += GetRandomValue(-(int)intensity, (int)intensity);
+        centerY += GetRandomValue(-(int)intensity, (int)intensity);
+    }
 
     // --- CALCUL AVEC MISE À L'ÉCHELLE ---
     float scale = 5.0f;
