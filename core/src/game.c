@@ -55,6 +55,11 @@ void Game_Init(GameContext* game)
 
     game->tex_pentagram = LoadTexture("assets/sprites/ui/pentagram.png");
 
+    game->tex_fire_lit[0] = LoadTexture("assets/sprites/ui/fire_1.png");
+    game->tex_fire_lit[1] = LoadTexture("assets/sprites/ui/fire_2.png");
+    game->tex_fire_lit[2] = LoadTexture("assets/sprites/ui/fire_3.png");
+    game->tex_fire_lit[3] = LoadTexture("assets/sprites/ui/fire_4.png");
+    game->tex_fire_unlit = LoadTexture("assets/sprites/ui/fire_unlit.png");
     Clicker_Init(&game->clicker);
     Combat_Init(&game->combat);
     Dungeon_Init(&myDungeon);
@@ -75,6 +80,10 @@ void Game_Close(GameContext* game)
         }
     }
     UnloadTexture(game->tex_pentagram);
+    for (int i = 0; i < 4; i++) {
+        UnloadTexture(game->tex_fire_lit[i]);
+    }
+    UnloadTexture(game->tex_fire_unlit);
 }
 
 void Game_Update(GameContext* game)

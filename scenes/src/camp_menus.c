@@ -552,62 +552,48 @@ void Game_RenderAltar(GameContext* game, int w, int h)
 
 void Game_RenderCamp(GameContext* game, int w, int h)
 {
-    float frameTime = 0.30f;
-    int   seed      = (int)(GetTime() / frameTime);
-    SetRandomSeed(seed);
-    
-    int   cx            = (w * 0.2f) + ((w * 0.55f) / 2);
-    int   cy            = h / 2;
-    float asciiFontSize = 20;
-    float spacing       = 2;
+    int cx = (w * 0.2f) + ((w * 0.55f) / 2);
+    int cy = h / 2;
 
     DrawTextEx(game->uiFont, T("CAMP_TITLE"), (Vector2){cx - 100, 80}, 40, 1, GREEN);
 
-    // --- 1. DESSIN DE LA FUMÉE (Seulement si allumé) ---
+    // =========================================================
+    // 1. DESSIN DU FEU DE CAMP (ANIMÉ)
+    // =========================================================
+    int fireY = cy - 80; // Position centrale du feu
+    Texture2D currentTex;
+
     if (g_camp_fire_lit) {
-        for (int s = 0; s < 3; s++) {
-            int   smokeX   = cx + GetRandomValue(-40, 40);
-            int   smokeY   = cy - 130 + GetRandomValue(-20, 20);
-            Color smokeCol = (Color){120, 120, 120, (unsigned char)GetRandomValue(100, 180)};
-            DrawTextEx(game->dungeonFont, "▒", (Vector2){(float)smokeX, (float)smokeY}, asciiFontSize, spacing, smokeCol);
-        }
+        // --- LOGIQUE D'ANIMATION ---
+        // GetTime() renvoie le temps en secondes. 
+        // En multipliant par 8.0f, on change d'image 8 fois par seconde.
+        // Le "% 4" permet de boucler entre les indices 0, 1, 2 et 3.
+        int frameIndex = (int)(GetTime() * 8.0f) % 4; 
+        currentTex = game->tex_fire_lit[frameIndex];
+    } else {
+        currentTex = game->tex_fire_unlit;
     }
 
-    // --- 2. L'ASCII DU FEU ---
-    const char* fireAscii[] = {
-        "                       ", 
-        "    ▓██▄      ▓██▄     ", "    ▀███  ███████████   ", "         █████████████  ", "   ▄████  ████████████▀  ",
-        "  ████████████▓▀███▀████     ▄▄ ", "  █████████████▀   █████▄   ▄███", "  ▀██████████▀     ▀███████████", "   ████████      ▄▄   ▀███████▀",
-        "    ▀▀█████████████     ██████ ",  "  ▄▄██████████████▀█▄█████████▄▄", "  █████████████████████████▀▀▀",  "   ▀███████████▀  ▀█████████▀ "
-    };
+    if (currentTex.id != 0) {
+        // On force le feu à avoir une belle taille (ex: 200 pixels de haut)
+        float scale = 200.0f / (float)currentTex.height;
+        float scaledWidth = currentTex.width * scale;
+        float scaledHeight = currentTex.height * scale;
 
-    int lineCount = 13;
-    for (int i = 0; i < lineCount; i++)
-    {
-        float flickerX = (g_camp_fire_lit && i < 11) ? (float)GetRandomValue(-1, 1) : 0;
-        Vector2 textSize = MeasureTextEx(game->dungeonFont, fireAscii[i], asciiFontSize, spacing);
-        Vector2 pos      = {cx - (textSize.x / 2) + flickerX, cy - 140 + (i * asciiFontSize)};
+        int imgX = cx - (scaledWidth / 2);
+        int imgY = fireY - (scaledHeight / 2);
 
-        Color col;
-        int intensity = GetRandomValue(0, 40);
-
-        if (g_camp_fire_lit) {
-            if (i <= 4) col = (Color){255, 255 - intensity, intensity, 255}; // Jaune/Blanc
-            else if (i <= 8) col = (Color){255, 160 - intensity, 0, 255}; // Orange
-            else if (i <= 10) col = (Color){220 - intensity, 20, 0, 255}; // Rouge
-            else col = (Color){100, 60, 30, 255}; // Bûches
-        } else {
-            // Feu éteint : braises et bois froid
-            if (i <= 8) col = BLANK; // Pas de flammes hautes
-            else if (i <= 10) col = (Color){80 + intensity, 20, 10, 255}; // Braises mourantes
-            else col = (Color){60, 40, 20, 255}; // Bois sombre
-        }
-
-        DrawTextEx(game->dungeonFont, fireAscii[i], (Vector2){pos.x + flickerX, pos.y}, asciiFontSize, spacing, col);
+        // Si le feu est allumé, on le dessine tel quel (WHITE). 
+        // S'il est éteint, on peut le griser un peu (GRAY) pour faire plus triste.
+        Color tint = g_camp_fire_lit ? WHITE : GRAY;
+        
+        DrawTextureEx(currentTex, (Vector2){(float)imgX, (float)imgY}, 0.0f, scale, tint);
     }
 
-    // --- 3. GESTION DE LA SURVIE (Boutons au centre) ---
-    int btnY = cy + 130;
+    // =========================================================
+    // 2. GESTION DE LA SURVIE (Boutons au centre)
+    // =========================================================
+    int btnY = cy + 100; // Légèrement remonté pour coller avec la nouvelle image
 
     // Bouton Allumer/Eteindre
     char fireBtn[64];
@@ -664,7 +650,9 @@ void Game_RenderCamp(GameContext* game, int w, int h)
         DrawTextCentered(game->uiFont, "FROID ABYSSAL : ATK et Production reduites !", cx, btnY + 90, 20, 1, RED);
     }
 
-    // --- 4. MENUS DU CAMP (Latéraux) ---
+    // =========================================================
+    // 3. MENUS DU CAMP (Latéraux)
+    // =========================================================
     // Colonne de gauche
     DrawTextEx(game->uiFont, T("CAMP_BTN_MINE"),       (Vector2){cx - 300, h - 200}, 24, 1, LIGHTGRAY);
     DrawTextEx(game->uiFont, T("CAMP_BTN_FOREST"),     (Vector2){cx - 300, h - 160}, 24, 1, GREEN);
