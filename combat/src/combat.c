@@ -19,6 +19,9 @@ int           g_spellCount = 0;
 PotionTemplate g_potionDB[MAX_POTIONS_DB];
 int            g_potionCount = 0;
 
+static void Combat_AddDamageText(CombatContext* combat, int x, int y, const char* text, Color color);
+
+
 void Inventory_Add(CombatContext* combat, const char* item_id)
 {
     if (combat->player.inventory_count >= MAX_INVENTORY)
@@ -68,6 +71,8 @@ void Combat_Init(CombatContext* combat)
     combat->player.inventory_count      = 0;
     combat->player.inventory_safe_count = 0;
 
+    for(int i = 0; i < MAX_DMG_TEXTS; i++) combat->dmg_texts[i].active = false;
+
     for (int i = 0; i < MAX_SLOTS; i++)
     {
         combat->player.equipped[i] = -1;
@@ -105,6 +110,8 @@ void Combat_ResetRun(CombatContext* combat)
             combat->player.equipped[i] = -1;
         }
     }
+
+    for(int i = 0; i < MAX_DMG_TEXTS; i++) combat->dmg_texts[i].active = false;
 
     if (combat->current_enemy.sprite.id != 0)
     {
@@ -224,6 +231,20 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
     if (!combat->is_active)
         return;
 
+    //  GESTION DES TEXTES FLOTTANTS 
+    for (int i = 0; i < MAX_DMG_TEXTS; i++)
+    {
+        if (combat->dmg_texts[i].active)
+        {
+            combat->dmg_texts[i].timer -= deltaTime;
+            combat->dmg_texts[i].y -= 40.0f * deltaTime; // Le texte monte de 40 pixels par seconde
+            if (combat->dmg_texts[i].timer <= 0.0f)
+            {
+                combat->dmg_texts[i].active = false;
+            }
+        }
+    }
+
     if (combat->screen_flash_timer > 0.0f)
     {
         combat->screen_flash_timer -= deltaTime;
@@ -246,6 +267,9 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
         if (combat->current_enemy.poison_tick <= 0)
         {
             combat->current_enemy.hp -= combat->current_enemy.poison_dmg;
+            char dmgStr[32];
+            sprintf(dmgStr, "-%d", combat->current_enemy.poison_dmg);
+            Combat_AddDamageText(combat, centerX, centerY, dmgStr, LIME);
             Combat_AddLog(combat, T("LOG_POISON_DAMAGE"));
             combat->current_enemy.poison_tick = 1.0f; // Dégâts toutes les secondes
         }
@@ -281,8 +305,12 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
 
                     if (t->type == SPELL_DAMAGE)
                     {
+                        char dmgStr[32];
+                        sprintf(dmgStr, "-%d", val);
+                        Combat_AddDamageText(combat, centerX, centerY, dmgStr, BLUE);
                         combat->current_enemy.hp -= val;
                         combat->screen_flash_color = (Color){255, 100, 0, 60}; // Flash Orange
+
                     }
                     else if (t->type == SPELL_POISON)
                     {
@@ -330,6 +358,9 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
     {
         Audio_PlaySFX(SFX_ATTACK);
         combat->current_enemy.hp -= combat->player.atk;
+        char dmgStr[32];
+        sprintf(dmgStr, "-%d", combat->player.atk);
+        Combat_AddDamageText(combat, centerX, centerY, dmgStr, WHITE);
 
         // --- DECLENCHEMENT DU SLASH NORMAL ---
         combat->slash_timer = 0.15f; // Durée très courte et nerveuse (0.15 sec)
@@ -373,6 +404,9 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
         if (combat->enemy_attack_timer >= 1.0f)
         {
             combat->player.hp -= combat->current_enemy.atk;
+            char dmgStr[32];
+            sprintf(dmgStr, "-%d", combat->current_enemy.atk);
+            Combat_AddDamageText(combat, centerX - 250, centerY, dmgStr, RED);
             char log[64];
             sprintf(log, "%s frappe (%d degats)", combat->current_enemy.name, combat->current_enemy.atk);
             Combat_AddLog(combat, log);
@@ -433,6 +467,9 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
             Audio_PlaySFX(SFX_QTE_OK);
             int crit_dmg = combat->player.atk * 2;
             combat->current_enemy.hp -= crit_dmg;
+            char dmgStr[32];
+            sprintf(dmgStr, "-%d CRIT!", crit_dmg);
+            Combat_AddDamageText(combat, centerX, centerY - 50, dmgStr, YELLOW);
             // --- DECLENCHEMENT DU SLASH CRITIQUE ---
             combat->slash_timer = 0.20f;
             combat->slash_direction = GetRandomValue(0, 1);
@@ -663,6 +700,25 @@ void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int cent
     // Le texte des PV se place 10 pixels SOUS l'image agrandie
     int textY = imgY + scaledHeight + 40;
     DrawTextEx(font, hpText, (Vector2){centerX - (tSize.x / 2), textY}, 24, 1, RED);
+
+    // ==========================================
+    // --- 6. DESSIN DES DEGATS FLOTTANTS ---
+    // ==========================================
+    for (int i = 0; i < MAX_DMG_TEXTS; i++)
+    {
+        if (combat->dmg_texts[i].active)
+        {
+            // On calcule l'opacité (Alpha) pour créer un fondu sur la fin
+            float alpha = combat->dmg_texts[i].timer / 1.0f; 
+            Color fadeColor = combat->dmg_texts[i].color;
+            fadeColor.a = (unsigned char)(255.0f * alpha);
+
+            Vector2 tSize = MeasureTextEx(font, combat->dmg_texts[i].text, 24, 1);
+            DrawTextEx(font, combat->dmg_texts[i].text, 
+                      (Vector2){combat->dmg_texts[i].x - (tSize.x / 2), combat->dmg_texts[i].y}, 
+                      30, 1, fadeColor); // Taille 30 pour être bien lisible
+        }
+    }
 }
 
 void Combat_RecalculateStats(CombatContext* combat)
@@ -819,5 +875,24 @@ void Combat_TryUsePotion(CombatContext* combat, int slot_index)
         char log[64];
         sprintf(log, "> %s : %s", T("WORD_UTILISE"), g_isEnglish ? t->name_en : t->name_fr);
         Combat_AddLog(combat, log);
+    }
+}
+
+// Cherche une case libre et crée un texte flottant
+static void Combat_AddDamageText(CombatContext* combat, int x, int y, const char* text, Color color)
+{
+    for (int i = 0; i < MAX_DMG_TEXTS; i++)
+    {
+        if (!combat->dmg_texts[i].active)
+        {
+            // On ajoute un petit décalage aléatoire pour que les textes ne se superposent pas
+            combat->dmg_texts[i].x = x + GetRandomValue(-20, 20);
+            combat->dmg_texts[i].y = y + GetRandomValue(-10, 10);
+            strcpy(combat->dmg_texts[i].text, text);
+            combat->dmg_texts[i].color = color;
+            combat->dmg_texts[i].timer = 1.0f; // Disparaît après 1 seconde
+            combat->dmg_texts[i].active = true;
+            break;
+        }
     }
 }

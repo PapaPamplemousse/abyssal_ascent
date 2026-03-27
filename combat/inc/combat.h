@@ -29,6 +29,9 @@ typedef enum
 #define MAX_SPELLS_DB 20
 #define MAX_POTIONS_DB 20
 
+#define MAX_DMG_TEXTS 10
+
+
 typedef enum { SPELL_DAMAGE, SPELL_HEAL, SPELL_POISON, SPELL_FREEZE, SPELL_VAMPIRISM, SPELL_STUN } EffectType;
 
 typedef enum {
@@ -196,6 +199,17 @@ typedef struct
     Vector2 qte_pos;
 } Enemy;
 
+
+
+typedef struct {
+    float x;
+    float y;
+    char  text[32];
+    Color color;
+    float timer;
+    bool  active;
+} DamageText;
+
 // Contexte global du combat
 typedef struct
 {
@@ -223,6 +237,9 @@ typedef struct
     //Screen Shake
     float screen_shake_timer;
     float screen_shake_magnitude;
+
+    //Textes de dégâts 
+    DamageText dmg_texts[MAX_DMG_TEXTS];
 
     /* number of monster killed */
     int monsters_killed;
