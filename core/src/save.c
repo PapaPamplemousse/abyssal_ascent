@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 
-extern bool g_isEnglish;
-
+extern bool  g_isEnglish;
+extern bool  g_camp_fire_lit;
+extern float g_camp_fire_timer;
 
 static void newgamestat(GameContext* game);
 
@@ -50,6 +51,15 @@ void SaveGame(GameContext* game, DungeonContext* dungeon)
     // On utilise le pointeur dungeon au lieu de la variable statique
     cJSON_AddNumberToObject(root, "highest_floor", dungeon->highest_floor);
 
+    cJSON_AddNumberToObject(root, "player_level", game->combat.player.level);
+    cJSON_AddNumberToObject(root, "player_xp", game->combat.player.xp);
+    cJSON_AddNumberToObject(root, "player_max_xp", game->combat.player.max_xp);
+    cJSON_AddNumberToObject(root, "player_hp", game->combat.player.hp);
+    cJSON_AddNumberToObject(root, "player_mana", game->combat.player.mana);
+
+    cJSON_AddBoolToObject(root, "camp_fire_lit", g_camp_fire_lit);
+    cJSON_AddNumberToObject(root, "camp_fire_timer", g_camp_fire_timer);
+
     // Sauvegarde des Ressources
     cJSON_AddNumberToObject(root, "fer", game->clicker.inventory.fer);
     cJSON_AddNumberToObject(root, "or", game->clicker.inventory.or);
@@ -68,7 +78,6 @@ void SaveGame(GameContext* game, DungeonContext* dungeon)
     cJSON_AddNumberToObject(root, "passive_atk", game->combat.player.passive_atk_level);
     cJSON_AddNumberToObject(root, "passive_loot", game->combat.player.passive_loot_level);
     cJSON_AddNumberToObject(root, "passive_mana", game->combat.player.passive_mana_level);
-
 
     cJSON_AddNumberToObject(root, "monsters_killed", game->combat.monsters_killed);
 
@@ -212,6 +221,29 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
     if (hf)
         dungeon->highest_floor = hf->valueint;
 
+    cJSON* lvlNode = cJSON_GetObjectItem(root, "player_level");
+    if (lvlNode)
+        game->combat.player.level = lvlNode->valueint;
+    cJSON* xpNode = cJSON_GetObjectItem(root, "player_xp");
+    if (xpNode)
+        game->combat.player.xp = xpNode->valueint;
+    cJSON* mxpNode = cJSON_GetObjectItem(root, "player_max_xp");
+    if (mxpNode)
+        game->combat.player.max_xp = mxpNode->valueint;
+    cJSON* hpNode = cJSON_GetObjectItem(root, "player_hp");
+    if (hpNode)
+        game->combat.player.hp = hpNode->valueint;
+    cJSON* manaNode = cJSON_GetObjectItem(root, "player_mana");
+    if (manaNode)
+        game->combat.player.mana = manaNode->valueint;
+
+    cJSON* fireLitNode = cJSON_GetObjectItem(root, "camp_fire_lit");
+    if (fireLitNode)
+        g_camp_fire_lit = cJSON_IsTrue(fireLitNode);
+
+    cJSON* fireTimerNode = cJSON_GetObjectItem(root, "camp_fire_timer");
+    if (fireTimerNode)
+        g_camp_fire_timer = fireTimerNode->valuedouble;
     // --- Chargement des Passifs (propre, sans les else devenus inutiles) ---
     cJSON* bsNode = cJSON_GetObjectItem(root, "boss_souls");
     if (bsNode)
@@ -271,7 +303,6 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
     LOAD_INT_ARRAY("equipped_spells", game->combat.player.equipped_spells, 3);
     LOAD_INT_ARRAY("equipped_potions", game->combat.player.equipped_potions, 3);
 
-
     // --- Chargement de l'Inventaire Physique ---
     cJSON* inv_count_node = cJSON_GetObjectItem(root, "inventory_count");
     if (inv_count_node)
@@ -315,11 +346,16 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
 
     // Et on applique tout ça proprement !
     Combat_RecalculateStats(&game->combat);
+
+    if (game->combat.player.hp > game->combat.player.max_hp) 
+        game->combat.player.hp = game->combat.player.max_hp;
+        
+    if (game->combat.player.mana > game->combat.player.max_mana) 
+        game->combat.player.mana = game->combat.player.max_mana;
 }
 
 static void newgamestat(GameContext* game)
 {
-    
     // On met TOUTE la structure du joueur à ZÉRO (inventaire, passifs, sorts, TOUT).
     memset(&game->combat.player, 0, sizeof(game->combat.player));
 
@@ -336,7 +372,7 @@ static void newgamestat(GameContext* game)
     game->combat.player.base_spd      = 0.8f;
 
     game->combat.monsters_killed = 0;
-    
+
     // Initialisation des emplacements "Vides" à -1 (car 0 = le premier objet/sort)
     for (int i = 0; i < MAX_SLOTS; i++)
     {
