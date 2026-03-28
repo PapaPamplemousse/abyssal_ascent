@@ -224,7 +224,10 @@ void Combat_StartEncounter(CombatContext* combat, int current_floor, bool is_bos
     combat->current_enemy.freeze_timer = 0.0f;
     combat->current_enemy.stun_timer   = 0.0f;
 
-    Combat_AddLog(combat, combat->current_enemy.flavor);
+    char encounterMsg[64];
+    sprintf(encounterMsg, "Un %s approche !", combat->current_enemy.name);
+    Combat_AddLog(combat, encounterMsg);
+    
     printf("=== FIN START ENCOUNTER (SUCCES) ===\n\n");
 }
 extern SpellTemplate  g_spellDB[MAX_SPELLS_DB];
@@ -717,6 +720,28 @@ void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int cent
         DrawTextEx(font, txt, (Vector2){centerX - (tSize.x / 2), tagY}, 20, 1, LIME);
         tagY -= 25;
     }
+
+    // ... (Fin du bloc 3. TAGS DE STATUT)
+    if (combat->current_enemy.poison_timer > 0)
+    {
+        const char* txt   = g_isEnglish ? "[ POISONED ]" : "[ EMPOISONNE ]";
+        Vector2     tSize = MeasureTextEx(font, txt, 20, 1);
+        DrawTextEx(font, txt, (Vector2){centerX - (tSize.x / 2), tagY}, 20, 1, LIME);
+        tagY -= 25;
+    }
+
+    // ==========================================
+    // --- 3.5 TEXTE DE LORE (FLAVOR) ---
+    // ==========================================
+    // On encadre la description avec des guillemets pour le style
+    char flavorDisplay[256];
+    sprintf(flavorDisplay, "\"%s\"", combat->current_enemy.flavor);
+    
+    Vector2 flavorSize = MeasureTextEx(font, flavorDisplay, 20, 1);
+    
+    // On l'affiche en gris (DARKGRAY ou GRAY), juste au-dessus du dernier tag
+    DrawTextEx(font, flavorDisplay, (Vector2){centerX - (flavorSize.x / 2), tagY - 15}, 20, 1, GRAY);
+
 
     // --- 4. DESSIN DU MONSTRE (AGRANDI) ---
     DrawTextureEx(combat->current_enemy.sprite, (Vector2){(float)imgX, (float)imgY}, 0.0f, scale, mColor);

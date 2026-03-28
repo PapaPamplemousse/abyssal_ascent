@@ -53,9 +53,9 @@ void GameOver_Render(GameContext* game, DungeonContext* dungeon, int w, int h)
     // --- 3. LES STATISTIQUES DE LA RUN ---
     char stats[256];
     if (g_isEnglish) {
-        sprintf(stats, "Floor Reached: %d\nMonsters Killed: %d\nLevel Reached: %d", dungeon->highest_floor, game->combat.monsters_killed, game->combat.player.level);
+        sprintf(stats, "Floor Reached: %d\nMonsters Killed: %d\nLevel Reached: %d", dungeon->highest_floor_curr, game->combat.monsters_killed, game->combat.player.level);
     } else {
-        sprintf(stats, "Etage atteint : %d\nMonstres vaincus : %d\nNiveau atteint : %d", dungeon->highest_floor, game->combat.monsters_killed, game->combat.player.level);
+        sprintf(stats, "Etage atteint : %d\nMonstres vaincus : %d\nNiveau atteint : %d", dungeon->highest_floor_curr, game->combat.monsters_killed, game->combat.player.level);
     }
     
     // On centre manuellement le texte multilingue
@@ -73,6 +73,7 @@ void GameOver_Render(GameContext* game, DungeonContext* dungeon, int w, int h)
         Combat_ResetRun(&game->combat);
         game->combat.player.hp = 1;          // Renaissance avec 1 PV
         game->currentState = STATE_CAMP;
+        dungeon->highest_floor_curr = 0 ;
         SaveGame(game, dungeon);             // On sauvegarde le retour au camp !
     }
 }

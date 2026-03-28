@@ -49,7 +49,9 @@ void SaveGame(GameContext* game, DungeonContext* dungeon)
     cJSON_AddBoolToObject(root, "is_english", g_isEnglish);
 
     // On utilise le pointeur dungeon au lieu de la variable statique
-    cJSON_AddNumberToObject(root, "highest_floor", dungeon->highest_floor);
+    cJSON_AddNumberToObject(root, "highest_floor_curr", dungeon->highest_floor_curr);
+    cJSON_AddNumberToObject(root, "highest_floor_all", dungeon->highest_floor_all_time);
+    
 
     cJSON_AddNumberToObject(root, "player_level", game->combat.player.level);
     cJSON_AddNumberToObject(root, "player_xp", game->combat.player.xp);
@@ -217,9 +219,15 @@ void LoadGame(GameContext* game, DungeonContext* dungeon)
     if (langNode)
         g_isEnglish = cJSON_IsTrue(langNode);
 
-    cJSON* hf = cJSON_GetObjectItem(root, "highest_floor");
+    cJSON* hf = cJSON_GetObjectItem(root, "highest_floor_curr");
     if (hf)
-        dungeon->highest_floor = hf->valueint;
+        dungeon->highest_floor_curr = hf->valueint;
+
+    cJSON* hfa = cJSON_GetObjectItem(root, "highest_floor_all");
+    if (hfa)
+        dungeon->highest_floor_all_time = hfa->valueint;
+
+        
 
     cJSON* lvlNode = cJSON_GetObjectItem(root, "player_level");
     if (lvlNode)

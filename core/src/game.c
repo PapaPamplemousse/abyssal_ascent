@@ -380,5 +380,5 @@ void Game_ResetState(GameContext* game)
     }
     // Sans fichier save.json, LoadGame exécute son memset et réinitialise tout !
     LoadGame(game, &myDungeon);
-    myDungeon.highest_floor = 0; // On reset l'étage
+    myDungeon.highest_floor_curr = 0; // On reset l'étage
 }

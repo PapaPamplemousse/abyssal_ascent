@@ -49,8 +49,8 @@ typedef struct
     Direction playerDir;
     bool      explored[MAP_HEIGHT][MAP_WIDTH];
     int       floor_level;
-    int       highest_floor;
-
+    int       highest_floor_curr;
+    int       highest_floor_all_time;
     RoomType          room_type;
     EventRoomTemplate current_event;
 

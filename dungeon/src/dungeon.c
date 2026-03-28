@@ -26,7 +26,7 @@ static void Dungeon_UpdateFog(DungeonContext* dungeon, int fog_bonus);
 void Dungeon_Enter(DungeonContext* dungeon)
 {
     // La formule : a1 = 1, an = 10(n-1) -> ex: 1, 10, 20...
-    int checkpoint       = (dungeon->highest_floor >= 10) ? (dungeon->highest_floor / 10) * 10 : 1;
+    int checkpoint       = (dungeon->highest_floor_curr >= 10) ? (dungeon->highest_floor_curr / 10) * 10 : 1;
     dungeon->floor_level = checkpoint;
     dungeon->room_type   = ROOM_NORMAL;
     Dungeon_Generate(dungeon); // Génère la carte
@@ -111,10 +111,10 @@ void Dungeon_Generate(DungeonContext* dungeon)
 
 void Dungeon_Init(DungeonContext* dungeon)
 {
-    dungeon->floor_level     = 1;
-    dungeon->highest_floor   = 1;
-    dungeon->room_type       = ROOM_NORMAL;
-    dungeon->active_event_ui = false;
+    dungeon->floor_level        = 1;
+    dungeon->highest_floor_curr = 1;
+    dungeon->room_type          = ROOM_NORMAL;
+    dungeon->active_event_ui    = false;
 }
 
 void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
@@ -182,9 +182,11 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
             {
                 if (dungeon->room_type == ROOM_NORMAL)
                 {
-                    if (dungeon->floor_level > dungeon->highest_floor)
+                    if (dungeon->floor_level > dungeon->highest_floor_curr)
                     {
-                        dungeon->highest_floor = dungeon->floor_level;
+                        dungeon->highest_floor_curr = dungeon->floor_level;
+                        if (dungeon->highest_floor_curr > dungeon->highest_floor_all_time)
+                            dungeon->highest_floor_all_time = dungeon->highest_floor_curr;
                     }
 
                     // Si le prochain étage est un multiple de 5 (Ex: on est au 4, on passe au 5)
