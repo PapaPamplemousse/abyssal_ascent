@@ -20,8 +20,7 @@ static int selectedPotionIdx = -1;
 bool  g_camp_fire_lit = false;
 float g_camp_fire_timer = 0.0f;
 
-static int compute_price(int base, int inc, int level);
-
+static long long compute_price(int base, int inc, int level);
 
 
 void Game_RenderInventory(GameContext* game, int w, int h)
@@ -135,14 +134,13 @@ void Game_RenderForge(GameContext* game, int w, int h)
         char itemText[256];
         sprintf(itemText, "%s %s%s%s (Niv %d)", is_eq ? "[E]" : "[ ]", GetRarityName(item->rarity), g_isEnglish ? t->name_en : t->name_fr, GetEffectString(item->effect), item->level);
 
-        // CORRECTION 3 : Suppression de DoShopButton pour laisser les couleurs s'afficher !
         int startY = 150;
         Vector2 tSize = MeasureTextEx(game->uiFont, itemText, 20, 1);
         Rectangle hitbox = {listX, startY + (i * 30), tSize.x, tSize.y};
         bool isHovered = CheckCollisionPointRec(GetMousePosition(), hitbox);
 
         Color drawColor = GetRarityColor(item->rarity);
-        if (selectedForgeIdx == inv_idx) drawColor = YELLOW; // L'objet sélectionné clignote en jaune
+        if (selectedForgeIdx == inv_idx) drawColor = YELLOW; 
         else if (isHovered) drawColor = WHITE;
 
         DrawTextEx(game->uiFont, itemText, (Vector2){hitbox.x, hitbox.y}, 20, 1, drawColor);
@@ -167,7 +165,7 @@ void Game_RenderForge(GameContext* game, int w, int h)
         ItemTemplate* t    = &g_itemDB[item->template_idx];
 
         // --- AFFICHAGE DU SPRITE DANS LA FORGE ---
-        float scale = 4.0f; // Image bien grosse pour la forge !
+        float scale = 4.0f; 
         int scaledWidth = t->sprite.width * scale;
         int scaledHeight = t->sprite.height * scale;
         
@@ -175,11 +173,9 @@ void Game_RenderForge(GameContext* game, int w, int h)
         int imgY = 150;
 
         if (t->sprite.id != 0) {
-            // Teinte colorée selon la rareté
             DrawTextureEx(t->sprite, (Vector2){(float)imgX, (float)imgY}, 0.0f, scale, GetRarityColor(item->rarity));
         }
 
-        // On positionne le texte des stats juste en dessous de la nouvelle image
         int  infoY = imgY + scaledHeight + 30;
         char statsText[256];
 
@@ -208,27 +204,36 @@ void Game_RenderForge(GameContext* game, int w, int h)
         else if (item->rarity == 2) r_mult = 1.5f;
         else if (item->rarity == 3) r_mult = 2.0f;
 
-        int cur_cost_fer = compute_price(t->cost_fer_base, t->cost_fer_inc, item->level);
-        int cur_cost_bois = compute_price(t->cost_bois_base, t->cost_bois_inc, item->level);
+        // --- NOUVEAU : Calcul avec long long ! ---
+        long long cur_cost_fer = compute_price(t->cost_fer_base, t->cost_fer_inc, item->level);
+        long long cur_cost_bois = compute_price(t->cost_bois_base, t->cost_bois_inc, item->level);
          
-        cur_cost_fer = cur_cost_fer*r_mult;
-        cur_cost_bois = cur_cost_bois * r_mult;
+        cur_cost_fer = (long long)(cur_cost_fer * r_mult);
+        cur_cost_bois = (long long)(cur_cost_bois * r_mult);
         
         bool canAfford     = true;
-
         int costLineY = costY + 30;
+
         if (cur_cost_fer > 0)
         {
             bool hasFer = game->clicker.inventory.fer >= cur_cost_fer;
             if (!hasFer) canAfford = false;
-            DrawTextEx(game->uiFont, TextFormat("Fer: %d", cur_cost_fer), (Vector2){shopX, costLineY}, 20, 1, hasFer ? GRAY : RED);
+            
+            // Formatage du prix
+            char fmt_fer[32];
+            FormatNumber(cur_cost_fer, fmt_fer);
+            DrawTextEx(game->uiFont, TextFormat("Fer: %s", fmt_fer), (Vector2){shopX, costLineY}, 20, 1, hasFer ? GRAY : RED);
             costLineY += 25;
         }
         if (cur_cost_bois > 0)
         {
             bool hasBois = game->clicker.inventory.bois >= cur_cost_bois;
             if (!hasBois) canAfford = false;
-            DrawTextEx(game->uiFont, TextFormat("Bois: %d", cur_cost_bois), (Vector2){shopX, costLineY}, 20, 1, hasBois ? BROWN : RED);
+            
+            // Formatage du prix
+            char fmt_bois[32];
+            FormatNumber(cur_cost_bois, fmt_bois);
+            DrawTextEx(game->uiFont, TextFormat("Bois: %s", fmt_bois), (Vector2){shopX, costLineY}, 20, 1, hasBois ? BROWN : RED);
             costLineY += 25;
         }
 
@@ -288,8 +293,13 @@ void Game_RenderArchiforge(GameContext* game, int w, int h)
 
         if (!unlocked)
         {
-            char costText[64];
-            sprintf(costText, "Cout: %d Or, %d Cristal", t->learn_gold, t->learn_crystal);
+            // Formatage des coûts de déblocage
+            char fmt_gold[32], fmt_crystal[32];
+            FormatNumber(t->learn_gold, fmt_gold);
+            FormatNumber(t->learn_crystal, fmt_crystal);
+
+            char costText[128];
+            sprintf(costText, "Cout: %s Or, %s Cristal", fmt_gold, fmt_crystal);
             DrawTextEx(game->uiFont, costText, (Vector2){shopX, 200}, 20, 1, GRAY);
 
             bool canAfford = (game->clicker.inventory.or >= t->learn_gold && game->clicker.inventory.cristaux >= t->learn_crystal);
@@ -303,11 +313,15 @@ void Game_RenderArchiforge(GameContext* game, int w, int h)
         else
         {
             int  lvl      = game->combat.player.spell_level[selectedSpellIdx];
-            int upg_cost = compute_price(t->upg_gold_base, t->upg_gold_inc, lvl);
-
+            
+            // --- NOUVEAU : Formatage du prix d'amélioration ! ---
+            long long upg_cost = compute_price(t->upg_gold_base, t->upg_gold_inc, lvl);
             bool canUpg   = (game->clicker.inventory.or >= upg_cost && lvl < 10);
 
-            if (DoShopButton(game->uiFont, TextFormat("[ AMELIORER (-%d Or) ]", upg_cost), shopX, 250, 24, canUpg))
+            char fmt_upg[32];
+            FormatNumber(upg_cost, fmt_upg);
+
+            if (DoShopButton(game->uiFont, TextFormat("[ AMELIORER (-%s Or) ]", fmt_upg), shopX, 250, 24, canUpg))
             {
                 game->clicker.inventory.or -= upg_cost;
                 game->combat.player.spell_level[selectedSpellIdx]++;
@@ -315,10 +329,14 @@ void Game_RenderArchiforge(GameContext* game, int w, int h)
 
             DrawTextEx(game->uiFont, "Equiper dans le slot :", (Vector2){shopX, 320}, 20, 1, LIGHTGRAY);
             bool canPrep = (game->clicker.inventory.cristaux >= t->prep_crystal);
+            
+            // Formatage du coût d'équipement
+            char fmt_prep[32];
+            FormatNumber(t->prep_crystal, fmt_prep);
 
             for (int slot = 0; slot < 3; slot++)
             {
-                if (DoShopButton(game->uiFont, TextFormat("[ Slot %d (-%d Cristal) ]", slot + 1, t->prep_crystal), shopX + (slot * 150), 360, 20, canPrep))
+                if (DoShopButton(game->uiFont, TextFormat("[ Slot %d (-%s Cristal) ]", slot + 1, fmt_prep), shopX + (slot * 150), 360, 20, canPrep))
                 {
                     game->clicker.inventory.cristaux -= t->prep_crystal;
                     game->combat.player.equipped_spells[slot] = selectedSpellIdx;
@@ -383,19 +401,31 @@ void Game_RenderAlchemist(GameContext* game, int w, int h)
         }
         else
         {
-            int lvl        = game->combat.player.potion_level[selectedPotionIdx];
-            int upg_cost   = compute_price(t->upg_gold_base, t->upg_gold_inc, lvl*lvl);
-            int craft_cost = t->craft_herbs_base + ((lvl*10+1)* t->craft_herbs_inc);
+            int lvl = game->combat.player.potion_level[selectedPotionIdx];
+            
+            // 1. On récupère les prix géants
+            long long upg_cost   = compute_price(t->upg_gold_base, t->upg_gold_inc, lvl);
+            long long craft_cost = t->craft_herbs_base + ((long long)(lvl * 10 + 1) * t->craft_herbs_inc);
 
             bool canUpg = (game->clicker.inventory.or >= upg_cost && lvl < 10);
-            if (DoShopButton(game->uiFont, TextFormat("[ AMELIORER (-%d Or) ]", upg_cost), shopX, 200, 20, canUpg))
+            
+            // 2. On formate le prix en "K", "M", etc.
+            char formatted_upg_cost[32];
+            FormatNumber(upg_cost, formatted_upg_cost);
+
+            // 3. On affiche avec TextFormat et le %s (car c'est maintenant du texte !)
+            if (DoShopButton(game->uiFont, TextFormat("[ AMELIORER (-%s Or) ]", formatted_upg_cost), shopX, 200, 20, canUpg))
             {
                 game->clicker.inventory.or -= upg_cost;
                 game->combat.player.potion_level[selectedPotionIdx]++;
             }
 
             bool canCraft = (game->clicker.inventory.herbes >= craft_cost);
-            if (DoShopButton(game->uiFont, TextFormat("[ CRAFTER (-%d Herbes) ]", craft_cost), shopX, 250, 24, canCraft))
+            
+            char formatted_craft_cost[32];
+            FormatNumber(craft_cost, formatted_craft_cost);
+
+            if (DoShopButton(game->uiFont, TextFormat("[ CRAFTER (-%s Herbes) ]", formatted_craft_cost), shopX, 250, 24, canCraft))
             {
                 game->clicker.inventory.herbes -= craft_cost;
                 game->combat.player.potion_qty[selectedPotionIdx]++;
@@ -689,10 +719,9 @@ void Game_RenderCamp(GameContext* game, int w, int h)
     DrawTextCentered(game->uiFont, T("CAMP_BTN_MAIN_MENU"), cx, h - 30, 20, 1, DARKGRAY);
 }
 
-
-static int compute_price(int base, int inc, int level)
+static long long compute_price(int base, int inc, int level)
 {
-    int price = base;
+    long long price = base; // On utilise la puissance du 64 bits !
 
     for (int i = 0; i < level; i++)
     {

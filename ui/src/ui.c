@@ -131,14 +131,24 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
     sprintf(combatStats, "HP: %d/%d  |  Mana: %d/%d  |  ATK: %d", game->combat.player.hp, game->combat.player.max_hp, game->combat.player.mana, game->combat.player.max_mana, game->combat.player.atk);
     DrawTextEx(game->uiFont, combatStats, (Vector2){leftWidth + 20, 40}, 20, 1, (game->combat.player.hp < 20) ? RED : GREEN);
 
+    // --- PREPARATION DES TEXTES FORMATES ---
+    char fmt_fer[32], fmt_or[32], fmt_crys[32], fmt_herb[32], fmt_bois[32], fmt_viande[32];
+
+    FormatNumber(game->clicker.inventory.fer, fmt_fer);
+    FormatNumber(game->clicker.inventory.or, fmt_or);
+    FormatNumber(game->clicker.inventory.cristaux, fmt_crys);
+    FormatNumber(game->clicker.inventory.herbes, fmt_herb);
+    FormatNumber(game->clicker.inventory.bois, fmt_bois);
+    FormatNumber(game->clicker.inventory.viande, fmt_viande);
+
     // --- PANNEAU GAUCHE : RESSOURCES ET CARTE ---
     DrawTextEx(game->uiFont, T("UI_RESOURCES_TITLE"), (Vector2){20, 20}, 24, 1, LIGHTGRAY);
-    DrawTextEx(game->uiFont, TextFormat(T("RES_IRON"), game->clicker.inventory.fer), (Vector2){20, 60}, 20, 1, GRAY);
-    DrawTextEx(game->uiFont, TextFormat(T("RES_GOLD"), game->clicker.inventory.or), (Vector2){20, 90}, 20, 1, YELLOW);
-    DrawTextEx(game->uiFont, TextFormat(T("RES_CRYSTALS"), game->clicker.inventory.cristaux), (Vector2){20, 120}, 20, 1, PURPLE);
-    DrawTextEx(game->uiFont, TextFormat(T("RES_HERBS"), game->clicker.inventory.herbes), (Vector2){20, 150}, 20, 1, GREEN);
-    DrawTextEx(game->uiFont, TextFormat(T("RES_WOOD"), game->clicker.inventory.bois), (Vector2){20, 180}, 20, 1, BROWN);
-    DrawTextEx(game->uiFont, TextFormat(T("RES_MEAT"), game->clicker.inventory.viande), (Vector2){20, 210}, 20, 1, RED);
+    DrawTextEx(game->uiFont, TextFormat(T("RES_IRON"), fmt_fer), (Vector2){20, 60}, 20, 1, GRAY);
+    DrawTextEx(game->uiFont, TextFormat(T("RES_GOLD"), fmt_or), (Vector2){20, 90}, 20, 1, YELLOW);
+    DrawTextEx(game->uiFont, TextFormat(T("RES_CRYSTALS"), fmt_crys), (Vector2){20, 120}, 20, 1, PURPLE);
+    DrawTextEx(game->uiFont, TextFormat(T("RES_HERBS"), fmt_herb), (Vector2){20, 150}, 20, 1, GREEN);
+    DrawTextEx(game->uiFont, TextFormat(T("RES_WOOD"), fmt_bois), (Vector2){20, 180}, 20, 1, BROWN);
+    DrawTextEx(game->uiFont, TextFormat(T("RES_MEAT"), fmt_viande), (Vector2){20, 210}, 20, 1, RED);
 
     DrawTextEx(game->uiFont, T("MAP_TITLE"), (Vector2){20, mapStartY + 15}, 24, 1, LIGHTGRAY);
     if (game->currentState == STATE_DUNGEON && dungeon != NULL)
@@ -261,5 +271,23 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
             sprintf(sText, "(%d) [ Vide ]", i + 4);
             DrawTextEx(game->uiFont, sText, (Vector2){rightX, spellStartY + 45 + (i * 20)}, 20, 1, DARKGRAY);
         }
+    }
+}
+
+// Transforme 1500000 en "1.50M"
+void FormatNumber(long long value, char* buffer) 
+{
+    if (value >= 1000000000000000LL) {
+        sprintf(buffer, "%.2fQ", (float)value / 1000000000000000.0f); // Quadrillions
+    } else if (value >= 1000000000000LL) {
+        sprintf(buffer, "%.2fT", (float)value / 1000000000000.0f);    // Trillions
+    } else if (value >= 1000000000LL) {
+        sprintf(buffer, "%.2fB", (float)value / 1000000000.0f);       // Billions (Milliards)
+    } else if (value >= 1000000LL) {
+        sprintf(buffer, "%.2fM", (float)value / 1000000.0f);          // Millions
+    } else if (value >= 1000LL) {
+        sprintf(buffer, "%.1fK", (float)value / 1000.0f);             // Milliers
+    } else {
+        sprintf(buffer, "%lld", value);                               // Normal (< 1000)
     }
 }

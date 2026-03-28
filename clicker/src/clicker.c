@@ -5,7 +5,7 @@
 
 /** === Private prototypes ===  */
 static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX, int y, int fontSize, Color baseColor);
-static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, int* res, int x, int y);
+static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, unsigned long long * res, int x, int y);
 static bool DrawAndCheckImageButtonCentered(Texture2D texture, int centerX, int y, Color baseColor, Font font, const char* label);
 
 /* === Pub implementation ===*/
@@ -301,9 +301,9 @@ static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX,
  * @param[in] y Position Y
  * @note Fonction privée
  */
-static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, int* res, int x, int y)
+static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, unsigned long long* res, int x, int y)
 {
-    int  cost = baseCost + (*count * scale);
+    unsigned long long  cost = baseCost + (*count * scale);
     char txt[64];
     sprintf(txt, "[%d] %s (-%d)", *count, name, cost);
     if (DrawAndCheckButtonCentered(font, txt, x, y, 18, GRAY))

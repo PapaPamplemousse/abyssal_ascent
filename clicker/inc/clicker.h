@@ -11,22 +11,22 @@
 typedef struct
 {
     /** @brief Quantité d'herbes possédées */
-    int herbes;
+    unsigned long long herbes;
 
     /** @brief Quantité de fer possédée */
-    int fer;
+    unsigned long long fer;
 
     /** @brief Quantité de viande possédée */
-    int viande;
+    unsigned long long viande;
 
     /** @brief Quantité d'or possédée */
-    int or ;
+    unsigned long long or ;
 
     /** @brief Quantité de bois possédée */
-    int bois;
+    unsigned long long bois;
 
     /** @brief Quantité de cristaux possédée */
-    int cristaux;
+    unsigned long long cristaux;
 
     /** @brief Indique si la ressource or est débloquée */
     bool unlock_or;

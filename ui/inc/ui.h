@@ -68,4 +68,9 @@ Color GetRarityColor(int rarity);
  */
 const char* GetRarityName(int rarity);
 
+/**
+ * 
+ */
+void FormatNumber(long long value, char* buffer) ;
+
 #endif // UI_H

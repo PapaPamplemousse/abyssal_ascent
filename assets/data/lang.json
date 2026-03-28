@@ -66,48 +66,18 @@
   "UI_SPELL_FIREBALL": { "fr": "(>) Boule de Feu (10 Mana)", "en": "(>) Fireball (10 Mana)" },
   "UI_RESOURCES_TITLE": { "fr": "[ RESSOURCES ]", "en": "[ RESOURCES ]" },
   
-  "RES_IRON": { "fr": "Fer: %d", "en": "Iron: %d" },
-  "RES_GOLD": { "fr": "Or: %d", "en": "Gold: %d" },
-  "RES_CRYSTALS": { "fr": "Cristaux: %d", "en": "Crystals: %d" },
-  "RES_HERBS": { "fr": "Herbes: %d", "en": "Herbs: %d" },
-  "RES_WOOD": { "fr": "Bois: %d", "en": "Wood: %d" },
-  "RES_MEAT": { "fr": "Viande: %d", "en": "Meat: %d" },
+  "RES_IRON": { "fr": "Fer: %s", "en": "Iron: %s" },
+  "RES_GOLD": { "fr": "Or: %s", "en": "Gold: %s" },
+  "RES_CRYSTALS": { "fr": "Cristaux: %s", "en": "Crystals: %s" },
+  "RES_HERBS": { "fr": "Herbes: %s", "en": "Herbs: %s" },
+  "RES_WOOD": { "fr": "Bois: %s", "en": "Wood: %s" },
+  "RES_MEAT": { "fr": "Viande: %s", "en": "Meat: %s" },
   
   "UI_LOG_TITLE": { "fr": "[ JOURNAL DE BATAILLE ]", "en": "[ BATTLE LOG ]" },
   
   "LOG_DEAD": { "fr": "VOUS ETES MORT", "en": "YOU DIED" },
   "GAMEOVER_STATS_LOST": { "fr": "Vos statistiques de donjon sont perdues.", "en": "Your dungeon stats are lost." },
   "GAMEOVER_RESPAWN": { "fr": "[ESPACE] pour renaitre au Campement", "en": "[SPACE] to respawn at Camp" },
-
-    "ART_IRON": { 
-    "fr": "   ______   \n  / ____ \\  \n | |FER | | \n | |____| | \n  \\______/  ", 
-    "en": "   ______   \n  / ____ \\  \n | |IRON| | \n | |____| | \n  \\______/  " 
-    },
-
-    "ART_GOLD": { 
-    "fr": "    ____    \n  /      \\  \n |  $$$$  | \n |   OR   | \n  \\______/  ", 
-    "en": "    ____    \n  /      \\  \n |  $$$$  | \n |  GOLD  | \n  \\______/  " 
-    },
-
-    "ART_CRYSTAL": { 
-    "fr": "     /\\     \n    /**\\    \n   /****\\   \n   \\****/   \n    \\__/    \n  CRISTAL   ", 
-    "en": "     /\\     \n    /**\\    \n   /****\\   \n   \\****/   \n    \\__/    \n  CRYSTAL   " 
-    },
-
-    "ART_HERBS": { 
-    "fr": "    ,-,     \n   /   \\    \n  (     )   \n   \\___/    \n    |||     \n  HERBES    ", 
-    "en": "    ,-,     \n   /   \\    \n  (     )   \n   \\___/    \n    |||     \n   HERBS    " 
-    },
-
-    "ART_WOOD": { 
-    "fr": "     /\\     \n    /**\\    \n   /****\\   \n  /______\\  \n     ||     \n     ||     \n    BOIS    ", 
-    "en": "     /\\     \n    /**\\    \n   /****\\   \n  /______\\  \n     ||     \n     ||     \n    WOOD    " 
-    },
-
-    "ART_MEAT": { 
-    "fr": "    ____    \n  /      \\  \n |  XXXX  | \n |  XXXX  | \n  \\______/  \n   VIANDE   ", 
-    "en": "    ____    \n  /      \\  \n |  XXXX  | \n |  XXXX  | \n  \\______/  \n    MEAT    " 
-    },
 
   "LEVEL_UP": { "fr": "NIVEAU SUPERIEUR !", "en": "Level Up!" },
   "WEAK_POINT": { "fr": "*** Point Faible ***", "en": "*** Weak Point ***" },

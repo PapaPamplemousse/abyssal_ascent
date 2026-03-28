@@ -45,20 +45,20 @@ typedef enum {
 typedef struct {
     char id[32]; char name_en[32]; char name_fr[32];
     EffectType type;
-    int base_val, inc_val; float base_dur, inc_dur;
-    int mana_cost;
-    int learn_gold, learn_crystal;
-    int upg_gold_base, upg_gold_inc;
-    int prep_crystal; // Coût pour l'équiper
+    long long base_val, inc_val; float base_dur, inc_dur;
+    long long mana_cost;
+    long long learn_gold, learn_crystal;
+    long long upg_gold_base, upg_gold_inc;
+    long long prep_crystal; // Coût pour l'équiper
 } SpellTemplate;
 
 typedef struct {
     char id[32]; char name_en[32]; char name_fr[32];
     EffectType type;
-    int base_val, inc_val;
-    int learn_gold;
-    int upg_gold_base, upg_gold_inc;
-    int craft_herbs_base, craft_herbs_inc;
+    long long base_val, inc_val;
+    long long learn_gold;
+    long long upg_gold_base, upg_gold_inc;
+    long long craft_herbs_base, craft_herbs_inc;
 } PotionTemplate;
 
 // Structure chargée depuis items.json
@@ -75,10 +75,10 @@ typedef struct
     float inc_spd; // Par niveau
 
     // Coûts d'amélioration { base, incrément }
-    int cost_fer_base, cost_fer_inc;
-    int cost_bois_base, cost_bois_inc;
-    int cost_or_base, cost_or_inc;
-    int cost_viande_base, cost_viande_inc;
+    long long cost_fer_base, cost_fer_inc;
+    long long cost_bois_base, cost_bois_inc;
+    long long cost_or_base, cost_or_inc;
+    long long cost_viande_base, cost_viande_inc;
 
     char image_path[128];
     Texture2D sprite;
