@@ -4,9 +4,10 @@
 #include "audio_manager.h"
 #include "camp_menus.h"
 #include "dungeon.h"
+#include "ui.h"
 /** === Private prototypes ===  */
 static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX, int y, int fontSize, Color baseColor);
-static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, unsigned long long * res, int x, int y);
+static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, long long* res, int x, int y);
 static bool DrawAndCheckImageButtonCentered(Texture2D texture, int centerX, int y, Color baseColor, Font font, const char* label);
 
 
@@ -341,12 +342,24 @@ static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX,
  * @param[in] y Position Y
  * @note Fonction privée
  */
-static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, unsigned long long* res, int x, int y)
+static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, long long* res, int x, int y)
 {
-    unsigned long long  cost = baseCost + (*count * scale);
+    // --- L'ÉQUILIBRAGE MAGIQUE (Augmentation de 15% exponentielle) ---
+    long long cost = baseCost;
+    for (int i = 0; i < *count; i++) {
+        cost = cost + (cost * 15) / 100; // Chaque bâtiment coûte 15% plus cher que le précédent
+    }
+
+    char fmt_cost[32];
+    FormatNumber(cost, fmt_cost);
+
     char txt[64];
-    sprintf(txt, "[%d] %s (-%d)", *count, name, cost);
-    if (DrawAndCheckButtonCentered(font, txt, x, y, 18, GRAY))
+    sprintf(txt, "[%d] %s (-%s)", *count, name, fmt_cost);
+    
+    // Le bouton s'affiche en rouge si on ne peut pas payer
+    Color btnColor = (*res >= cost) ? GRAY : (Color){150, 50, 50, 255};
+
+    if (DrawAndCheckButtonCentered(font, txt, x, y, 18, btnColor))
     {
         if (*res >= cost)
         {
@@ -355,7 +368,6 @@ static void BuyBld(Font font, const char* name, int* count, int baseCost, int sc
         }
     }
 }
-
 
 void Clicker_Unload(ClickerContext* clicker)
 {

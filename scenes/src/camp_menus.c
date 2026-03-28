@@ -3,6 +3,7 @@
 #include "lang.h"
 #include <stdio.h>
 #include <math.h>
+#include "ui.h"
 
 // Déclarations externes pour les bases de données
 extern ItemTemplate   g_itemDB[];
@@ -405,8 +406,11 @@ void Game_RenderAlchemist(GameContext* game, int w, int h)
             
             // 1. On récupère les prix géants
             long long upg_cost   = compute_price(t->upg_gold_base, t->upg_gold_inc, lvl);
-            long long craft_cost = t->craft_herbs_base + ((long long)(lvl * 10 + 1) * t->craft_herbs_inc);
+            long long craft_cost = compute_price(t->craft_herbs_base, t->craft_herbs_inc, lvl);
 
+            int max_potions = 5;
+            bool isFull = (game->combat.player.potion_qty[selectedPotionIdx] >= max_potions);
+            bool canCraft = (game->clicker.inventory.herbes >= craft_cost) && !isFull;
             bool canUpg = (game->clicker.inventory.or >= upg_cost && lvl < 10);
             
             // 2. On formate le prix en "K", "M", etc.
@@ -419,16 +423,22 @@ void Game_RenderAlchemist(GameContext* game, int w, int h)
                 game->clicker.inventory.or -= upg_cost;
                 game->combat.player.potion_level[selectedPotionIdx]++;
             }
-
-            bool canCraft = (game->clicker.inventory.herbes >= craft_cost);
-            
+                        
             char formatted_craft_cost[32];
             FormatNumber(craft_cost, formatted_craft_cost);
 
-            if (DoShopButton(game->uiFont, TextFormat("[ CRAFTER (-%s Herbes) ]", formatted_craft_cost), shopX, 250, 24, canCraft))
+            if (isFull) 
             {
-                game->clicker.inventory.herbes -= craft_cost;
-                game->combat.player.potion_qty[selectedPotionIdx]++;
+                // Message rouge si le sac est plein
+                DrawTextCentered(game->uiFont, "[ SACOCHE PLEINE (MAX 5) ]", shopX + 150, 250, 20, 1, RED);
+            }
+            else 
+            {
+                if (DoShopButton(game->uiFont, TextFormat("[ CRAFTER (-%s Herbes) ]", formatted_craft_cost), shopX, 250, 24, canCraft))
+                {
+                    game->clicker.inventory.herbes -= craft_cost;
+                    game->combat.player.potion_qty[selectedPotionIdx]++;
+                }
             }
 
             DrawTextEx(game->uiFont, "Equiper dans le slot (Touches 1, 2, 3):", (Vector2){shopX, 320}, 20, 1, LIGHTGRAY);
