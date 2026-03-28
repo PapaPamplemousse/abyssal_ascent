@@ -39,6 +39,7 @@ typedef struct
     // Images du Feu de Camp 
     Texture2D tex_fire_lit[4]; // Tableau de 4 frames pour l'animation
     Texture2D tex_fire_unlit;  // Le feu éteint
+    
     ClickerContext clicker;      /**< Contexte du système clicker */
     CombatContext  combat;       /**< Contexte du système de combat */
 } GameContext;

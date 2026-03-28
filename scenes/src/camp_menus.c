@@ -2,6 +2,7 @@
 #include "ui.h"
 #include "lang.h"
 #include <stdio.h>
+#include <math.h>
 
 // Déclarations externes pour les bases de données
 extern ItemTemplate   g_itemDB[];
@@ -555,27 +556,48 @@ void Game_RenderCamp(GameContext* game, int w, int h)
     int cx = (w * 0.2f) + ((w * 0.55f) / 2);
     int cy = h / 2;
 
-    DrawTextEx(game->uiFont, T("CAMP_TITLE"), (Vector2){cx - 100, 80}, 40, 1, GREEN);
+    // --- TITRE ET SOUS-TITRE (Plus d'ambiance) ---
+    DrawTextCentered(game->uiFont, T("CAMP_TITLE"), cx, 110, 40, 1, GREEN);
+    DrawTextCentered(game->uiFont, "Un bref repit dans les tenebres...", cx, 160, 20, 1, GRAY);
 
     // =========================================================
-    // 1. DESSIN DU FEU DE CAMP (ANIMÉ)
+    // 1. DESSIN DU FEU DE CAMP (ANIMÉ + EFFETS DE LUMIÈRE)
     // =========================================================
-    int fireY = cy - 80; // Position centrale du feu
+    int fireY = cy - 60; 
     Texture2D currentTex;
 
+    // L'ombre au sol (dessinée EN DESSOUS du feu)
+    DrawEllipse(cx, fireY + 80, 100, 20, (Color){10, 10, 10, 180});
+
     if (g_camp_fire_lit) {
-        // --- LOGIQUE D'ANIMATION ---
-        // GetTime() renvoie le temps en secondes. 
-        // En multipliant par 8.0f, on change d'image 8 fois par seconde.
-        // Le "% 4" permet de boucler entre les indices 0, 1, 2 et 3.
         int frameIndex = (int)(GetTime() * 8.0f) % 4; 
         currentTex = game->tex_fire_lit[frameIndex];
+
+        // --- HALO LUMINEUX QUI PALPITE ---
+        // Utilisation d'un sinus pour faire "respirer" la lumière
+        float pulse = sinf(GetTime() * 5.0f) * 10.0f;
+        
+        // Un grand halo orange léger
+        DrawCircleGradient(cx, fireY + 30, 250.0f + pulse, (Color){255, 100, 0, 30}, BLANK);
+        // Un petit halo jaune plus intense au centre
+        DrawCircleGradient(cx, fireY + 30, 120.0f + (pulse * 0.5f), (Color){255, 200, 0, 50}, BLANK);
+
+        // --- BRAISES VOLANTES ---
+        for (int i = 0; i < 8; i++) {
+            float pTime = GetTime() + (i * 0.7f); // Décalage temporel pour chaque particule
+            float pY = fireY + 60 - fmodf(pTime * 50.0f, 180.0f); // Monte vers le haut
+            float pX = cx + sinf(pTime * 3.0f + i) * 40.0f;       // Vole en zigzag
+            float pAlpha = 1.0f - (fmodf(pTime * 50.0f, 180.0f) / 180.0f); // Disparaît en montant
+            
+            DrawRectangle(pX, pY, 4, 4, Fade(YELLOW, pAlpha));
+        }
+
     } else {
         currentTex = game->tex_fire_unlit;
     }
 
+    // Le dessin du sprite par-dessus la lumière
     if (currentTex.id != 0) {
-        // On force le feu à avoir une belle taille (ex: 200 pixels de haut)
         float scale = 200.0f / (float)currentTex.height;
         float scaledWidth = currentTex.width * scale;
         float scaledHeight = currentTex.height * scale;
@@ -583,19 +605,15 @@ void Game_RenderCamp(GameContext* game, int w, int h)
         int imgX = cx - (scaledWidth / 2);
         int imgY = fireY - (scaledHeight / 2);
 
-        // Si le feu est allumé, on le dessine tel quel (WHITE). 
-        // S'il est éteint, on peut le griser un peu (GRAY) pour faire plus triste.
         Color tint = g_camp_fire_lit ? WHITE : GRAY;
-        
         DrawTextureEx(currentTex, (Vector2){(float)imgX, (float)imgY}, 0.0f, scale, tint);
     }
 
     // =========================================================
     // 2. GESTION DE LA SURVIE (Boutons au centre)
     // =========================================================
-    int btnY = cy + 100; // Légèrement remonté pour coller avec la nouvelle image
+    int btnY = fireY + 130; 
 
-    // Bouton Allumer/Eteindre
     char fireBtn[64];
     if (g_camp_fire_lit) sprintf(fireBtn, "[ ETEINDRE LE FEU ]");
     else sprintf(fireBtn, "[ ALLUMER LE FEU (-25 Bois/sec) ]");
@@ -604,12 +622,10 @@ void Game_RenderCamp(GameContext* game, int w, int h)
     if (DoShopButton(game->uiFont, fireBtn, cx - 180, btnY, 20, can_light_fire)) {
         g_camp_fire_lit = !g_camp_fire_lit;
         g_camp_fire_timer = 0.0f;
-
         game->combat.player.is_freezing = !g_camp_fire_lit;
         Combat_RecalculateStats(&game->combat);
     }
 
-    // Bouton Cuire Viande (Calcul du besoin de soin)
     int missing_hp = game->combat.player.max_hp - game->combat.player.hp;
     int missing_mana = game->combat.player.max_mana - game->combat.player.mana;
     int total_missing = missing_hp + missing_mana;
@@ -633,17 +649,16 @@ void Game_RenderCamp(GameContext* game, int w, int h)
                 int points_to_heal = (meat_cost > game->clicker.inventory.viande) ? affordable_heal : total_missing;
                 game->clicker.inventory.viande -= points_to_heal * 5;
 
-                // On soigne d'abord les HP, puis le Mana
                 int hp_to_heal = (missing_hp < points_to_heal) ? missing_hp : points_to_heal;
                 game->combat.player.hp += hp_to_heal;
                 points_to_heal -= hp_to_heal;
                 if (points_to_heal > 0) game->combat.player.mana += points_to_heal;
             }
         } else {
-            DrawTextEx(game->uiFont, "(Le feu doit etre allume pour cuisiner)", (Vector2){cx - 190, btnY + 45}, 18, 1, DARKGRAY);
+            DrawTextCentered(game->uiFont, "(Le feu doit etre allume pour cuisiner)", cx, btnY + 45, 18, 1, DARKGRAY);
         }
     } else {
-        DrawTextEx(game->uiFont, "(Sante et Mana au maximum)", (Vector2){cx - 130, btnY + 45}, 18, 1, GRAY);
+        DrawTextCentered(game->uiFont, "(Sante et Mana au maximum)", cx, btnY + 45, 18, 1, GRAY);
     }
 
     if (!g_camp_fire_lit) {
@@ -651,22 +666,27 @@ void Game_RenderCamp(GameContext* game, int w, int h)
     }
 
     // =========================================================
-    // 3. MENUS DU CAMP (Latéraux)
+    // 3. MENUS DU CAMP (Latéraux et structurés)
     // =========================================================
+    
+    // Cadre décoratif pour la zone des menus en bas
+    DrawLine(cx - 280, h - 230, cx + 280, h - 230, DARKGRAY);
+    DrawTextCentered(game->uiFont, "[ ACTIVITES DISPONIBLES ]", cx, h - 250, 20, 1, GRAY);
+
     // Colonne de gauche
-    DrawTextEx(game->uiFont, T("CAMP_BTN_MINE"),       (Vector2){cx - 300, h - 200}, 24, 1, LIGHTGRAY);
-    DrawTextEx(game->uiFont, T("CAMP_BTN_FOREST"),     (Vector2){cx - 300, h - 160}, 24, 1, GREEN);
-    DrawTextEx(game->uiFont, T("CAMP_BTN_FORGE"),      (Vector2){cx - 300, h - 120}, 24, 1, ORANGE);
-    DrawTextEx(game->uiFont, T("CAMP_BTN_ALCHEMIST"),  (Vector2){cx - 300, h - 80},  24, 1, PINK);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_MINE"),       (Vector2){cx - 250, h - 190}, 24, 1, LIGHTGRAY);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_FOREST"),     (Vector2){cx - 250, h - 150}, 24, 1, GREEN);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_FORGE"),      (Vector2){cx - 250, h - 110}, 24, 1, ORANGE);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_ALCHEMIST"),  (Vector2){cx - 250, h - 70},  24, 1, PINK);
 
     // Colonne de droite
-    DrawTextEx(game->uiFont, T("CAMP_BTN_ARCHIFORGE"), (Vector2){cx + 70,  h - 200}, 24, 1, BLUE);
-    DrawTextEx(game->uiFont, T("CAMP_BTN_INVENTORY"),  (Vector2){cx + 70,  h - 160}, 24, 1, YELLOW);
-    DrawTextEx(game->uiFont, T("CAMP_BTN_DUNGEON"),    (Vector2){cx + 70,  h - 120}, 24, 1, PURPLE);
-    DrawTextEx(game->uiFont, T("CAMP_BTN_ALTAR"),      (Vector2){cx + 70,  h - 80},  20, 1, RED);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_ARCHIFORGE"), (Vector2){cx + 50,  h - 190}, 24, 1, BLUE);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_INVENTORY"),  (Vector2){cx + 50,  h - 150}, 24, 1, YELLOW);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_DUNGEON"),    (Vector2){cx + 50,  h - 110}, 24, 1, PURPLE);
+    DrawTextEx(game->uiFont, T("CAMP_BTN_ALTAR"),      (Vector2){cx + 50,  h - 70},  20, 1, RED);
 
-    // Bouton retour au centre en bas
-    DrawTextEx(game->uiFont, T("CAMP_BTN_MAIN_MENU"),  (Vector2){cx - 100, h - 40},  20, 1, DARKGRAY);
+    // Bouton retour tout en bas
+    DrawTextCentered(game->uiFont, T("CAMP_BTN_MAIN_MENU"), cx, h - 30, 20, 1, DARKGRAY);
 }
 
 
