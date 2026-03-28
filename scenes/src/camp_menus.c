@@ -166,18 +166,22 @@ void Game_RenderForge(GameContext* game, int w, int h)
         ItemTemplate* t    = &g_itemDB[item->template_idx];
 
         // --- AFFICHAGE DU SPRITE DANS LA FORGE ---
-        float scale = 4.0f; 
-        int scaledWidth = t->sprite.width * scale;
-        int scaledHeight = t->sprite.height * scale;
+        // On force l'image à faire 150 pixels de haut maximum
+        float targetHeight = 150.0f; 
+        float scale = targetHeight / (float)t->sprite.height; 
+        
+        int scaledWidth = (int)(t->sprite.width * scale);
+        int scaledHeight = (int)(t->sprite.height * scale);
         
         int imgX = shopX + (shopWidth / 2) - (scaledWidth / 2) - 20;
-        int imgY = 150;
+        int imgY = 130; // On remonte un peu l'image (avant c'était 150)
 
         if (t->sprite.id != 0) {
             DrawTextureEx(t->sprite, (Vector2){(float)imgX, (float)imgY}, 0.0f, scale, GetRarityColor(item->rarity));
         }
 
-        int  infoY = imgY + scaledHeight + 30;
+        // On positionne le texte des stats juste en dessous avec une marge plus petite
+        int  infoY = imgY + scaledHeight + 20; 
         char statsText[256];
 
         sprintf(statsText, "%s (Niv %d -> %d)", g_isEnglish ? t->name_en : t->name_fr, item->level, item->level + 1);
