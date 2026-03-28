@@ -23,18 +23,22 @@ typedef enum
 } RoomType;
 
 // Template JSON pour les salles d'événements
+// Template JSON pour les salles d'événements
 typedef struct
 {
     char id[32];
-    char name_en[32];
-    char name_fr[32];
-    char type[32]; // Ex: "HEAL", "GIVE_POTION"
+    char name_en[64];
+    char name_fr[64];
+    char type[32]; // Ex: "HEAL", "MERCHANT", "CHEST", "STORY"
     int  amount;
-    char flavor_en[128];
-    char flavor_fr[128];
+    
+    // 1024 POUR LES LONGS TEXTES ---
+    char flavor_en[1024];
+    char flavor_fr[1024];
 
-    char ascii[MAX_ASCII_LINES][128];
-    int  ascii_line_count;
+    // GESTION DES IMAGES ---
+    char image_path[128];
+    Texture2D sprite;
 } EventRoomTemplate;
 
 typedef struct
@@ -49,6 +53,8 @@ typedef struct
 
     RoomType          room_type;
     EventRoomTemplate current_event;
+
+    bool active_event_ui;
 } DungeonContext;
 
 

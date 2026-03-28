@@ -127,14 +127,14 @@ static void LoadMonstersDB(const char* filepath)
 
         // ---  GESTION DE L'IMAGE (PNG) ---
         cJSON* imageNode = cJSON_GetObjectItem(monsterNode, "image");
-        
+
         if (imageNode && imageNode->valuestring)
         {
             strcpy(t->image_path, imageNode->valuestring);
         }
         else
         {
-            printf("pas d'image par defaut pour le monstre %d ",g_monsterCount);
+            printf("pas d'image par defaut pour le monstre %d ", g_monsterCount);
         }
 
         // LE PRINTF ESPION !
@@ -207,7 +207,7 @@ static void LoadItemsDB(const char* filepath)
 
         // --- GESTION DE L'IMAGE DES OBJETS ---
         cJSON* imageNode = cJSON_GetObjectItem(itemNode, "image");
-        
+
         if (imageNode && imageNode->valuestring)
         {
             strcpy(t->image_path, imageNode->valuestring);
@@ -217,10 +217,10 @@ static void LoadItemsDB(const char* filepath)
             // Image par défaut si oubliée dans le JSON
             strcpy(t->image_path, "assets/sprites/armors/default.png");
         }
-        
+
         // On charge l'image en mémoire !
         t->sprite = LoadTexture(t->image_path);
-        
+
         g_itemCount++;
     }
     cJSON_Delete(json);
@@ -368,21 +368,18 @@ static void LoadDungeonDB(const char* ambiance_path, const char* rooms_path)
             t->amount = cJSON_GetObjectItem(item, "amount")->valueint;
             strcpy(t->flavor_en, cJSON_GetObjectItem(item, "flavor_en")->valuestring);
             strcpy(t->flavor_fr, cJSON_GetObjectItem(item, "flavor_fr")->valuestring);
-            // Ascii art
-            cJSON* asciiArray   = cJSON_GetObjectItem(item, "ascii");
-            cJSON* line         = NULL;
-            t->ascii_line_count = 0;
-            if (asciiArray)
+            cJSON* imageNode = cJSON_GetObjectItem(item, "image");
+            if (imageNode && imageNode->valuestring)
             {
-                cJSON_ArrayForEach(line, asciiArray)
-                {
-                    if (t->ascii_line_count < MAX_ASCII_LINES)
-                    {
-                        strcpy(t->ascii[t->ascii_line_count], line->valuestring);
-                        t->ascii_line_count++;
-                    }
-                }
+                strcpy(t->image_path, imageNode->valuestring);
             }
+            else
+            {
+                strcpy(t->image_path, "assets/sprites/rooms/default.png");
+            }
+
+            // On charge l'image en RAM
+            t->sprite = LoadTexture(t->image_path);
 
             g_eventCount++;
         }
@@ -406,7 +403,7 @@ static EffectType ParseEffectType(const char* str)
         return SPELL_HEAL;
     if (strstr(str, "POISON"))
         return SPELL_POISON;
-    if(strstr(str,"MANA"))
+    if (strstr(str, "MANA"))
         return SPELL_MANA;
     if (strstr(str, "FREEZE"))
         return SPELL_FREEZE;

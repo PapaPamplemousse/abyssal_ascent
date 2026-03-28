@@ -9,7 +9,7 @@
       "min_floor": 1,
       "max_floor": 4,
       "color": [180, 180, 195],
-      "stats": { "hp": 55, "atk": 7, "spd": 0.6, "xp": 40 },
+      "stats": { "hp": 5, "atk": 7, "spd": 0.6, "xp": 40 },
       "flavor_en": "The weakest undead. Barely holds together.",
       "flavor_fr": "Le mort-vivant le plus fragile. Tient a peine debout.",
       "image": "assets/sprites/monsters/creature_049.png"
@@ -23,7 +23,7 @@
       "min_floor": 1,
       "max_floor": 5,
       "color": [170, 175, 190],
-      "stats": { "hp": 65, "atk": 9, "spd": 0.5, "xp": 50 },
+      "stats": { "hp": 5, "atk": 9, "spd": 0.5, "xp": 50 },
       "flavor_en": "Freshly risen from a shallow grave.",
       "flavor_fr": "Fraichement sorti d'une tombe peu profonde.",
       "image": "assets/sprites/monsters/creature_057.png"

@@ -1,54 +1,124 @@
 {
   "rooms": [
     {
-      "id": "rest_camp",
-      "name_en": "Abandoned Camp",
-      "name_fr": "Campement Abandonne",
+      "id": "heal_shrine",
+      "name_en": "Defiled Shrine",
+      "name_fr": "Autel profane",
       "type": "HEAL",
       "amount": 50,
-      "flavor_en": "You rested at the camp. HP restored.",
-      "flavor_fr": "Vous vous reposez au camp. PV restaures.",
-      "ascii": [
-        "      (      ",
-        "     ) (     ",
-        "   (_____)   ",
-        "    |   |    "
-      ]
+      "flavor_en": "The icons of the Old Gods have been smashed,\nreplaced by crude carvings of bone.\nYet, a lingering, stolen sanctity allows your wounds to close in its shadow.",
+      "flavor_fr": "Les icônes des Vieux Dieux ont été brisées,\nremplacées par de grossières sculptures d'os.\nPourtant, une sainteté volée subsiste,\npermettant à vos plaies de se refermer dans son ombre.",
+      "image": "assets/sprites/rooms/heal_shrine.png"
     },
     {
-      "id": "merchant_potions",
-      "name_en": "Wandering Merchant",
-      "name_fr": "Marchand Ambulant",
+      "id": "heal_spores",
+      "name_en": "Cavern of Parasitic Spores",
+      "name_fr": "Caverne aux Spores Parasites",
+      "type": "HEAL",
+      "amount": 100,
+      "flavor_en": "The air is thick with glowing dust.\nThese fungi feed on your pain,\nknitting your flesh back together with their invasive, numbing mycelium.",
+      "flavor_fr": "L'air est saturé de poussière incandescente.\nCes champignons se nourrissent de votre douleur,\nrecousant votre chair avec leur mycélium envahissant et anesthésiant.",
+      "image": "assets/sprites/rooms/heal_spores.png"
+    },
+    {
+      "id": "merchant_peddler",
+      "name_en": "The Whispering Peddler",
+      "name_fr": "Le Colporteur Chuchoteur",
       "type": "MERCHANT",
-      "amount": 50,
-      "flavor_en": "You bought a mysterious Potion for 50 Gold.",
-      "flavor_fr": "Vous achetez une mysterieuses Potion pour 50 Or.",
-      "ascii": [
-        "    .---.    ",
-        "   / ___ \\   ",
-        "  ( (o o) )  ",
-        "   \\_ v _/   ",
-        "   / `-' \\   "
-      ]
+      "amount": 1000,
+      "flavor_en": "His cart creaks under the weight of stolen relics.\nHe speaks in riddles, his eyes hidden behind a tattered veil,\noffering treasures for a price only the desperate pay.",
+      "flavor_fr": "Sa charrette grince sous le poids de reliques volées.\nIl s'exprime par énigmes, les yeux cachés derrière un voile en lambeaux,\noffrant des trésors pour un prix que seuls les désespérés paient.",
+      "image": "assets/sprites/rooms/merchant_peddler.png"
     },
     {
-      "id": "chest_event",
-      "name_en": "Treasure Chest",
-      "name_fr": "Coffre au Tresor",
+      "id": "merchant_collector",
+      "name_en": "The Blood Collector",
+      "name_fr": "Le Collectionneur de Sang",
+      "type": "MERCHANT",
+      "amount": 10000,
+      "flavor_en": "Vials of varying shades of crimson line his coat.\nHe doesn't want your gold;\nhe seeks the essence of the living to sate his eternal, dry thirst.",
+      "flavor_fr": "Des fioles aux nuances cramoisies tapissent son manteau.\nIl ne veut pas de votre or ;\nil cherche l'essence des vivants pour étancher sa soif éternelle et desséchée.",
+      "image": "assets/sprites/rooms/merchant_collector.png"
+    },
+    {
+      "id": "chest_iron",
+      "name_en": "Rust-bound Coffer",
+      "name_fr": "Coffre cerclé de rouille",
       "type": "CHEST",
       "amount": 0,
-      "flavor_en": "You open the chest...",
-      "flavor_fr": "Vous ouvrez le coffre... ",
-      "ascii": [
-        "   __________   ",
-        "  /\\____;;___\\  ",
-        " | /         /  ",
-        " `. ())oo() .   ",
-        "  |\\(%()*^^()^\\ ",
-        " | |-%-------| |",
-        "  \\ | %  ))   | |",
-        "   \\|%________|/ "
-      ]
+      "flavor_en": "The lock is jammed with oxidation and dried grime.\nSomething metallic rattles inside,\ndesperate to be freed from its corroded prison.",
+      "flavor_fr": "La serrure est bloquée par l'oxydation et la crasse séchée.\nQuelque chose de métallique s'agite à l'intérieur,\ndésespérant d'être libéré de sa prison corrodée.",
+      "image": "assets/sprites/rooms/chest_iron.png"
+    },
+    {
+      "id": "chest_flesh",
+      "name_en": "Pulsating Fleshy Casket",
+      "name_fr": "Cassette de Chair Pulsante",
+      "type": "CHEST",
+      "amount": 0,
+      "flavor_en": "It breathes in slow, wet rasps.\nTo open it is to perform a surgery;\nthe rewards within are often worth the gore on your hands.",
+      "flavor_fr": "Elle respire dans un râle lent et humide.\nL'ouvrir revient à pratiquer une chirurgie ;\nles récompenses qu'elle contient valent souvent le sang sur vos mains.",
+      "image": "assets/sprites/rooms/chest_flesh.png"
+    },
+    {
+      "id": "story_ouroboros_shrine",
+      "name_en": "Desecrated Icon",
+      "name_fr": "Icone Profanee",
+      "type": "STORY",
+      "amount": 0,
+      "flavor_en": "A stone statue of a serpent devouring its own tail has been smashed.\nScrawled in dried blood beneath it are the words:\n'Ouroboros stirs'.",
+      "flavor_fr": "Une statue de pierre representant un serpent se devorant la queue a ete fracassee.\nGriffonnes en sang seche en dessous, ces mots :\n'Ouroboros s'eveille'.",
+      "image": "assets/sprites/rooms/story_ouroboros.png"
+    },
+    {
+      "id": "story_torture_rack",
+      "name_en": "The Maiden's Kiss",
+      "name_fr": "Le Baiser de la Vierge",
+      "type": "STORY",
+      "amount": 0,
+      "flavor_en": "An iron maiden stands open,\nits interior coated in a thick, sweet-smelling patina of ancient blood.\nA faint sobbing seems to echo from within.",
+      "flavor_fr": "Une vierge de fer se tient ouverte,\nson interieur recouvert d'une epaisse patine de sang ancien à l'odeur douceatre.\nUn faible sanglot semble resonner de l'interieur.",
+      "image": "assets/sprites/rooms/story_torture.png"
+    },
+    {
+      "id": "story_abattoir",
+      "name_en": "The Sanguine Abattoir",
+      "name_fr": "L'Abattoir Sanguin",
+      "type": "STORY",
+      "amount": 0,
+      "flavor_en": "Meat hooks hang from the ceiling,\nholding unidentifiable lumps of decaying flesh.\nThe floor is slick with fresh blood.\nThe Sanguine Queen demands her tithe.",
+      "flavor_fr": "Des crochets à viande pendent du plafond,\nretenant des morceaux identifiables de chair en decomposition.\nLe sol est glissant de sang frais.\nLa Reine Sanguine exige sa dime.",
+      "image": "assets/sprites/rooms/story_abattoir.png"
+    },
+    {
+      "id": "story_plague_pit",
+      "name_en": "Pit of the Faceless",
+      "name_fr": "Fosse des Sans-Visage",
+      "type": "STORY",
+      "amount": 0,
+      "flavor_en": "A mass grave filled with bodies contorted in agony.\nTheir faces have dissolved into a green, acidic sludge.\nThe mark of the Plague Lord Beelzebub is everywhere.",
+      "flavor_fr": "Une fosse commune remplie de corps contorsionnes par l'agonie.\nLeurs visages se sont dissous en une boue verte et acide.\nLa marque du Seigneur de la Peste Beelzebub est partout.",
+      "image": "assets/sprites/rooms/story_pit.png"
+    },
+    {
+      "id": "story_heretic_library",
+      "name_en": "The Heretic's Library",
+      "name_fr": "La Bibliotheque de l'Heretique",
+      "type": "STORY",
+      "amount": 0,
+      "flavor_en": "Books bound in human skin line the shelves.\nThey whisper secrets of the Outer Gods\nand the Rituals of the Crow Demon Malphas.\nOne book seems to watch you.",
+      "flavor_fr": "Des livres relies en peau humaine tapissent les etageres.\nIls chuchotent les secrets des Dieux Exterieurs\net les Rituels du Demon-Corbeau Malphas.\nUn livre semble vous regarder.",
+      "image": "assets/sprites/rooms/story_library.png"
+    },
+    {
+      "id": "story_void_tear",
+      "name_en": "A Tear in Reality",
+      "name_fr": "Une Dechirure dans la Realite",
+      "type": "STORY",
+      "amount": 0,
+      "flavor_en": "A jagged crack hovers in the air,\nbleeding an impossible purple light that sings Abyssal harmonies.\nLooking into it, you see the Void Walker Azazel smiling back.",
+      "flavor_fr": "Une fissure dechiquetee flotte dans l'air,\nsaignant une lumiere violette impossible qui chante des harmonies abyssales.\nEn y regardant, vous voyez le Marcheur du Vide Azazel vous sourire.",
+      "image": "assets/sprites/rooms/story_void.png"
     }
   ]
 }

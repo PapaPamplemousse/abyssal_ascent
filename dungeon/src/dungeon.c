@@ -22,14 +22,11 @@ int               g_eventCount = 0;
 
 static void Dungeon_UpdateFog(DungeonContext* dungeon, int fog_bonus);
 
-
-
-
 // --- LA FORMULE DE CHECKPOINT ---
 void Dungeon_Enter(DungeonContext* dungeon)
 {
     // La formule : a1 = 1, an = 10(n-1) -> ex: 1, 10, 20...
-    int checkpoint = (dungeon->highest_floor >= 10) ? (dungeon->highest_floor / 10) * 10 : 1;
+    int checkpoint       = (dungeon->highest_floor >= 10) ? (dungeon->highest_floor / 10) * 10 : 1;
     dungeon->floor_level = checkpoint;
     dungeon->room_type   = ROOM_NORMAL;
     Dungeon_Generate(dungeon); // Génère la carte
@@ -114,16 +111,27 @@ void Dungeon_Generate(DungeonContext* dungeon)
 
 void Dungeon_Init(DungeonContext* dungeon)
 {
-    dungeon->floor_level   = 1;
-    dungeon->highest_floor = 1;
-    dungeon->room_type     = ROOM_NORMAL;
+    dungeon->floor_level     = 1;
+    dungeon->highest_floor   = 1;
+    dungeon->room_type       = ROOM_NORMAL;
+    dungeon->active_event_ui = false;
 }
 
 void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
 {
     int  nextX    = dungeon->playerX;
     int  nextY    = dungeon->playerY;
-    bool hasMoved = false; // <-- LA CORRECTION EST ICI
+    bool hasMoved = false;
+
+    //  On bloque le joueur sur l'écran d'événement
+    if (dungeon->active_event_ui)
+    {
+        if (key != 0)
+        { // N'importe quelle touche pour fermer l'événement
+            dungeon->active_event_ui = false;
+        }
+        return;
+    }
 
     if (key == KEY_UP)
     {
@@ -191,17 +199,19 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                         dungeon->room_type = ROOM_EVENT;
                         if (g_eventCount > 0)
                         {
-                            //  15% de chance de tomber sur un COFFRE SURPRISE 
-                            if (GetRandomValue(1, 100) <= 15) 
+                            //  15% de chance de tomber sur un COFFRE SURPRISE
+                            if (GetRandomValue(1, 100) <= 15)
                             {
-                                for (int i = 0; i < g_eventCount; i++) {
-                                    if (strcmp(g_eventDB[i].type, "CHEST") == 0) {
+                                for (int i = 0; i < g_eventCount; i++)
+                                {
+                                    if (strcmp(g_eventDB[i].type, "CHEST") == 0)
+                                    {
                                         dungeon->current_event = g_eventDB[i];
                                         break;
                                     }
                                 }
-                            } 
-                            else 
+                            }
+                            else
                             {
                                 // Sinon, c'est un marchand, un soin, ou une HISTOIRE
                                 do
@@ -244,13 +254,15 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                 {
                     // Soin des PV
                     game->combat.player.hp += dungeon->current_event.amount;
-                    if (game->combat.player.hp > game->combat.player.max_hp) {
+                    if (game->combat.player.hp > game->combat.player.max_hp)
+                    {
                         game->combat.player.hp = game->combat.player.max_hp;
                     }
 
                     // Régénération de la moitié du Mana (50% du max)
                     game->combat.player.mana += (game->combat.player.max_mana / 2);
-                    if (game->combat.player.mana > game->combat.player.max_mana) {
+                    if (game->combat.player.mana > game->combat.player.max_mana)
+                    {
                         game->combat.player.mana = game->combat.player.max_mana;
                     }
 
@@ -306,13 +318,14 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                     // Événement narratif : Le joueur lit le texte et gagne une récompense (ex: XP)
                     int xp_gain = 25 * dungeon->floor_level;
                     game->combat.player.xp += xp_gain;
-                    
+
                     char logMsg[128];
                     sprintf(logMsg, "Vous gagnez %d XP !", xp_gain);
                     Combat_AddLog(&game->combat, logMsg);
-                    
+
                     // Si on a assez d'XP pour passer de niveau, on gère le Level Up
-                    if (game->combat.player.xp >= game->combat.player.max_xp) {
+                    if (game->combat.player.xp >= game->combat.player.max_xp)
+                    {
                         game->combat.player.level++;
                         game->combat.player.xp -= game->combat.player.max_xp;
                         game->combat.player.max_xp = (int)(game->combat.player.max_xp * 1.5);
@@ -321,30 +334,35 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                         Combat_RecalculateStats(&game->combat);
                         Combat_AddLog(&game->combat, "*** LEVEL UP ! ***");
                     }
-                    
+
                     eventSuccess = true;
                 }
                 else if (strcmp(dungeon->current_event.type, "CHEST") == 0)
                 {
-                    if (g_itemCount > 0) {
+                    if (g_itemCount > 0)
+                    {
                         int rand_item = GetRandomValue(0, g_itemCount - 1);
-                        int base_lvl = dungeon->floor_level / 5;
-                        int rand_lvl = base_lvl + GetRandomValue(0, 2);
-                        
+                        int base_lvl  = dungeon->floor_level / 5;
+                        int rand_lvl  = base_lvl + GetRandomValue(0, 2);
+
                         ItemEffect fx = ITEM_EFFECT_NONE;
-                        if (GetRandomValue(1, 100) <= 30) {
+                        if (GetRandomValue(1, 100) <= 30)
+                        {
                             fx = (ItemEffect)GetRandomValue(1, 4);
                         }
 
                         // --- NOUVEAU : LE TIRAGE DE LA RARETÉ ---
-                        ItemRarity rarity = RARITY_COMMON;
-                        int luck_bonus = game->combat.player.passive_loot_level * 2;
-                        int roll = GetRandomValue(1, 100);
-                        if (roll <= 5 + luck_bonus) rarity = RARITY_LEGENDARY;
-                        else if (roll <= 20 + (luck_bonus * 2)) rarity = RARITY_EPIC;
-                        else if (roll <= 50 + (luck_bonus * 3)) rarity = RARITY_RARE;
+                        ItemRarity rarity     = RARITY_COMMON;
+                        int        luck_bonus = game->combat.player.passive_loot_level * 2;
+                        int        roll       = GetRandomValue(1, 100);
+                        if (roll <= 5 + luck_bonus)
+                            rarity = RARITY_LEGENDARY;
+                        else if (roll <= 20 + (luck_bonus * 2))
+                            rarity = RARITY_EPIC;
+                        else if (roll <= 50 + (luck_bonus * 3))
+                            rarity = RARITY_RARE;
                         // Reste (50%) = Commun
-                        
+
                         // Ajout avec la rareté !
                         Inventory_AddLoot(&game->combat, rand_item, rand_lvl, fx, rarity);
                         Combat_AddLog(&game->combat, "*** COFFRE OUVERT ! ***");
@@ -354,9 +372,26 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
 
                 if (eventSuccess)
                 {
-                    Combat_AddLog(&game->combat, g_isEnglish ? dungeon->current_event.flavor_en : dungeon->current_event.flavor_fr);
-                    dungeon->map[nextY][nextX] = '.'; // L'entité disparaît après utilisation
+                    // Au lieu d'afficher dans le log, on déclenche l'écran d'événement !
+                    dungeon->active_event_ui   = true;
+                    dungeon->map[nextY][nextX] = '.'; // L'entité disparaît
                 }
+
+                // if (eventSuccess)
+                // {
+                //     // On envoie un message court pour le log, l'histoire est lue dans le couloir !
+                //     if (strcmp(dungeon->current_event.type, "STORY") == 0) {
+                //         Combat_AddLog(&game->combat, "Evenement termine.");
+                //     } else {
+                //         // Pour les petits messages (coffre, marchand) on peut garder le flavor s'il est court
+                //         char shortMsg[60];
+                //         strncpy(shortMsg, g_isEnglish ? dungeon->current_event.flavor_en : dungeon->current_event.flavor_fr, 59);
+                //         shortMsg[59] = '\0';
+                //         Combat_AddLog(&game->combat, shortMsg);
+                //     }
+
+                //     dungeon->map[nextY][nextX] = '.';
+                // }
                 else
                 {
                     // Si on a raté (pas d'or), on recule le joueur d'une case pour qu'il puisse réessayer ou partir
@@ -413,13 +448,78 @@ void DrawTextCentered(Font font, const char* text, int centerX, int y, int fontS
 
 void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int screenWidth, int screenHeight)
 {
-    char dist1 = GetTileAhead(dungeon, 1);
-    char dist2 = GetTileAhead(dungeon, 2);
-    char dist3 = GetTileAhead(dungeon, 3);
-
     int viewStartX = (int)(screenWidth * 0.25f);
     int viewWidth  = (int)(screenWidth * 0.55f);
     int centerX    = viewStartX + (viewWidth / 2);
+
+    // ==========================================
+    // --- SCÈNE D'ÉVÉNEMENT (PLEIN ECRAN) ---
+    // ==========================================
+    if (dungeon->active_event_ui)
+    {
+        Texture2D tex = dungeon->current_event.sprite;
+
+        // Titre de la salle
+        DrawTextCentered(uiFont, g_isEnglish ? dungeon->current_event.name_en : dungeon->current_event.name_fr, centerX, 80, 40, 1, PURPLE);
+
+        if (tex.id != 0)
+        {
+            // Image très grande au centre de l'écran
+            float scale        = 400.0f / (float)tex.height;
+            int   scaledWidth  = tex.width * scale;
+            int   scaledHeight = tex.height * scale;
+
+            int imgX = centerX - (scaledWidth / 2);
+            int imgY = 160; // Juste sous le titre
+
+            DrawTextureEx(tex, (Vector2){(float)imgX, (float)imgY}, 0.0f, scale, WHITE);
+
+            // ==========================================
+            // AFFICHAGE DU TEXTE MULTI-LIGNES
+            // ==========================================
+            const char* flavorText = g_isEnglish ? dungeon->current_event.flavor_en : dungeon->current_event.flavor_fr;
+
+            // 1. On compte le nombre de lignes (en cherchant les \n)
+            int lineCount = 1;
+            for (int i = 0; flavorText[i] != '\0'; i++)
+            {
+                if (flavorText[i] == '\n')
+                    lineCount++;
+            }
+
+            // 2. On calcule la taille dynamique du bandeau noir
+            int lineHeight      = 24; // Espace vertical entre chaque ligne
+            int textBlockHeight = lineCount * lineHeight;
+            int bannerHeight    = textBlockHeight + 20; // 20 pixels de marge pour faire joli
+            int bannerY         = imgY + scaledHeight - bannerHeight;
+
+            // Bandeau noir semi-transparent qui s'adapte à la hauteur !
+            DrawRectangle(imgX, bannerY, scaledWidth, bannerHeight, (Color){0, 0, 0, 200});
+
+            // 3. On découpe le texte et on centre chaque ligne indépendamment
+            char tempText[1024];
+            strcpy(tempText, flavorText); // On copie pour ne pas abîmer le vrai texte
+
+            char* line     = strtok(tempText, "\n");
+            int   currentY = bannerY + 10; // On commence 10 pixels sous le haut du bandeau
+
+            while (line != NULL)
+            {
+                // On dessine la ligne bien centrée
+                DrawTextCentered(uiFont, line, centerX, currentY, 20, 1, RED);
+
+                // On descend pour la ligne suivante
+                currentY += lineHeight;
+                line = strtok(NULL, "\n");
+            }
+        }
+
+        DrawTextCentered(uiFont, "[ APPUYEZ SUR UNE TOUCHE POUR CONTINUER ]", centerX, screenHeight - 100, 24, 1, YELLOW);
+        return; // On arrête la fonction ici, on ne dessine pas le couloir 3D !
+    }
+    char dist1 = GetTileAhead(dungeon, 1);
+    char dist2 = GetTileAhead(dungeon, 2);
+    char dist3 = GetTileAhead(dungeon, 3);
 
     char title[64];
     if (dungeon->room_type == ROOM_BOSS)
@@ -430,78 +530,60 @@ void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int 
         sprintf(title, T("DUNGEON_TITLE_DEEP"), dungeon->floor_level);
 
     // Titre remonté légèrement pour laisser de la place
-    DrawTextCentered(uiFont, title, centerX, 80, 50, 1, RED); 
+    DrawTextCentered(uiFont, title, centerX, 80, 50, 1, RED);
 
     // --- NOUVEAUX PARAMETRES DE TAILLE ---
     int startY   = (int)(screenHeight * 0.18f); // On commence plus haut sur l'écran
-    int fontSize = 48; // Taille de police optimale
+    int fontSize = 48;                          // Taille de police optimale
     int spacing  = 1;
     int lines    = 10; // 10 LIGNES AU LIEU DE 6 !
 
     // --- 1. LES MATRICES DU DONJON (10 lignes de profondeur) ---
-    const char* view_dist1[] = {
-        "  █████████████████████████████████████████████  ",
-        "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ",
-        "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",
-        "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",
-        "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",
-        "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",
-        "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",
-        "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",
-        "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ",
-        "  █████████████████████████████████████████████  "
-    };
+    const char* view_dist1[] = {"  █████████████████████████████████████████████  ", "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ", "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",
+                                "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",      "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",     "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",
+                                "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",      "  █▓   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   ▓█  ",     "  █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█  ",
+                                "  █████████████████████████████████████████████  "};
 
-    const char* view_dist2[] = {
-        "    ▓\\                              /▓    ",
-        "    ▓▓\\██████████████████████████/▓▓    ",
-        "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",
-        "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",
-        "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",
-        "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",
-        "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",
-        "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",
-        "    ▓▓/██████████████████████████\\▓▓    ",
-        "    ▓/                              \\▓    "
-    };
+    const char* view_dist2[] = {"    ▓\\                              /▓    ", "    ▓▓\\██████████████████████████/▓▓    ",  "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ", "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",
+                                "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",    "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",   "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ", "    ▓▓ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ▓▓    ",
+                                "    ▓▓/██████████████████████████\\▓▓    ",   "    ▓/                              \\▓    "};
 
-    const char* view_dist3[] = {
-        "      ░\\                          /░      ",
-        "      ░▓\\██████████████████████/▓░      ",
-        "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",
-        "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",
-        "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",
-        "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",
-        "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",
-        "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",
-        "      ░▓/██████████████████████\\▓░      ",
-        "      ░/                          \\░      "
-    };
+    const char* view_dist3[] = {"      ░\\                          /░      ", "      ░▓\\██████████████████████/▓░      ",  "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ", "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",
+                                "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",    "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",   "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ", "      ░ |▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓| ░      ",
+                                "      ░▓/██████████████████████\\▓░      ",   "      ░/                          \\░      "};
 
-    const char* view_empty[] = {
-        "      █░                        ░█      ",
-        "      ░█                        █░      ",
-        "      ░█                        █░      ",
-        "      ░█                        █░      ",
-        "      ░█                        █░      ",
-        "      ░█                        █░      ",
-        "      ░█                        █░      ",
-        "      ░█                        █░      ",
-        "      ░█                        █░      ",
-        "      █░                        ░█      "
-    };
+    const char* view_empty[] = {"      █░                        ░█      ", "      ░█                        █░      ", "      ░█                        █░      ", "      ░█                        █░      ",
+                                "      ░█                        █░      ", "      ░█                        █░      ", "      ░█                        █░      ", "      ░█                        █░      ",
+                                "      ░█                        █░      ", "      █░                        ░█      "};
 
     // --- 2. LOGIQUE DE DESSIN OPTIMISÉE ---
     const char** active_view = NULL;
-    Color view_color = WHITE;
+    Color        view_color  = WHITE;
 
-    if (dist1 == '#')      { active_view = view_dist1; view_color = WHITE; }
-    else if (dist2 == '#') { active_view = view_dist2; view_color = GRAY; }
-    else if (dist3 == '#') { active_view = view_dist3; view_color = DARKGRAY; }
-    else                   { active_view = view_empty; view_color = DARKGRAY; }
+    if (dist1 == '#')
+    {
+        active_view = view_dist1;
+        view_color  = WHITE;
+    }
+    else if (dist2 == '#')
+    {
+        active_view = view_dist2;
+        view_color  = GRAY;
+    }
+    else if (dist3 == '#')
+    {
+        active_view = view_dist3;
+        view_color  = DARKGRAY;
+    }
+    else
+    {
+        active_view = view_empty;
+        view_color  = DARKGRAY;
+    }
 
     // Une seule boucle pour tout dessiner, peu importe la distance !
-    for(int i = 0; i < lines; i++) {
+    for (int i = 0; i < lines; i++)
+    {
         DrawTextCentered(dungeonFont, active_view[i], centerX, startY + (i * fontSize), fontSize, spacing, view_color);
     }
 
@@ -518,20 +600,15 @@ void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int 
     else if (dist2 == 'B')
         DrawTextCentered(uiFont, T("DUNGEON_BOSS_FAR"), centerX, centerHeightY, 30, 1, DARKGRAY);
 
-    // --- 4. DESSIN DU ASCII ART DE L'ÉVÉNEMENT ---
+    // --- 4. INDICATION DE L'ÉVÉNEMENT DANS LE COULOIR ---
     if (dist1 == 'E' || dist2 == 'E')
     {
-        Color eColor = (strcmp(dungeon->current_event.type, "MERCHANT") == 0) ? GOLD : (strcmp(dungeon->current_event.type, "HEAL") == 0) ? GREEN : SKYBLUE;
+        int evStartY = startY + (fontSize * 3);
 
-        int line_height = 20;
-        int evStartY    = startY + (fontSize * 3); // Centré verticalement dans le grand couloir
+        // Un grand point d'interrogation mystique dans le couloir
+        Color eColor = (strcmp(dungeon->current_event.type, "MERCHANT") == 0) ? GOLD : (strcmp(dungeon->current_event.type, "HEAL") == 0) ? GREEN : PURPLE;
+        DrawTextCentered(dungeonFont, "?", centerX, evStartY + 40, 80, 1, eColor);
 
-        for (int i = 0; i < dungeon->current_event.ascii_line_count; i++)
-        {
-            DrawTextCentered(dungeonFont, dungeon->current_event.ascii[i], centerX, evStartY + (i * line_height), 20, 1, eColor);
-        }
-
-        // Si on est à côté, on affiche le prix !
         if (dist1 == 'E')
         {
             char prompt[100];
@@ -539,8 +616,8 @@ void Dungeon_Render(DungeonContext* dungeon, Font uiFont, Font dungeonFont, int 
                 sprintf(prompt, g_isEnglish ? "BUMP to Buy (-%d Gold)" : "BUMPER pour Acheter (-%d Or)", dungeon->current_event.amount);
             else
                 sprintf(prompt, g_isEnglish ? "BUMP to Interact" : "BUMPER pour Interagir");
-                
-            DrawTextCentered(uiFont, prompt, centerX, evStartY + (dungeon->current_event.ascii_line_count * line_height) + 20, 24, 1, YELLOW);
+
+            DrawTextCentered(uiFont, prompt, centerX, evStartY + 140, 24, 1, YELLOW);
         }
     }
 
@@ -566,4 +643,3 @@ void Dungeon_UpdateFog(DungeonContext* dungeon, int fog_bonus)
         }
     }
 }
-
