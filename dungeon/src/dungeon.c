@@ -187,14 +187,28 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                     }
                     else
                     {
-                        // Sinon, c'est forcément une salle d'événement (hors coffre)
+                        // Sinon, c'est une salle d'événement !
                         dungeon->room_type = ROOM_EVENT;
                         if (g_eventCount > 0)
                         {
-                            do
+                            //  15% de chance de tomber sur un COFFRE SURPRISE 
+                            if (GetRandomValue(1, 100) <= 15) 
                             {
-                                dungeon->current_event = g_eventDB[GetRandomValue(0, g_eventCount - 1)];
-                            } while (strcmp(dungeon->current_event.type, "CHEST") == 0);
+                                for (int i = 0; i < g_eventCount; i++) {
+                                    if (strcmp(g_eventDB[i].type, "CHEST") == 0) {
+                                        dungeon->current_event = g_eventDB[i];
+                                        break;
+                                    }
+                                }
+                            } 
+                            else 
+                            {
+                                // Sinon, c'est un marchand, un soin, ou une HISTOIRE
+                                do
+                                {
+                                    dungeon->current_event = g_eventDB[GetRandomValue(0, g_eventCount - 1)];
+                                } while (strcmp(dungeon->current_event.type, "CHEST") == 0);
+                            }
                         }
                     }
                 }
@@ -286,6 +300,29 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
                     {
                         Combat_AddLog(&game->combat, g_isEnglish ? "Not enough gold!" : "Pas assez d'or !");
                     }
+                }
+                else if (strcmp(dungeon->current_event.type, "STORY") == 0)
+                {
+                    // Événement narratif : Le joueur lit le texte et gagne une récompense (ex: XP)
+                    int xp_gain = 25 * dungeon->floor_level;
+                    game->combat.player.xp += xp_gain;
+                    
+                    char logMsg[128];
+                    sprintf(logMsg, "Vous gagnez %d XP !", xp_gain);
+                    Combat_AddLog(&game->combat, logMsg);
+                    
+                    // Si on a assez d'XP pour passer de niveau, on gère le Level Up
+                    if (game->combat.player.xp >= game->combat.player.max_xp) {
+                        game->combat.player.level++;
+                        game->combat.player.xp -= game->combat.player.max_xp;
+                        game->combat.player.max_xp = (int)(game->combat.player.max_xp * 1.5);
+                        game->combat.player.base_max_hp += 10;
+                        game->combat.player.base_atk += 2;
+                        Combat_RecalculateStats(&game->combat);
+                        Combat_AddLog(&game->combat, "*** LEVEL UP ! ***");
+                    }
+                    
+                    eventSuccess = true;
                 }
                 else if (strcmp(dungeon->current_event.type, "CHEST") == 0)
                 {

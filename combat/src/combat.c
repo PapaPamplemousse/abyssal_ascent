@@ -93,6 +93,10 @@ void Combat_Init(CombatContext* combat)
         combat->player.equipped_potions[i] = -1;
     }
 
+    for(int i=0; i < MAX_ACTIVE_QUESTS; i++) {
+        combat->player.active_quests[i].is_active = false;
+    }
+
     Combat_RecalculateStats(combat);
     combat->is_active = false;
     for (int i = 0; i < 5; i++)

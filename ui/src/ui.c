@@ -202,7 +202,47 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
         DrawTextEx(game->uiFont, game->combat.battle_log[i], (Vector2){rightX, 60 + (i * 25)}, 20, 1, (i == 0) ? WHITE : GRAY);
     }
 
-    float equipStartY = h * 0.35f;
+    // --- NOUVEAU : JOURNAL DES QUETES ---
+    float questStartY = 200; // On commence juste sous le journal de bataille
+    DrawLine(w - rightWidth, questStartY, w, questStartY, uiBorder);
+    DrawTextEx(game->uiFont, "[ QUETES ACTIVES ]", (Vector2){rightX, questStartY + 10}, 24, 1, LIGHTGRAY);
+
+    int active_count = 0;
+    for (int i = 0; i < MAX_ACTIVE_QUESTS; i++) 
+    {
+        if (game->combat.player.active_quests[i].is_active) 
+        {
+            Quest* q = &game->combat.player.active_quests[i];
+            
+            // La quête s'affiche en vert si elle est terminée et prête à être rendue !
+            Color qColor = q->is_completed ? GREEN : WHITE;
+            
+            // Titre de la quête
+            DrawTextEx(game->uiFont, q->title, (Vector2){rightX, questStartY + 45 + (active_count * 45)}, 20, 1, qColor);
+            
+            // Progression de la quête
+            char progress[128];
+            if (q->is_completed) {
+                sprintf(progress, "-> Termine ! (Recompense dispo)");
+            } else if (q->type == QUEST_STORY) {
+                sprintf(progress, "-> %s", q->desc); // Les quêtes histoire n'ont pas forcément de x/x
+            } else {
+                sprintf(progress, "-> %s : %d / %d", q->desc, q->current_val, q->target_val);
+            }
+            
+            DrawTextEx(game->uiFont, progress, (Vector2){rightX + 10, questStartY + 65 + (active_count * 45)}, 16, 1, GRAY);
+            
+            active_count++;
+        }
+    }
+    
+    if (active_count == 0) {
+        DrawTextEx(game->uiFont, "Aucune quete en cours...", (Vector2){rightX, questStartY + 50}, 18, 1, DARKGRAY);
+    }
+
+    // --- MISE À JOUR DE LA POSITION DE L'ÉQUIPEMENT ---
+    // On descend un peu le point de départ de l'équipement pour laisser la place aux quêtes !
+    float equipStartY = h * 0.48f; // (Avant: 0.35f)
     DrawLine(w - rightWidth, equipStartY, w, equipStartY, uiBorder);
     DrawTextEx(game->uiFont, T("UI_EQUIP_VISUAL"), (Vector2){rightX, equipStartY + 10}, 24, 1, LIGHTGRAY);
 

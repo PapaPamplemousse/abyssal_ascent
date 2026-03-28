@@ -114,6 +114,32 @@ typedef struct
     ItemRarity rarity; // La Rareté !
 } OwnedItem;
 
+// --- NOUVEAU : SYSTÈME DE QUÊTES ---
+#define MAX_ACTIVE_QUESTS 5
+
+typedef enum {
+    QUEST_KILL_MONSTERS,  // Tuer X monstres
+    QUEST_KILL_BOSSES,    // Tuer X boss
+    QUEST_REACH_FLOOR,    // Atteindre l'étage X
+    QUEST_REBIRTH,        // Effectuer X renaissances à l'Autel
+    QUEST_STORY           // Objectif narratif (Parler à PNJ, etc.)
+} QuestType;
+
+
+typedef struct {
+    bool  is_active;
+    char  title[64];
+    char  desc[128];
+    QuestType type;
+    
+    int   target_val;     // Ex: 10 (monstres à tuer)
+    int   current_val;    // Ex: 3 (déjà tués)
+    
+    bool  is_completed;   // Objectif atteint
+    int   reward_gold;    // Récompense en Or
+    int   reward_crystal; // Récompense en Cristaux
+} Quest;
+
 // Statistiques de combat du joueur
 typedef struct
 {
@@ -150,6 +176,8 @@ typedef struct
     int acquisition_order[MAX_INVENTORY];
 
     int fog_bonus; // Vision supplémentaire calculée
+
+    Quest active_quests[MAX_ACTIVE_QUESTS];// Quêtes actives
 
     // Sorts débloqués ---
     bool spell_unlocked[MAX_SPELLS_DB];
