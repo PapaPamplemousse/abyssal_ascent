@@ -2,11 +2,15 @@
 #include <stdio.h>
 #include "lang.h"
 #include "audio_manager.h"
-
+#include "camp_menus.h"
+#include "dungeon.h"
 /** === Private prototypes ===  */
 static bool DrawAndCheckButtonCentered(Font font, const char* text, int centerX, int y, int fontSize, Color baseColor);
 static void BuyBld(Font font, const char* name, int* count, int baseCost, int scale, unsigned long long * res, int x, int y);
 static bool DrawAndCheckImageButtonCentered(Texture2D texture, int centerX, int y, Color baseColor, Font font, const char* label);
+
+
+extern bool g_camp_fire_lit;
 
 /* === Pub implementation ===*/
 void Clicker_Init(ClickerContext* clicker)
@@ -135,28 +139,46 @@ void Clicker_RenderMine(ClickerContext* clicker, int viewStartX, int viewWidth, 
     DrawLine(viewStartX + colWidth, 150, viewStartX + colWidth, screenHeight, DARKGRAY);
     DrawLine(viewStartX + (colWidth * 2), 150, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
 
-    // Affichage des Productions par seconde (Dynamique)
     int              statsY = screenHeight * 0.85f;
-    char             statText[50];
+    char             statText[64];
     PlayerResources* inv = &clicker->inventory;
 
-    int p_fer = inv->b_fer[0] * 1 + inv->b_fer[1] * 10 + inv->b_fer[2] * 100 + inv->b_fer[3] * 1000;
-    sprintf(statText, "Prod: +%d/sec", p_fer);
-    DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth / 2), statsY, 20, DARKGRAY);
+    // --- CALCUL DU MULTIPLICATEUR DE FROID ---
+    float mult = g_camp_fire_lit ? 1.0f : 0.5f;
 
+    // FER
+    int p_fer = inv->b_fer[0] * 1 + inv->b_fer[1] * 10 + inv->b_fer[2] * 100 + inv->b_fer[3] * 1000;
+    int eff_fer = (int)(p_fer * mult);
+    if (g_camp_fire_lit) sprintf(statText, "Prod: +%d/sec", p_fer);
+    else sprintf(statText, "Prod: +%d / %d/sec", eff_fer, p_fer);
+    DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth / 2), statsY, 20, g_camp_fire_lit ? DARKGRAY : RED);
+
+    // OR
     if (inv->unlock_or)
     {
         int p_or = inv->b_or[0] * 1 + inv->b_or[1] * 10 + inv->b_or[2] * 100 + inv->b_or[3] * 1000;
-        sprintf(statText, "Prod: +%d/sec", p_or);
-        DrawAndCheckButtonCentered(font, statText, viewStartX + colWidth + (colWidth / 2), statsY, 20, DARKGRAY);
+        int eff_or = (int)(p_or * mult);
+        if (g_camp_fire_lit) sprintf(statText, "Prod: +%d/sec", p_or);
+        else sprintf(statText, "Prod: +%d / %d/sec", eff_or, p_or);
+        DrawAndCheckButtonCentered(font, statText, viewStartX + colWidth + (colWidth / 2), statsY, 20, g_camp_fire_lit ? DARKGRAY : RED);
     }
+    
+    // CRISTAUX
     if (inv->unlock_cristaux)
     {
         int p_cris = inv->b_cristaux[0] * 1 + inv->b_cristaux[1] * 10 + inv->b_cristaux[2] * 100 + inv->b_cristaux[3] * 1000;
-        sprintf(statText, "Prod: +%d/sec", p_cris);
-        DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, DARKGRAY);
+        int eff_cris = (int)(p_cris * mult);
+        if (g_camp_fire_lit) sprintf(statText, "Prod: +%d/sec", p_cris);
+        else sprintf(statText, "Prod: +%d / %d/sec", eff_cris, p_cris);
+        DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, g_camp_fire_lit ? DARKGRAY : RED);
+    }
+
+    // --- ALERTE GLOBALE SI LE FEU EST ETEINT ---
+    if (!g_camp_fire_lit) {
+        DrawTextCentered(font, "FROID ABYSSAL : Production divisee par 2 !", viewStartX + (viewWidth / 2), screenHeight - 100, 20, 1, RED);
     }
 }
+
 
 // --- LA FORÊT SOMBRE ---
 void Clicker_UpdateForest(ClickerContext* clicker, int viewStartX, int viewWidth, int screenHeight, Font font)
@@ -237,24 +259,42 @@ void Clicker_RenderForest(ClickerContext* clicker, int viewStartX, int viewWidth
     DrawLine(viewStartX + (colWidth * 2), 150, viewStartX + (colWidth * 2), screenHeight, DARKGRAY);
 
     int              statsY = screenHeight * 0.85f;
-    char             statText[50];
+    char             statText[64];
     PlayerResources* inv = &clicker->inventory;
 
-    int p_herb = inv->b_herbes[0] * 1 + inv->b_herbes[1] * 10 + inv->b_herbes[2] * 100 + inv->b_herbes[3] * 1000;
-    sprintf(statText, "Prod: +%d/sec", p_herb);
-    DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth / 2), statsY, 20, DARKGRAY);
+    // --- CALCUL DU MULTIPLICATEUR DE FROID ---
+    float mult = g_camp_fire_lit ? 1.0f : 0.5f;
 
+    // HERBES
+    int p_herb = inv->b_herbes[0] * 1 + inv->b_herbes[1] * 10 + inv->b_herbes[2] * 100 + inv->b_herbes[3] * 1000;
+    int eff_herb = (int)(p_herb * mult);
+    if (g_camp_fire_lit) sprintf(statText, "Prod: +%d/sec", p_herb);
+    else sprintf(statText, "Prod: +%d / %d/sec", eff_herb, p_herb);
+    DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth / 2), statsY, 20, g_camp_fire_lit ? DARKGRAY : RED);
+
+    // BOIS
     if (inv->unlock_bois)
     {
         int p_bois = inv->b_bois[0] * 1 + inv->b_bois[1] * 10 + inv->b_bois[2] * 100 + inv->b_bois[3] * 1000;
-        sprintf(statText, "Prod: +%d/sec", p_bois);
-        DrawAndCheckButtonCentered(font, statText, viewStartX + colWidth + (colWidth / 2), statsY, 20, DARKGRAY);
+        int eff_bois = (int)(p_bois * mult);
+        if (g_camp_fire_lit) sprintf(statText, "Prod: +%d/sec", p_bois);
+        else sprintf(statText, "Prod: +%d / %d/sec", eff_bois, p_bois);
+        DrawAndCheckButtonCentered(font, statText, viewStartX + colWidth + (colWidth / 2), statsY, 20, g_camp_fire_lit ? DARKGRAY : RED);
     }
+    
+    // VIANDE
     if (inv->unlock_viande)
     {
         int p_vian = inv->b_viande[0] * 1 + inv->b_viande[1] * 10 + inv->b_viande[2] * 100 + inv->b_viande[3] * 1000;
-        sprintf(statText, "Prod: +%d/sec", p_vian);
-        DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, DARKGRAY);
+        int eff_vian = (int)(p_vian * mult);
+        if (g_camp_fire_lit) sprintf(statText, "Prod: +%d/sec", p_vian);
+        else sprintf(statText, "Prod: +%d / %d/sec", eff_vian, p_vian);
+        DrawAndCheckButtonCentered(font, statText, viewStartX + (colWidth * 2) + (colWidth / 2), statsY, 20, g_camp_fire_lit ? DARKGRAY : RED);
+    }
+
+    // --- ALERTE GLOBALE SI LE FEU EST ETEINT ---
+    if (!g_camp_fire_lit) {
+        DrawTextCentered(font, "FROID ABYSSAL : Production divisee par 2 !", viewStartX + (viewWidth / 2), screenHeight - 100, 20, 1, RED);
     }
 }
 
