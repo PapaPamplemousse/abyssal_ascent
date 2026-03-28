@@ -3,14 +3,14 @@
     {
       "id": "heal_pot", "name_en": "Health Potion", "name_fr": "Potion de Soin",
       "type": "HEAL", "base_val": 30, "inc_val": 15,
-      "learn_gold": 20, "upg_gold_base": 15, "upg_gold_inc": 10,
-      "craft_herbs_base": 1000, "craft_herbs_inc": 50
+      "learn_gold": 1000, "upg_gold_base": 1000, "upg_gold_inc": 30,
+      "craft_herbs_base": 1000, "craft_herbs_inc": 30
     },
     {
       "id": "mana_pot", "name_en": "Mana Potion", "name_fr": "Potion de Mana",
       "type": "MANA", "base_val": 20, "inc_val": 10,
-      "learn_gold": 2000, "upg_gold_base": 15, "upg_gold_inc": 1000,
-      "craft_herbs_base": 5000, "craft_herbs_inc": 2
+      "learn_gold": 5000, "upg_gold_base": 5000, "upg_gold_inc": 50,
+      "craft_herbs_base": 5000, "craft_herbs_inc": 50
     }
   ]
 }
