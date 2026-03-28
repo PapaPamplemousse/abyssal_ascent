@@ -182,12 +182,14 @@ void Dungeon_Update(GameContext* game, DungeonContext* dungeon, int key)
             {
                 if (dungeon->room_type == ROOM_NORMAL)
                 {
-                    if (dungeon->floor_level > dungeon->highest_floor_curr)
-                    {
+                    if (dungeon->floor_level > dungeon->highest_floor_curr) {
                         dungeon->highest_floor_curr = dungeon->floor_level;
-                        if (dungeon->highest_floor_curr > dungeon->highest_floor_all_time)
-                            dungeon->highest_floor_all_time = dungeon->highest_floor_curr;
                     }
+                    if (dungeon->floor_level > dungeon->highest_floor_all_time) {
+                        dungeon->highest_floor_all_time = dungeon->floor_level;
+                    }
+                    
+                    Quest_UpdateFloor(&game->combat, dungeon->floor_level);
 
                     // Si le prochain étage est un multiple de 5 (Ex: on est au 4, on passe au 5)
                     if ((dungeon->floor_level + 1) % 5 == 0)

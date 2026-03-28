@@ -1041,6 +1041,175 @@ void Combat_TryUsePotion(CombatContext* combat, int slot_index)
     }
 }
 
+
+
+// =========================================================
+// SYSTEME DE QUETES
+// =========================================================
+
+void Quest_GenerateBossQuest(CombatContext* combat, int last_boss_floor) {
+    int next_boss_idx = -1;
+    int min_floor_diff = 9999;
+    
+    // On cherche le boss avec l'étage le plus proche au-dessus du précédent
+    for(int i = 0; i < g_monsterCount; i++) {
+        if(g_monsterDB[i].is_boss && g_monsterDB[i].boss_floor > last_boss_floor) {
+            if(g_monsterDB[i].boss_floor - last_boss_floor < min_floor_diff) {
+                min_floor_diff = g_monsterDB[i].boss_floor - last_boss_floor;
+                next_boss_idx = i;
+            }
+        }
+    }
+    if(next_boss_idx == -1) return; // Plus de boss disponibles !
+
+    // On crée la quête
+    for(int i = 0; i < MAX_ACTIVE_QUESTS; i++) {
+        if(!combat->player.active_quests[i].is_active) {
+            Quest* q = &combat->player.active_quests[i];
+            q->is_active = true;
+            q->type = QUEST_KILL_BOSSES;
+            q->target_id = next_boss_idx;
+            q->target_val = 1;
+            q->current_val = 0;
+            q->is_completed = false;
+            sprintf(q->title, "Cible : %s", g_isEnglish ? g_monsterDB[next_boss_idx].name_en : g_monsterDB[next_boss_idx].name_fr);
+            sprintf(q->desc, "Vaincre le boss (Etage %d)", g_monsterDB[next_boss_idx].boss_floor);
+            break;
+        }
+    }
+}
+
+void Quest_GenerateFloorQuest(CombatContext* combat, int target_floor) {
+    for(int i = 0; i < MAX_ACTIVE_QUESTS; i++) {
+        if(!combat->player.active_quests[i].is_active) {
+            Quest* q = &combat->player.active_quests[i];
+            q->is_active = true;
+            q->type = QUEST_REACH_FLOOR;
+            q->target_id = 0;
+            q->target_val = target_floor;
+            q->current_val = 0;
+            q->is_completed = false;
+            sprintf(q->title, "Exploration Profonde");
+            sprintf(q->desc, "Atteindre l'etage %d", target_floor);
+            break;
+        }
+    }
+}
+
+void Quest_GenerateKillQuest(CombatContext* combat, int highest_floor) {
+    int valid_monsters[MAX_MONSTERS_DB];
+    int count = 0;
+    
+    // On liste les monstres que le joueur a une chance de croiser (min_floor <= highest_floor)
+    for(int i = 0; i < g_monsterCount; i++) {
+        if(!g_monsterDB[i].is_boss && highest_floor >= g_monsterDB[i].min_floor) {
+            valid_monsters[count++] = i;
+        }
+    }
+    if(count == 0) return; 
+    
+    int chosen_idx = valid_monsters[GetRandomValue(0, count-1)];
+    int amount = GetRandomValue(5, 50); // Entre 5 et 50 monstres
+
+    for(int i = 0; i < MAX_ACTIVE_QUESTS; i++) {
+        if(!combat->player.active_quests[i].is_active) {
+            Quest* q = &combat->player.active_quests[i];
+            q->is_active = true;
+            q->type = QUEST_KILL_MONSTERS;
+            q->target_id = chosen_idx;
+            q->target_val = amount;
+            q->current_val = 0;
+            q->is_completed = false;
+            sprintf(q->title, "Chasse : %s", g_isEnglish ? g_monsterDB[chosen_idx].name_en : g_monsterDB[chosen_idx].name_fr);
+            sprintf(q->desc, "Eliminer la menace");
+            break;
+        }
+    }
+}
+
+void Quest_CheckInitial(CombatContext* combat) {
+    bool has_quests = false;
+    for(int i = 0; i < MAX_ACTIVE_QUESTS; i++) {
+        if(combat->player.active_quests[i].is_active) has_quests = true;
+    }
+    // Si on a aucune quête (ex: première partie), on initialise la boucle !
+    if(!has_quests && g_monsterCount > 0) {
+        Quest_GenerateBossQuest(combat, 0);   // Premier Boss
+        Quest_GenerateFloorQuest(combat, 10); // Etage 10
+        Quest_GenerateKillQuest(combat, 1);   // Monstre basique
+    }
+}
+
+void Quest_UpdateKill(CombatContext* combat, const char* enemy_name, bool is_boss) {
+    int enemy_idx = -1;
+    for(int i = 0; i < g_monsterCount; i++) {
+        if(strcmp(g_monsterDB[i].name_fr, enemy_name) == 0 || strcmp(g_monsterDB[i].name_en, enemy_name) == 0) {
+            enemy_idx = i; break;
+        }
+    }
+    if(enemy_idx == -1) return;
+
+    for(int i = 0; i < MAX_ACTIVE_QUESTS; i++) {
+        Quest* q = &combat->player.active_quests[i];
+        if(q->is_active && !q->is_completed) {
+            if(q->type == QUEST_KILL_MONSTERS && q->target_id == enemy_idx) {
+                q->current_val++;
+                if(q->current_val >= q->target_val) q->is_completed = true;
+            }
+            else if(q->type == QUEST_KILL_BOSSES && q->target_id == enemy_idx && is_boss) {
+                q->current_val = 1;
+                q->is_completed = true;
+            }
+        }
+    }
+}
+
+void Quest_UpdateFloor(CombatContext* combat, int floor) {
+    for(int i = 0; i < MAX_ACTIVE_QUESTS; i++) {
+        Quest* q = &combat->player.active_quests[i];
+        if(q->is_active && !q->is_completed && q->type == QUEST_REACH_FLOOR) {
+            q->current_val = floor;
+            if(q->current_val >= q->target_val) {
+                q->current_val = q->target_val;
+                q->is_completed = true;
+            }
+        }
+    }
+}
+
+void Quest_ClaimReward(CombatContext* combat, int quest_idx, int current_highest_floor) {
+    Quest* q = &combat->player.active_quests[quest_idx];
+    if(!q->is_active || !q->is_completed) return;
+
+    // --- RECOMPENSE GATCHA ---
+    if (g_itemCount > 0) {
+        int rand_item = GetRandomValue(0, g_itemCount - 1);
+        int rand_lvl = GetRandomValue(1, 3) + (current_highest_floor / 10);
+        ItemEffect fx = (GetRandomValue(1, 100) <= 30) ? (ItemEffect)GetRandomValue(1, 4) : ITEM_EFFECT_NONE;
+        ItemRarity rarity = (ItemRarity)GetRandomValue(0, 3);
+        Inventory_AddLoot(combat, rand_item, rand_lvl, fx, rarity);
+        Combat_AddLog(combat, "*** RECOMPENSE DE QUETE OBTENUE ! ***");
+    }
+    
+    // Sauvegarde des infos pour générer la suite
+    QuestType type = q->type;
+    int last_boss_idx = q->target_id;
+    int last_floor_target = q->target_val;
+
+    q->is_active = false; // On vide le slot
+
+    // --- GÉNÉRATION DE LA QUÊTE SUIVANTE ---
+    if(type == QUEST_KILL_BOSSES) {
+        Quest_GenerateBossQuest(combat, g_monsterDB[last_boss_idx].boss_floor);
+    }
+    else if(type == QUEST_REACH_FLOOR) {
+        Quest_GenerateFloorQuest(combat, last_floor_target + 10);
+    }
+    else if(type == QUEST_KILL_MONSTERS) {
+        Quest_GenerateKillQuest(combat, current_highest_floor);
+    }
+}
+
 // Cherche une case libre et crée un texte flottant
 static void Combat_AddDamageText(CombatContext* combat, int x, int y, const char* text, Color color)
 {
@@ -1059,3 +1228,4 @@ static void Combat_AddDamageText(CombatContext* combat, int x, int y, const char
         }
     }
 }
+

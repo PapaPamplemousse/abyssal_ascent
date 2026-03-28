@@ -4,6 +4,33 @@
 #include "raylib.h"
 #include <stdbool.h>
 
+#define MAX_ACTIVE_QUESTS 5
+
+typedef enum {
+    QUEST_KILL_MONSTERS,  // Tuer X monstres
+    QUEST_KILL_BOSSES,    // Tuer X boss
+    QUEST_REACH_FLOOR,    // Atteindre l'étage X
+    QUEST_REBIRTH,        // Effectuer X renaissances à l'Autel
+    QUEST_STORY           // Objectif narratif (Parler à PNJ, etc.)
+} QuestType;
+
+
+typedef struct {
+    bool  is_active;
+    char  title[64];
+    char  desc[128];
+    QuestType type;
+    
+    int   target_id;      // <-- NOUVEAU : Index du monstre/boss dans la base de données
+    int   target_val;     // Quantité cible (ou étage cible)
+    int   current_val;    // Progression
+    
+    bool  is_completed;   // Objectif atteint
+    int   reward_gold;    
+    int   reward_crystal; 
+} Quest;
+
+
 typedef enum
 {
     SLOT_HELMET   = 0,
@@ -114,31 +141,7 @@ typedef struct
     ItemRarity rarity; // La Rareté !
 } OwnedItem;
 
-// --- NOUVEAU : SYSTÈME DE QUÊTES ---
-#define MAX_ACTIVE_QUESTS 5
 
-typedef enum {
-    QUEST_KILL_MONSTERS,  // Tuer X monstres
-    QUEST_KILL_BOSSES,    // Tuer X boss
-    QUEST_REACH_FLOOR,    // Atteindre l'étage X
-    QUEST_REBIRTH,        // Effectuer X renaissances à l'Autel
-    QUEST_STORY           // Objectif narratif (Parler à PNJ, etc.)
-} QuestType;
-
-
-typedef struct {
-    bool  is_active;
-    char  title[64];
-    char  desc[128];
-    QuestType type;
-    
-    int   target_val;     // Ex: 10 (monstres à tuer)
-    int   current_val;    // Ex: 3 (déjà tués)
-    
-    bool  is_completed;   // Objectif atteint
-    int   reward_gold;    // Récompense en Or
-    int   reward_crystal; // Récompense en Cristaux
-} Quest;
 
 // Statistiques de combat du joueur
 typedef struct
@@ -313,4 +316,8 @@ void Inventory_Equip(CombatContext* combat, int inv_idx);
 void Combat_TryUsePotion(CombatContext* combat, int slot_index);
 void Inventory_GetSortedIndices(CombatContext* combat, int* indices);
 void Inventory_AddLoot(CombatContext* combat, int template_idx, int level, ItemEffect effect, ItemRarity rarity);
+void Quest_CheckInitial(CombatContext* combat);
+void Quest_UpdateKill(CombatContext* combat, const char* enemy_name, bool is_boss);
+void Quest_UpdateFloor(CombatContext* combat, int floor);
+void Quest_ClaimReward(CombatContext* combat, int quest_idx, int current_highest_floor);
 #endif // COMBAT_H

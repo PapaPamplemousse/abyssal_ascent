@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "audio_manager.h"
+#include "combat.h"
 
 // Déclarations externes nécessaires pour accéder aux bases de données du jeu
 extern PotionTemplate g_potionDB[MAX_POTIONS_DB];
@@ -202,8 +203,10 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
         DrawTextEx(game->uiFont, game->combat.battle_log[i], (Vector2){rightX, 60 + (i * 25)}, 20, 1, (i == 0) ? WHITE : GRAY);
     }
 
-    // --- NOUVEAU : JOURNAL DES QUETES ---
-    float questStartY = 200; // On commence juste sous le journal de bataille
+    // --- JOURNAL DES QUETES ---
+    Quest_CheckInitial(&game->combat); // S'assure qu'on a nos 3 quêtes de base !
+    
+    float questStartY = 200; 
     DrawLine(w - rightWidth, questStartY, w, questStartY, uiBorder);
     DrawTextEx(game->uiFont, "[ QUETES ACTIVES ]", (Vector2){rightX, questStartY + 10}, 24, 1, LIGHTGRAY);
 
@@ -214,24 +217,32 @@ void DrawGameUI(GameContext* game, DungeonContext* dungeon, int w, int h)
         {
             Quest* q = &game->combat.player.active_quests[i];
             
-            // La quête s'affiche en vert si elle est terminée et prête à être rendue !
             Color qColor = q->is_completed ? GREEN : WHITE;
-            
-            // Titre de la quête
             DrawTextEx(game->uiFont, q->title, (Vector2){rightX, questStartY + 45 + (active_count * 45)}, 20, 1, qColor);
             
-            // Progression de la quête
             char progress[128];
             if (q->is_completed) {
-                sprintf(progress, "-> Termine ! (Recompense dispo)");
+                sprintf(progress, "-> Termine ! (Cliquez pour valider)");
+                
+                // --- LOGIQUE DE CLIC POUR RÉCOMPENSE ---
+                Rectangle qRect = { rightX, questStartY + 40 + (active_count * 45), 300, 45 };
+                if (CheckCollisionPointRec(GetMousePosition(), qRect)) {
+                    DrawRectangleLinesEx(qRect, 1, YELLOW); // Surbrillance au survol
+                    
+                    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                        Audio_PlaySFX(SFX_CLICK_BUY);
+                        // On utilise highest_floor_curr si on est dans le donjon, sinon fallback
+                        int current_floor = (dungeon != NULL) ? dungeon->highest_floor_curr : game->combat.player.level;
+                        Quest_ClaimReward(&game->combat, i, current_floor);
+                    }
+                }
             } else if (q->type == QUEST_STORY) {
-                sprintf(progress, "-> %s", q->desc); // Les quêtes histoire n'ont pas forcément de x/x
+                sprintf(progress, "-> %s", q->desc);
             } else {
                 sprintf(progress, "-> %s : %d / %d", q->desc, q->current_val, q->target_val);
             }
             
             DrawTextEx(game->uiFont, progress, (Vector2){rightX + 10, questStartY + 65 + (active_count * 45)}, 16, 1, GRAY);
-            
             active_count++;
         }
     }
