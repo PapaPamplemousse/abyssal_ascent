@@ -4,6 +4,7 @@
 #include "cJSON.h"
 #include "lang.h"
 #include "audio_manager.h"
+#include "math.h"
 // 1. Monstres
 MonsterTemplate g_monsterDB[MAX_MONSTERS_DB];
 int             g_monsterCount = 0;
@@ -398,18 +399,35 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
     if (combat->player_attack_timer >= 1.0f)
     {
         Audio_PlaySFX(SFX_ATTACK);
-        combat->current_enemy.hp -= combat->player.atk;
+
+        // SYSTEME DE COUP CRITIQUE (15% de chance) ---
+        bool is_crit = (GetRandomValue(1, 100) <= 15);
+        int final_dmg = combat->player.atk;
+        
+        if (is_crit) {
+            final_dmg *= 2; // Dégâts doublés !
+            combat->screen_shake_timer = 0.2f;      // Tremblement de l'écran
+            combat->screen_shake_magnitude = 8.0f;
+        }
+
+        combat->current_enemy.hp -= final_dmg;
+
+
         char dmgStr[32];
-        sprintf(dmgStr, "-%d", combat->player.atk);
-        Combat_AddDamageText(combat, centerX, centerY, dmgStr, WHITE);
+        if (is_crit) sprintf(dmgStr, "-%d CRIT!", final_dmg);
+        else sprintf(dmgStr, "-%d", final_dmg);
+        
+        // Texte jaune si critique, blanc sinon
+        Combat_AddDamageText(combat, centerX, centerY, dmgStr, is_crit ? YELLOW : WHITE);
 
         // --- DECLENCHEMENT DU SLASH NORMAL ---
         combat->slash_timer = 0.15f; // Durée très courte et nerveuse (0.15 sec)
         combat->slash_direction = GetRandomValue(0, 1); // 50/50
-        combat->slash_color = WHITE;
+        combat->slash_color = is_crit ? ORANGE : WHITE;
 
         char log[64];
-        sprintf(log, T("LOG_HIT_ENEMY"), combat->player.atk);
+        if (is_crit) sprintf(log, "Coup Critique ! (%d degats)", final_dmg);
+        else sprintf(log, T("LOG_HIT_ENEMY"), final_dmg);
         Combat_AddLog(combat, log);
 
         // Effets Magiques à l'impact
@@ -444,18 +462,31 @@ void Combat_Update(CombatContext* combat, float deltaTime, int centerX, int cent
         combat->enemy_attack_timer += deltaTime * current_spd;
         if (combat->enemy_attack_timer >= 1.0f)
         {
-            combat->player.hp -= combat->current_enemy.atk;
-            char dmgStr[32];
-            sprintf(dmgStr, "-%d", combat->current_enemy.atk);
-            Combat_AddDamageText(combat, centerX - 250, centerY, dmgStr, RED);
-            char log[64];
-            sprintf(log, "%s frappe (%d degats)", combat->current_enemy.name, combat->current_enemy.atk);
-            Combat_AddLog(combat, log);
+            // --- NOUVEAU : SYSTEME D'ESQUIVE (10% de chance) ---
+            bool is_dodge = (GetRandomValue(1, 100) <= 10);
+            
+            if (is_dodge) 
+            {
+                // Pas de dégâts, juste un texte flottant stylé !
+                Combat_AddDamageText(combat, centerX - 250, centerY, "ESQUIVE !", LIGHTGRAY);
+                Combat_AddLog(combat, "Vous avez esquive l'attaque !");
+            } 
+            else 
+            {
+                combat->player.hp -= combat->current_enemy.atk;
+                char dmgStr[32];
+                sprintf(dmgStr, "-%d", combat->current_enemy.atk);
+                Combat_AddDamageText(combat, centerX - 250, centerY, dmgStr, RED);
+                
+                char log[64];
+                sprintf(log, "%s frappe (%d degats)", combat->current_enemy.name, combat->current_enemy.atk);
+                Combat_AddLog(combat, log);
+            }
+            
             combat->enemy_attack_timer -= 1.0f;
         }
     }
 
-    // --- 6. GESTION DU POINT FAIBLE (QTE) ---
     // --- 6. GESTION DU POINT FAIBLE (QTE AU CLAVIER) ---
     combat->current_enemy.qte_timer -= deltaTime;
     if (combat->current_enemy.qte_timer <= 0.0f)
@@ -796,6 +827,27 @@ void Combat_RenderCenter(CombatContext* combat, Font font, int centerX, int cent
             DrawCircleLines(combat->magic_proj.target.x, combat->magic_proj.target.y, radius, expColor);
         }
     }
+
+    // ==========================================
+    // --- 8. EFFET DANGER DE MORT (HP FAIBLES) ---
+    // ==========================================
+    float hp_percent = (float)combat->player.hp / (float)combat->player.max_hp;
+    
+    // Si on a moins de 25% de vie et qu'on est pas encore mort
+    if (hp_percent <= 0.25f && combat->player.hp > 0)
+    {
+        // On crée une pulsation agressive avec un sinus très rapide
+        float pulse = (sinf(GetTime() * 15.0f) + 1.0f) / 2.0f; 
+        
+        // Un voile rouge translucide qui palpite sur TOUT l'écran
+        Color dangerColor = (Color){ 200, 0, 0, (unsigned char)(60 * pulse) };
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), dangerColor);
+        
+        // Un texte d'alerte clignotant
+        Color textDanger = (Color){ 255, 0, 0, (unsigned char)(255 * pulse) };
+        Vector2 tSize = MeasureTextEx(font, "!!! SANTE CRITIQUE !!!", 30, 1);
+        DrawTextEx(font, "!!! SANTE CRITIQUE !!!", (Vector2){centerX - (tSize.x / 2), GetScreenHeight() - 150}, 30, 1, textDanger);
+    }
 }
 
 void Combat_RecalculateStats(CombatContext* combat)
@@ -935,11 +987,16 @@ void Combat_TryUsePotion(CombatContext* combat, int slot_index)
             combat->player.hp += val;
             combat->screen_flash_color = (Color){255, 0, 0, 60}; // Flash Rouge
         }
-        else
+        else if(t->type == SPELL_MANA)
         {
             combat->player.mana += val;
             combat->screen_flash_color = (Color){0, 150, 255, 60}; // Flash Bleu
         }
+        else
+        {
+            combat->screen_flash_color = GRAY;
+        }
+
         combat->screen_flash_timer = 0.15f; // Durée du flash
 
         // Sécurité pour ne pas dépasser le max

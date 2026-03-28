@@ -406,6 +406,8 @@ static EffectType ParseEffectType(const char* str)
         return SPELL_HEAL;
     if (strstr(str, "POISON"))
         return SPELL_POISON;
+    if(strstr(str,"MANA"))
+        return SPELL_MANA;
     if (strstr(str, "FREEZE"))
         return SPELL_FREEZE;
     if (strstr(str, "VAMPIRISM"))

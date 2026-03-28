@@ -408,7 +408,7 @@ void Game_RenderAlchemist(GameContext* game, int w, int h)
             long long upg_cost   = compute_price(t->upg_gold_base, t->upg_gold_inc, lvl);
             long long craft_cost = compute_price(t->craft_herbs_base, t->craft_herbs_inc, lvl);
 
-            int max_potions = 5;
+            int max_potions = 10;
             bool isFull = (game->combat.player.potion_qty[selectedPotionIdx] >= max_potions);
             bool canCraft = (game->clicker.inventory.herbes >= craft_cost) && !isFull;
             bool canUpg = (game->clicker.inventory.or >= upg_cost && lvl < 10);
@@ -430,7 +430,7 @@ void Game_RenderAlchemist(GameContext* game, int w, int h)
             if (isFull) 
             {
                 // Message rouge si le sac est plein
-                DrawTextCentered(game->uiFont, "[ SACOCHE PLEINE (MAX 5) ]", shopX + 150, 250, 20, 1, RED);
+                DrawTextCentered(game->uiFont, "[ SACOCHE PLEINE (MAX 10) ]", shopX + 150, 250, 20, 1, RED);
             }
             else 
             {

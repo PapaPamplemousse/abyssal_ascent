@@ -3,8 +3,8 @@
 
 #include "game.h"
 
-#define MAP_WIDTH 50
-#define MAP_HEIGHT 50
+#define MAP_WIDTH 21
+#define MAP_HEIGHT 21
 #ifndef MAX_ASCII_LINES
 #define MAX_ASCII_LINES 60
 #endif
